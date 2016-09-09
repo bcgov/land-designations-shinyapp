@@ -17,18 +17,21 @@ library(ggplot2)
 library(ggthemes)
 library(plotly)
 
+bc_bound <- read_feather("data/gg_bc_bound.feather")
 ecoregions <- readRDS("data/ecoregions_t_leaflet.rds")
 gg_ld_x_ecoreg <- read_feather("data/gg_ld_ecoreg.feather")
 gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
 ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather")
 ecoreg_ids <- ecoregions$CRGNCD
 
-gg_ld_ecoreg <- function(ecoreg_cd, ld_df, ecoreg_df) {
+gg_ld_ecoreg <- function(ecoreg_cd) {
   if (ecoreg_cd != "BC") {
-    ld_df <- ld_df[ld_df$CRGNCD == ecoreg_cd,]
-    ecoreg_df <- ecoreg_df[ecoreg_df$CRGNCD == ecoreg_cd, ]
+    ld_df <- gg_ld_x_ecoreg[gg_ld_x_ecoreg$CRGNCD == ecoreg_cd,]
+    ecoreg_df <- gg_ecoreg[gg_ecoreg$CRGNCD == ecoreg_cd, ]
     title <- tools::toTitleCase(tolower(ecoreg_df$CRGNNM[1]))
   } else {
+    ld_df <- gg_ld_x_ecoreg
+    ecoreg_df <- bc_bound
     title <- "British Columbia"
   }
 
@@ -42,7 +45,7 @@ gg_ld_ecoreg <- function(ecoreg_cd, ld_df, ecoreg_df) {
 }
 
 plotly_barchart <- function(ecoreg_cd) {
-  ggplot(ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ],
+  gg <- ggplot(ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_cd, ],
          aes(x = cons_cat, y = percent_des, fill = cons_cat,
              text = paste0("Area: ", round(area_des_ha), " ha (",
                            round(percent_des, 1), "%)"))) +
@@ -77,12 +80,12 @@ shinyServer(function(input, output, session) {
   output$ecoreg_map <- renderPlot({
     ecoreg_code <- ecoreg_re()
 
-    gg_ld_ecoreg(ecoreg_code, gg_ld_x_ecoreg, gg_ecoreg)
+    gg_ld_ecoreg(ecoreg_code)
   })
 
   output$ecoreg_barchart <- renderPlotly({
     ecoreg_code <- ecoreg_re()
 
-    gg <- plotly_barchart(ecoreg_code)
+    plotly_barchart(ecoreg_code)
   })
 })
