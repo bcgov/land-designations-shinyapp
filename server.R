@@ -1,11 +1,11 @@
 # Copyright 2016 Province of British Columbia
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
@@ -24,12 +24,18 @@ ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather")
 ecoreg_ids <- ecoregions$ECOREGION_CODE
 
 gg_ld_ecoreg <- function(ecoreg_cd, ld_df, ecoreg_df) {
-  ld_df_sub <- ld_df[ld_df$CRGNCD == ecoreg_cd,]
-  ecoreg_df_sub <- ecoreg_df[ecoreg_df$CRGNCD == ecoreg_cd, ]
-  ggplot(ld_df_sub, aes(x = long, y = lat, group = group)) +
-    geom_polygon(data = ecoreg_df_sub, fill = "grey85", colour = "gray40") +
+  if (ecoreg_cd != "BC") {
+    ld_df <- ld_df[ld_df$CRGNCD == ecoreg_cd,]
+    ecoreg_df <- ecoreg_df[ecoreg_df$CRGNCD == ecoreg_cd, ]
+    title <- tools::toTitleCase(tolower(ecoreg_df$CRGNNM[1]))
+  } else {
+    title <- "British Columbia"
+  }
+
+  ggplot(ld_df, aes(x = long, y = lat, group = group)) +
+    geom_polygon(data = ecoreg_df, fill = "grey85", colour = "gray40") +
     geom_polygon(aes(fill = cons_cat)) +
-    ggtitle(tools::toTitleCase(tolower(ecoreg_df_sub$CRGNNM[1]))) +
+    ggtitle(title) +
     coord_fixed() +
     theme_map() +
     guides(fill = "none")
