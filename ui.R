@@ -15,7 +15,7 @@ library(leaflet)
 library(plotly)
 
 shinyUI(fluidPage(
-  titlePanel("Protection of ecoregions and Biogeoclimatic Zones"),
+  titlePanel("Land Designations in Ecoregions and Biogeoclimatic Zones"),
   tabsetPanel(
     tabPanel(
       "Ecoregions",
