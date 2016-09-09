@@ -83,6 +83,6 @@ shinyServer(function(input, output, session) {
   output$ecoreg_barchart <- renderPlotly({
     ecoreg_code <- ecoreg_re()
 
-    gg <- plotyl_barchart(ecoreg_code)
+    gg <- plotly_barchart(ecoreg_code)
   })
 })
