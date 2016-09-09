@@ -41,6 +41,20 @@ gg_ld_ecoreg <- function(ecoreg_cd, ld_df, ecoreg_df) {
     guides(fill = "none")
 }
 
+plotly_barchart <- function(ecoreg_cd) {
+  ggplot(ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ],
+         aes(x = cons_cat, y = percent_des, fill = cons_cat,
+             text = paste0("Area: ", round(area_des_ha), " ha (",
+                           round(percent_des, 1), "%)"))) +
+    geom_bar(stat = "identity") +
+    theme_minimal() +
+    coord_flip() +
+    labs(x = "Designation type", y = "Percent of ecoregion designated", fill = NULL) +
+    guides(fill = "none")
+
+  ggplotly(gg, tooltip = "text") %>% layout(showlegend = FALSE)
+}
+
 shinyServer(function(input, output, session) {
 
   # data <- reactiveValues(clickedMarker = NULL)
@@ -69,16 +83,6 @@ shinyServer(function(input, output, session) {
   output$ecoreg_barchart <- renderPlotly({
     ecoreg_code <- ecoreg_re()
 
-    gg <- ggplot(ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ],
-           aes(x = cons_cat, y = percent_des, fill = cons_cat,
-               text = paste0("Area: ", round(area_des_ha), " ha (",
-                            round(percent_des, 1), "%)"))) +
-      geom_bar(stat = "identity") +
-      theme_minimal() +
-      coord_flip() +
-      labs(x = "Designation type", y = "Percent of ecoregion designated", fill = NULL) +
-      guides(fill = "none")
-
-    ggplotly(gg, tooltip = "text") %>% layout(showlegend = FALSE)
+    gg <- plotyl_barchart(ecoreg_code)
   })
 })
