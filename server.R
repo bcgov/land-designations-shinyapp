@@ -17,11 +17,11 @@ library(ggplot2)
 library(ggthemes)
 library(plotly)
 
-ecoregions <- readRDS("data/terr_ecoreg.rds")
+ecoregions <- readRDS("data/ecoregions_t_leaflet.rds")
 gg_ld_x_ecoreg <- read_feather("data/gg_ld_ecoreg.feather")
 gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
 ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather")
-ecoreg_ids <- ecoregions$ECOREGION_CODE
+ecoreg_ids <- ecoregions$CRGNCD
 
 gg_ld_ecoreg <- function(ecoreg_cd, ld_df, ecoreg_df) {
   if (ecoreg_cd != "BC") {
