@@ -62,13 +62,31 @@ shinyServer(function(input, output, session) {
 
   # data <- reactiveValues(clickedMarker = NULL)
 
+  colorpal <- reactive({
+    cols <- rep("blue", length(ecoreg_ids))
+    names(cols) <- ecoreg_ids
+    code <- input$bc_ecoreg_map_shape_click$id
+    if (!is.null(code)) {
+      cols[code] <- "red"
+    }
+    colorFactor(cols, ecoreg_ids, ordered = TRUE)
+  })
+
   output$bc_ecoreg_map <- renderLeaflet({
+
     leaflet(ecoregions) %>%
+      fitBounds(-139, 48, -114, 60) %>%
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE)
-      ) %>%
-      addPolygons(layerId = ecoreg_ids, color = "#00441b", weight = 1,
-                  fillColor = "#c7e9c0")
+      )
+  })
+
+  observe({
+    pal <- colorpal()
+    leafletProxy("bc_ecoreg_map", data = ecoregions)  %>%
+      clearShapes() %>%
+      addPolygons(layerId = ecoregions$CRGNCD, color = "#00441b", weight = 1,
+                  fillColor = ~pal(CRGNCD))
   })
 
   ecoreg_re <- reactive({
