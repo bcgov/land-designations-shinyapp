@@ -24,16 +24,32 @@ gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
 ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather")
 ecoreg_ids <- ecoregions$CRGNCD
 ecoreg_nms <- ecoregions$CRGNNM
-centroids <- as.data.frame(coordinates(ecoregions))
-names(centroids) <- c("long", "lat")
-rownames(centroids) <- ecoreg_ids
+ecoregion_centroids <- as.data.frame(coordinates(ecoregions))
+names(ecoregion_centroids) <- c("long", "lat")
+rownames(ecoregion_centroids) <- ecoreg_ids
 
-gg_ld_class <- function(class, ecoreg_cd) {
-  if (ecoreg_cd != "BC") {
+## TODO:
+# bec_zones <-
+# gg_ld_x_bec <-
+# gg_bec <-
+# ld_bec_summary <-
+# bec_ids <-
+# bec_nms <-
+# bec_centroids <- as.data.frame(coordinates(bec_zones))
+# names(bec_centroids) <- c("long", "lat")
+# rownames(bec_centroids) <- bec_ids
+
+
+gg_ld_class <- function(class, reg_cd) {
+  if (reg_cd != "BC") {
     if (class == "ecoreg") {
-      ld_df <- gg_ld_x_ecoreg[gg_ld_x_ecoreg$CRGNCD == ecoreg_cd,]
-      class_df <- gg_ecoreg[gg_ecoreg$CRGNCD == ecoreg_cd, ]
-      title <- ecoreg_nms[ecoreg_ids == ecoreg_cd]
+      ld_df <- gg_ld_x_ecoreg[gg_ld_x_ecoreg$CRGNCD == reg_cd,]
+      class_df <- gg_ecoreg[gg_ecoreg$CRGNCD == reg_cd, ]
+      title <- ecoreg_nms[ecoreg_ids == reg_cd]
+    } else if (class == "bec") {
+      ld_df <- gg_ld_x_bec[gg_ld_x_bec$ZONE == reg_cd]
+      class_df <- gg_bec[gg_bec$ZONE == reg_cd]
+      title <- reg_cd
     }
   } else {
     ld_df <- gg_ld_x_ecoreg
@@ -50,8 +66,8 @@ gg_ld_class <- function(class, ecoreg_cd) {
     guides(fill = "none")
 }
 
-plotly_barchart <- function(ecoreg_cd) {
-  gg <- ggplot(ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_cd, ],
+plotly_barchart <- function(df) {
+  gg <- ggplot(df,
                aes(x = cons_cat, y = percent_des, fill = cons_cat,
                    text = paste0("Area: ", round(area_des_ha), " ha (",
                                  round(percent_des, 1), "%)"))) +
@@ -66,7 +82,9 @@ plotly_barchart <- function(ecoreg_cd) {
 
 shinyServer(function(input, output, session) {
 
-  add_polys <- reactive({
+
+  ## Ecoregion reactives
+  add_ecoregion_polys <- reactive({
     er_code <- input$bc_ecoreg_map_shape_click$id
 
     wts <- rep(1, length(ecoreg_ids))
@@ -83,16 +101,17 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  add_popup <- reactive({
+  add_ecoregion_popup <- reactive({
     reg_id <- input$bc_ecoreg_map_shape_mouseover$id
-    lat <- centroids[reg_id, "lat"]
-    lng <- centroids[reg_id, "long"]
+    lat <- ecoregion_centroids[reg_id, "lat"]
+    lng <- ecoregion_centroids[reg_id, "long"]
     reg_name <- ecoreg_nms[ecoreg_ids == reg_id]
 
     function(map_id) addPopups(map_id, lat = lat, lng = lng, reg_name,
                                options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
   })
 
+  ## Ecoregion leaflet map
   output$bc_ecoreg_map <- renderLeaflet({
     leaflet(ecoregions) %>%
       fitBounds(-139, 48, -114, 60) %>%
@@ -101,21 +120,24 @@ shinyServer(function(input, output, session) {
       )
   })
 
+  ## Observers for clearing old and adding new popups to ecoregion leaflet map
   observeEvent(input$bc_ecoreg_map_shape_mouseout$id, {
     leafletProxy("bc_ecoreg_map") %>% clearPopups()
   })
 
   observe({
-    add_eco_popup <- add_popup()
-    leafletProxy("bc_ecoreg_map") %>% add_eco_popup()
+    add_popup <- add_ecoregion_popup()
+    leafletProxy("bc_ecoreg_map") %>% add_popup()
   })
 
+  ## Observer for highlighting ecoregion polygon on click
   observe({
-    add_polygons <- add_polys()
+    add_polygons <- add_ecoregion_polys()
     leafletProxy("bc_ecoreg_map", data = ecoregions) %>%
       add_polygons()
   })
 
+  ## Ecoregion map and barchart
   ecoreg_re <- reactive({
     code <- input$bc_ecoreg_map_shape_click$id
     if (is.null(code)) return("BC")
@@ -130,7 +152,64 @@ shinyServer(function(input, output, session) {
 
   output$ecoreg_barchart <- renderPlotly({
     ecoreg_code <- ecoreg_re()
+    df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
 
-    plotly_barchart(ecoreg_code)
+    plotly_barchart(df)
   })
+
+  # ## BEC Reactives
+  # add_bec_polys <- reactive({
+  #   er_code <- input$bc_bec_map_shape_click$id
+  #
+  #   wts <- rep(1, length(ecoreg_ids))
+  #   opac <- rep(0.2, length(ecoreg_ids))
+  #   names(wts) <- names(opac) <- ecoreg_ids
+  #   if (!is.null(er_code)) {
+  #     wts[er_code] <- 2
+  #     opac[er_code] <- 0.8
+  #   }
+  #
+  #   function(mapid) {
+  #     addPolygons(mapid, layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
+  #                 weight = unname(wts), fillOpacity = unname(opac))
+  #   }
+  # })
+  #
+  # add_bec_popup <- reactive({
+  #   reg_id <- input$bc_bec_map_shape_mouseover$id
+  #   lat <- centroids[reg_id, "lat"]
+  #   lng <- centroids[reg_id, "long"]
+  #   reg_name <- ecoreg_nms[ecoreg_ids == reg_id]
+  #
+  #   function(map_id) addPopups(map_id, lat = lat, lng = lng, reg_name,
+  #                              options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
+  # })
+  #
+  # ## BEC leaflet map
+  # output$bc_bec_map <- renderLeaflet({
+  #   leaflet(ecoregions) %>%
+  #     fitBounds(-139, 48, -114, 60) %>%
+  #     addProviderTiles("Stamen.TonerLite",
+  #                      options = providerTileOptions(noWrap = TRUE)
+  #     )
+  # })
+  #
+  # ## Observers for clearing old and adding new popups to BEC leaflet map
+  # observeEvent(input$bc_bec_map_shape_mouseout$id, {
+  #   leafletProxy("bc_bec_map") %>% clearPopups()
+  # })
+  #
+  # observe({
+  #   add_popup <- add_bec_popup()
+  #   leafletProxy("bc_ecoreg_map") %>% add_popup()
+  # })
+  #
+  # ## Observer for highlighting polygon on click
+  # observe({
+  #   add_polygons <- add_bec_polys()
+  #   leafletProxy("bc_bec_map", data = bec) %>%
+  #     add_polygons()
+  # })
+  #
+  # ## BEC map and barchart
 })
