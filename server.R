@@ -63,11 +63,21 @@ shinyServer(function(input, output, session) {
   line_weights <- reactive({
     wts <- rep(1, length(ecoreg_ids))
     names(wts) <- ecoreg_ids
-    code <- input$bc_ecoreg_map_shape_click$id
+    er_code <- input$bc_ecoreg_map_shape_click$id
     if (!is.null(code)) {
-      wts[code] <- 2
+      wts[er_code] <- 2
     }
-    wts
+    unname(wts)
+  })
+
+  fill_opac <- reactive({
+    opac <- rep(0.2, length(ecoreg_ids))
+    names(opac) <- ecoreg_ids
+    er_code <- input$bc_ecoreg_map_shape_click$id
+    if (!is.null(code)) {
+      opac[er_code] <- 0.8
+    }
+    unname(opac)
   })
 
   output$bc_ecoreg_map <- renderLeaflet({
@@ -81,11 +91,12 @@ shinyServer(function(input, output, session) {
 
   observe({
     wts <- line_weights()
+    opac <- fill_opac()
+
     leafletProxy("bc_ecoreg_map", data = ecoregions)  %>%
       clearShapes() %>%
-      addPolygons(layerId = ecoregions$CRGNCD, color = "#00441b",
-                  weight = ~wts(CRGNCD),
-                  fillColor = "#006d2c")
+      addPolygons(layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
+                  weight = wts, fillOpacity = opac)
   })
 
   ecoreg_re <- reactive({
