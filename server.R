@@ -60,28 +60,23 @@ plotly_barchart <- function(ecoreg_cd) {
 
 shinyServer(function(input, output, session) {
 
-  line_weights <- reactive({
+  add_polys <- reactive({
     wts <- rep(1, length(ecoreg_ids))
-    names(wts) <- ecoreg_ids
-    er_code <- input$bc_ecoreg_map_shape_click$id
-    if (!is.null(code)) {
-      wts[er_code] <- 2
-    }
-    unname(wts)
-  })
-
-  fill_opac <- reactive({
     opac <- rep(0.2, length(ecoreg_ids))
-    names(opac) <- ecoreg_ids
+    names(wts) <- names(opac) <- ecoreg_ids
     er_code <- input$bc_ecoreg_map_shape_click$id
-    if (!is.null(code)) {
+    if (!is.null(er_code)) {
+      wts[er_code] <- 2
       opac[er_code] <- 0.8
     }
-    unname(opac)
+
+    function(map) {
+      addPolygons(map, layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
+                weight = unname(wts), fillOpacity = unname(opac))
+    }
   })
 
   output$bc_ecoreg_map <- renderLeaflet({
-
     leaflet(ecoregions) %>%
       fitBounds(-139, 48, -114, 60) %>%
       addProviderTiles("Stamen.TonerLite",
@@ -90,13 +85,10 @@ shinyServer(function(input, output, session) {
   })
 
   observe({
-    wts <- line_weights()
-    opac <- fill_opac()
+    add_polygons <- add_polys()
 
     leafletProxy("bc_ecoreg_map", data = ecoregions)  %>%
-      clearShapes() %>%
-      addPolygons(layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
-                  weight = wts, fillOpacity = opac)
+      add_polygons()
   })
 
   ecoreg_re <- reactive({
