@@ -23,6 +23,7 @@ gg_ld_x_ecoreg <- read_feather("data/gg_ld_ecoreg.feather")
 gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
 ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather")
 ecoreg_ids <- ecoregions$CRGNCD
+ecoreg_nms <- ecoregions$CRGNNM
 centroids <- as.data.frame(coordinates(ecoregions))
 names(centroids) <- c("long", "lat")
 rownames(centroids) <- ecoreg_ids
@@ -32,7 +33,7 @@ gg_ld_class <- function(class, ecoreg_cd) {
     if (class == "ecoreg") {
       ld_df <- gg_ld_x_ecoreg[gg_ld_x_ecoreg$CRGNCD == ecoreg_cd,]
       class_df <- gg_ecoreg[gg_ecoreg$CRGNCD == ecoreg_cd, ]
-      title <- tools::toTitleCase(tolower(class_df$CRGNNM[1]))
+      title <- ecoreg_nms[ecoreg_ids == ecoreg_cd]
     }
   } else {
     ld_df <- gg_ld_x_ecoreg
@@ -83,11 +84,12 @@ shinyServer(function(input, output, session) {
   })
 
   add_popup <- reactive({
-    pointId <- input$bc_ecoreg_map_shape_mouseover$id
-    lat <- centroids[pointId, "lat"]
-    lng <- centroids[pointId, "long"]
+    reg_id <- input$bc_ecoreg_map_shape_mouseover$id
+    lat <- centroids[reg_id, "lat"]
+    lng <- centroids[reg_id, "long"]
+    reg_name <- ecoreg_nms[ecoreg_ids == reg_id]
 
-    function(map_id) addPopups(map_id, lat = lat, lng = lng, as.character(pointId),
+    function(map_id) addPopups(map_id, lat = lat, lng = lng, reg_name,
                                options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
   })
 
