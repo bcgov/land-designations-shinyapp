@@ -61,10 +61,11 @@ plotly_barchart <- function(ecoreg_cd) {
 shinyServer(function(input, output, session) {
 
   add_polys <- reactive({
+    er_code <- input$bc_ecoreg_map_shape_click$id
+
     wts <- rep(1, length(ecoreg_ids))
     opac <- rep(0.2, length(ecoreg_ids))
     names(wts) <- names(opac) <- ecoreg_ids
-    er_code <- input$bc_ecoreg_map_shape_click$id
     if (!is.null(er_code)) {
       wts[er_code] <- 2
       opac[er_code] <- 0.8
@@ -86,8 +87,7 @@ shinyServer(function(input, output, session) {
 
   observe({
     add_polygons <- add_polys()
-
-    leafletProxy("bc_ecoreg_map", data = ecoregions)  %>%
+    leafletProxy("bc_ecoreg_map", data = ecoregions) %>%
       add_polygons()
   })
 
