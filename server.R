@@ -23,6 +23,9 @@ gg_ld_x_ecoreg <- read_feather("data/gg_ld_ecoreg.feather")
 gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
 ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather")
 ecoreg_ids <- ecoregions$CRGNCD
+centroids <- as.data.frame(coordinates(ecoregions))
+names(centroids) <- c("long", "lat")
+rownames(centroids) <- ecoreg_ids
 
 gg_ld_ecoreg <- function(ecoreg_cd) {
   if (ecoreg_cd != "BC") {
@@ -71,10 +74,19 @@ shinyServer(function(input, output, session) {
       opac[er_code] <- 0.8
     }
 
-    function(map) {
-      addPolygons(map, layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
+    function(mapid) {
+      addPolygons(mapid, layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
                 weight = unname(wts), fillOpacity = unname(opac))
     }
+  })
+
+  add_popup <- reactive({
+    pointId <- input$bc_ecoreg_map_shape_mouseover$id
+    lat <- centroids[pointId, "lat"]
+    lng <- centroids[pointId, "long"]
+
+    function(map_id) addPopups(map_id, lat = lat, lng = lng, as.character(pointId),
+                               options = popupOptions(closeButton = FALSE, className = 'popup'))
   })
 
   output$bc_ecoreg_map <- renderLeaflet({
@@ -83,6 +95,15 @@ shinyServer(function(input, output, session) {
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE)
       )
+  })
+
+  observeEvent(input$bc_ecoreg_map_shape_mouseout$id, {
+    leafletProxy("bc_ecoreg_map") %>% clearPopups()
+  })
+
+  observe({
+    add_eco_popup <- add_popup()
+    leafletProxy("bc_ecoreg_map") %>% add_eco_popup()
   })
 
   observe({
