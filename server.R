@@ -60,16 +60,14 @@ plotly_barchart <- function(ecoreg_cd) {
 
 shinyServer(function(input, output, session) {
 
-  # data <- reactiveValues(clickedMarker = NULL)
-
-  colorpal <- reactive({
-    cols <- rep("blue", length(ecoreg_ids))
-    names(cols) <- ecoreg_ids
+  line_weights <- reactive({
+    wts <- rep(1, length(ecoreg_ids))
+    names(wts) <- ecoreg_ids
     code <- input$bc_ecoreg_map_shape_click$id
     if (!is.null(code)) {
-      cols[code] <- "red"
+      wts[code] <- 2
     }
-    colorFactor(cols, ecoreg_ids, ordered = TRUE)
+    wts
   })
 
   output$bc_ecoreg_map <- renderLeaflet({
@@ -82,11 +80,12 @@ shinyServer(function(input, output, session) {
   })
 
   observe({
-    pal <- colorpal()
+    wts <- line_weights()
     leafletProxy("bc_ecoreg_map", data = ecoregions)  %>%
       clearShapes() %>%
-      addPolygons(layerId = ecoregions$CRGNCD, color = "#00441b", weight = 1,
-                  fillColor = ~pal(CRGNCD))
+      addPolygons(layerId = ecoregions$CRGNCD, color = "#00441b",
+                  weight = ~wts(CRGNCD),
+                  fillColor = "#006d2c")
   })
 
   ecoreg_re <- reactive({
