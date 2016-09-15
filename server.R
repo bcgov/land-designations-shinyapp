@@ -27,19 +27,21 @@ centroids <- as.data.frame(coordinates(ecoregions))
 names(centroids) <- c("long", "lat")
 rownames(centroids) <- ecoreg_ids
 
-gg_ld_ecoreg <- function(ecoreg_cd) {
+gg_ld_class <- function(class, ecoreg_cd) {
   if (ecoreg_cd != "BC") {
-    ld_df <- gg_ld_x_ecoreg[gg_ld_x_ecoreg$CRGNCD == ecoreg_cd,]
-    ecoreg_df <- gg_ecoreg[gg_ecoreg$CRGNCD == ecoreg_cd, ]
-    title <- tools::toTitleCase(tolower(ecoreg_df$CRGNNM[1]))
+    if (class == "ecoreg") {
+      ld_df <- gg_ld_x_ecoreg[gg_ld_x_ecoreg$CRGNCD == ecoreg_cd,]
+      class_df <- gg_ecoreg[gg_ecoreg$CRGNCD == ecoreg_cd, ]
+      title <- tools::toTitleCase(tolower(class_df$CRGNNM[1]))
+    }
   } else {
     ld_df <- gg_ld_x_ecoreg
-    ecoreg_df <- bc_bound
+    class_df <- bc_bound
     title <- "British Columbia"
   }
 
   ggplot(ld_df, aes(x = long, y = lat, group = group)) +
-    geom_polygon(data = ecoreg_df, fill = "grey85", colour = "gray40") +
+    geom_polygon(data = class_df, fill = "grey85", colour = "gray40") +
     geom_polygon(aes(fill = cons_cat)) +
     ggtitle(title) +
     coord_fixed() +
@@ -49,9 +51,9 @@ gg_ld_ecoreg <- function(ecoreg_cd) {
 
 plotly_barchart <- function(ecoreg_cd) {
   gg <- ggplot(ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_cd, ],
-         aes(x = cons_cat, y = percent_des, fill = cons_cat,
-             text = paste0("Area: ", round(area_des_ha), " ha (",
-                           round(percent_des, 1), "%)"))) +
+               aes(x = cons_cat, y = percent_des, fill = cons_cat,
+                   text = paste0("Area: ", round(area_des_ha), " ha (",
+                                 round(percent_des, 1), "%)"))) +
     geom_bar(stat = "identity") +
     theme_minimal() +
     coord_flip() +
@@ -76,7 +78,7 @@ shinyServer(function(input, output, session) {
 
     function(mapid) {
       addPolygons(mapid, layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
-                weight = unname(wts), fillOpacity = unname(opac))
+                  weight = unname(wts), fillOpacity = unname(opac))
     }
   })
 
@@ -121,7 +123,7 @@ shinyServer(function(input, output, session) {
   output$ecoreg_map <- renderPlot({
     ecoreg_code <- ecoreg_re()
 
-    gg_ld_ecoreg(ecoreg_code)
+    gg_ld_class(class = "ecoreg", ecoreg_code)
   })
 
   output$ecoreg_barchart <- renderPlotly({

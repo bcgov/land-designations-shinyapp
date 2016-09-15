@@ -24,12 +24,18 @@ shinyUI(fluidPage(
   tabsetPanel(
     tabPanel(
       "Ecoregions",
-             fluidRow(column(5, leafletOutput("bc_ecoreg_map", height = 600)),
-                      column(7,
-                             plotOutput(outputId = "ecoreg_map"),
-                             plotlyOutput(outputId = "ecoreg_barchart",
-                                        height = "200px")))),
-    tabPanel("BEC","content")
+      fluidRow(column(5, leafletOutput("bc_ecoreg_map", height = 600)),
+               column(7,
+                      plotOutput(outputId = "ecoreg_map"),
+                      plotlyOutput(outputId = "ecoreg_barchart",
+                                   height = "200px")))),
+    tabPanel(
+      "BEC",
+      fluidRow(column(5, leafletOutput("bc_bec_map", height = 600)),
+               column(7,
+                      plotOutput(outputId = "bec_map"),
+                      plotlyOutput(outputId = "bec_barchart",
+                                   height = "200px"))))
   )
 
 
