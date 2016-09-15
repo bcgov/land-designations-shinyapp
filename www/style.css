@@ -1,0 +1,9 @@
+.ecoreg-popup {
+   color: #006d2c;
+}
+
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background-color: #e5f5e0;
+  border: 1px solid #006d2c;
+}

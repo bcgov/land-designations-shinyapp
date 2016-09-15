@@ -86,7 +86,7 @@ shinyServer(function(input, output, session) {
     lng <- centroids[pointId, "long"]
 
     function(map_id) addPopups(map_id, lat = lat, lng = lng, as.character(pointId),
-                               options = popupOptions(closeButton = FALSE, className = 'popup'))
+                               options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
   })
 
   output$bc_ecoreg_map <- renderLeaflet({
