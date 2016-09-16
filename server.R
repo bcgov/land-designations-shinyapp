@@ -29,15 +29,20 @@ names(ecoregion_centroids) <- c("long", "lat")
 rownames(ecoregion_centroids) <- ecoreg_ids
 
 ## TODO:
-# bec_zones <-
+bec_zones <- readRDS("data/bec_leaflet.rds")
 # gg_ld_x_bec <-
 # gg_bec <-
 # ld_bec_summary <-
-# bec_ids <-
+bec_ids <- bec_zones$ZONE
 # bec_nms <-
-# bec_centroids <- as.data.frame(coordinates(bec_zones))
-# names(bec_centroids) <- c("long", "lat")
-# rownames(bec_centroids) <- bec_ids
+bec_colors <- c(BAFA = "#E5D8B1", SWB = "#A3D1AB", BWBS = "#ABE7FF",
+                ESSF = "#9E33D3", CMA = "#E5C7C7", SBS = "#2D8CBD", MH = "#A599FF",
+                CWH = "#208500", ICH = "#85A303", IMA = "#B2B2B2", SBPS = "#36DEFC",
+                MS = "#FF46A3", IDF = "#FFCF00", BG = "#FF0000", PP = "#DE7D00",
+                CDF = "#FFFF00")[bec_ids]
+bec_centroids <- as.data.frame(coordinates(bec_zones))
+names(bec_centroids) <- c("long", "lat")
+rownames(bec_centroids) <- bec_ids
 
 
 gg_ld_class <- function(class, reg_cd) {
@@ -158,56 +163,55 @@ shinyServer(function(input, output, session) {
   })
 
   # ## BEC Reactives
+  ## Highlighting BEC polygons on click is too slow
   # add_bec_polys <- reactive({
-  #   er_code <- input$bc_bec_map_shape_click$id
-  #
-  #   wts <- rep(1, length(ecoreg_ids))
-  #   opac <- rep(0.2, length(ecoreg_ids))
-  #   names(wts) <- names(opac) <- ecoreg_ids
-  #   if (!is.null(er_code)) {
-  #     wts[er_code] <- 2
-  #     opac[er_code] <- 0.8
+  #   bec_code <- input$bc_bec_map_shape_click$id
+  #   opac <- rep(0.6, length(bec_ids))
+  #   names(opac) <- bec_ids
+  #   if (!is.null(bec_code)) {
+  #     opac[bec_code] <- 0.8
   #   }
   #
   #   function(mapid) {
-  #     addPolygons(mapid, layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
-  #                 weight = unname(wts), fillOpacity = unname(opac))
+  #     addPolygons(mapid, layerId = bec_zones$ZONE, color = "",
+  #                 fillColor = unname(bec_colors), fillOpacity = unname(opac))
   #   }
   # })
   #
-  # add_bec_popup <- reactive({
-  #   reg_id <- input$bc_bec_map_shape_mouseover$id
-  #   lat <- centroids[reg_id, "lat"]
-  #   lng <- centroids[reg_id, "long"]
-  #   reg_name <- ecoreg_nms[ecoreg_ids == reg_id]
-  #
-  #   function(map_id) addPopups(map_id, lat = lat, lng = lng, reg_name,
-  #                              options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
-  # })
+  add_bec_popup <- reactive({
+    reg_id <- input$bc_bec_map_shape_mouseover$id
+    lat <- bec_centroids[reg_id, "lat"]
+    lng <- bec_centroids[reg_id, "long"]
+    reg_name <- reg_id
+
+    function(map_id) addPopups(map_id, lat = lat, lng = lng, reg_name,
+                               options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
+  })
   #
   # ## BEC leaflet map
-  # output$bc_bec_map <- renderLeaflet({
-  #   leaflet(ecoregions) %>%
-  #     fitBounds(-139, 48, -114, 60) %>%
-  #     addProviderTiles("Stamen.TonerLite",
-  #                      options = providerTileOptions(noWrap = TRUE)
-  #     )
-  # })
+  output$bc_bec_map <- renderLeaflet({
+    leaflet(bec_zones) %>%
+      fitBounds(-139, 48, -114, 60) %>%
+      addProviderTiles("Stamen.TonerLite",
+                       options = providerTileOptions(noWrap = TRUE)) %>%
+      addPolygons(layerId = bec_zones$ZONE, color = "",
+                  fillColor = unname(bec_colors), fillOpacity = 0.8)
+  })
   #
   # ## Observers for clearing old and adding new popups to BEC leaflet map
-  # observeEvent(input$bc_bec_map_shape_mouseout$id, {
-  #   leafletProxy("bc_bec_map") %>% clearPopups()
-  # })
-  #
-  # observe({
-  #   add_popup <- add_bec_popup()
-  #   leafletProxy("bc_ecoreg_map") %>% add_popup()
-  # })
-  #
-  # ## Observer for highlighting polygon on click
+  observeEvent(input$bc_bec_map_shape_mouseout$id, {
+    leafletProxy("bc_bec_map") %>% clearPopups()
+  })
+
+  observe({
+    add_popup <- add_bec_popup()
+    leafletProxy("bc_bec_map") %>% add_popup()
+  })
+
+  ## Observer for highlighting polygon on click
   # observe({
   #   add_polygons <- add_bec_polys()
-  #   leafletProxy("bc_bec_map", data = bec) %>%
+  #   leafletProxy("bc_bec_map", data = bec_zones) %>%
   #     add_polygons()
   # })
   #
