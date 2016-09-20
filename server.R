@@ -40,9 +40,9 @@ bec_colors <- c(BAFA = "#E5D8B1", SWB = "#A3D1AB", BWBS = "#ABE7FF",
                 CWH = "#208500", ICH = "#85A303", IMA = "#B2B2B2", SBPS = "#36DEFC",
                 MS = "#FF46A3", IDF = "#FFCF00", BG = "#FF0000", PP = "#DE7D00",
                 CDF = "#FFFF00")[bec_ids]
-bec_centroids <- as.data.frame(coordinates(bec_zones))
-names(bec_centroids) <- c("long", "lat")
-rownames(bec_centroids) <- bec_ids
+# bec_centroids <- as.data.frame(coordinates(bec_zones))
+# names(bec_centroids) <- c("long", "lat")
+# rownames(bec_centroids) <- bec_ids
 
 
 gg_ld_class <- function(class, reg_cd) {
@@ -178,15 +178,15 @@ shinyServer(function(input, output, session) {
   #   }
   # })
   #
-  add_bec_popup <- reactive({
-    reg_id <- input$bc_bec_map_shape_mouseover$id
-    lat <- bec_centroids[reg_id, "lat"]
-    lng <- bec_centroids[reg_id, "long"]
-    reg_name <- reg_id
-
-    function(map_id) addPopups(map_id, lat = lat, lng = lng, reg_name,
-                               options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
-  })
+  # add_bec_popup <- reactive({
+  #   reg_id <- input$bc_bec_map_shape_mouseover$id
+  #   lat <- bec_centroids[reg_id, "lat"]
+  #   lng <- bec_centroids[reg_id, "long"]
+  #   reg_name <- reg_id
+  #
+  #   function(map_id) addPopups(map_id, lat = lat, lng = lng, reg_name,
+  #                              options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
+  # })
   #
   # ## BEC leaflet map
   output$bc_bec_map <- renderLeaflet({
@@ -203,9 +203,15 @@ shinyServer(function(input, output, session) {
     leafletProxy("bc_bec_map") %>% clearPopups()
   })
 
-  observe({
-    add_popup <- add_bec_popup()
-    leafletProxy("bc_bec_map") %>% add_popup()
+  observeEvent(input$bc_bec_map_shape_mouseover$id, {
+    reg_id <- input$bc_bec_map_shape_mouseover$id
+    lat <- input$bc_bec_map_shape_mouseover$lat
+    lng <- input$bc_bec_map_shape_mouseover$lng
+    reg_name <- reg_id
+
+    leafletProxy("bc_bec_map") %>%
+      addPopups(lat = lat, lng = lng, reg_name,
+                options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
   })
 
   ## Observer for highlighting polygon on click
