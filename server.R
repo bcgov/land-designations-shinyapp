@@ -87,24 +87,34 @@ plotly_barchart <- function(df) {
 
 shinyServer(function(input, output, session) {
 
+  ecoreg_click_ids <- reactiveValues(ids = character(0))
 
-  ## Ecoregion reactives
-  add_ecoregion_polys <- reactive({
-    er_code <- input$bc_ecoreg_map_shape_click$id
-
-    wts <- rep(1, length(ecoreg_ids))
-    opac <- rep(0.2, length(ecoreg_ids))
-    names(wts) <- names(opac) <- ecoreg_ids
-    if (!is.null(er_code)) {
-      wts[er_code] <- 2
-      opac[er_code] <- 0.8
-    }
-
-    function(mapid) {
-      addPolygons(mapid, layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
-                  weight = unname(wts), fillOpacity = unname(opac))
+  observeEvent(input$bc_ecoreg_map_shape_click$id, {
+    if (!is.null(input$bc_ecoreg_map_shape_click$id)) {
+      ecoreg_click_ids$ids <- c(ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)],
+                                input$bc_ecoreg_map_shape_click$id)
     }
   })
+
+  output$click_ids <- renderText(ecoreg_click_ids$ids)
+
+  ## Ecoregion reactives
+  # add_ecoregion_polys <- reactive({
+  #   er_code <- input$bc_ecoreg_map_shape_click$id
+  #
+  #   wts <- rep(1, length(ecoreg_ids))
+  #   opac <- rep(0.2, length(ecoreg_ids))
+  #   names(wts) <- names(opac) <- ecoreg_ids
+  #   if (!is.null(er_code)) {
+  #     wts[er_code] <- 2
+  #     opac[er_code] <- 0.8
+  #   }
+  #
+  #   function(mapid) {
+  #     addPolygons(mapid, layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
+  #                 weight = unname(wts), fillOpacity = unname(opac))
+  #   }
+  # })
 
   add_ecoregion_popup <- reactive({
     reg_id <- input$bc_ecoreg_map_shape_mouseover$id
@@ -121,8 +131,22 @@ shinyServer(function(input, output, session) {
     leaflet(ecoregions) %>%
       fitBounds(-139, 48, -114, 60) %>%
       addProviderTiles("Stamen.TonerLite",
-                       options = providerTileOptions(noWrap = TRUE)
-      )
+                       options = providerTileOptions(noWrap = TRUE)) %>%
+      addPolygons(layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
+                  weight = 1, fillOpacity = 0.2)
+  })
+
+  # Observer for highlighting ecoregion polygon on click
+  observe({
+    clicked_polys <- ecoreg_click_ids$ids
+    ecoreg_subset <- ecoregions[ecoregions$CRGNCD %in% clicked_polys,]
+
+    leafletProxy("bc_ecoreg_map", data = ecoreg_subset) %>%
+      removeShape(clicked_polys) %>%
+      addPolygons(layerId = clicked_polys[1], color = "#00441b", fillColor = "#006d2c",
+                  weight = 1, fillOpacity = 0.2) %>%
+      addPolygons(layerId = clicked_polys[2], color = "#00441b", fillColor = "#006d2c",
+                  weight = 2, fillOpacity = 0.8)
   })
 
   ## Observers for clearing old and adding new popups to ecoregion leaflet map
@@ -135,28 +159,24 @@ shinyServer(function(input, output, session) {
     leafletProxy("bc_ecoreg_map") %>% add_popup()
   })
 
-  ## Observer for highlighting ecoregion polygon on click
-  observe({
-    add_polygons <- add_ecoregion_polys()
-    leafletProxy("bc_ecoreg_map", data = ecoregions) %>%
-      add_polygons()
-  })
-
   ## Ecoregion map and barchart
-  ecoreg_re <- reactive({
-    code <- input$bc_ecoreg_map_shape_click$id
-    if (is.null(code)) return("BC")
-    code
-  })
+  # ecoreg_re <- reactive({
+  #   code <- input$bc_ecoreg_map_shape_click$id
+  #   if (is.null(code)) return("BC")
+  #   code
+  # })
 
   output$ecoreg_map <- renderPlot({
-    ecoreg_code <- ecoreg_re()
+    ecoreg_code <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
+    if (length(ecoreg_code) == 0) ecoreg_code <- "BC"
 
     gg_ld_class(class = "ecoreg", ecoreg_code)
   })
 
   output$ecoreg_barchart <- renderPlotly({
-    ecoreg_code <- ecoreg_re()
+    ecoreg_code <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
+    if (is.null(ecoreg_code)) ecoreg_code <- "BC"
+
     df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
 
     plotly_barchart(df)
