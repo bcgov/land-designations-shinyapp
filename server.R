@@ -100,6 +100,8 @@ plotly_barchart <- function(df) {
 ecoreg_proxy <- function(...) leafletProxy("bc_ecoreg_map", ...)
 bec_proxy <- function(...) leafletProxy("bc_bec_map", ...)
 
+bc_view <- function(map) setView(map, lng = -126.5, lat = 54.5, zoom = 5)
+
 shinyServer(function(input, output, session) {
 
   ## Ecoregion reactives
@@ -123,7 +125,7 @@ shinyServer(function(input, output, session) {
   ## Ecoregion leaflet map
   output$bc_ecoreg_map <- renderLeaflet({
     leaflet(ecoregions) %>%
-      fitBounds(-139, 48, -114, 60) %>%
+      bc_view() %>%
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE))
   })
@@ -196,7 +198,7 @@ shinyServer(function(input, output, session) {
   # ## BEC leaflet map
   output$bc_bec_map <- renderLeaflet({
     leaflet(bec_zones) %>%
-      fitBounds(-139, 48, -114, 60) %>%
+      bc_view() %>%
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE)) %>%
       addPolygons(layerId = bec_zones$ZONE, color = "",
