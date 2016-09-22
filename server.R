@@ -30,21 +30,21 @@ rownames(ecoregion_centroids) <- ecoreg_ids
 
 ## TODO:
 bec_zones <- readRDS("data/bec_leaflet.rds")
-# gg_ld_x_bec <-
+gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather")
 # gg_bec <-
 # ld_bec_summary <-
 bec_ids <- bec_zones$ZONE
 bec_nms <- c(BAFA = "Boreal Altai Fescue Alpine",
-             SWB = "Spruce&mdash;Willow&mdash;Birch",
-             BWBS = "Boreal White &amp; Black Spruce",
-             ESSF = "Engelmann Spruce&mdash;Subalpine Fir",
+             SWB = "Spruce--Willow--Birch",
+             BWBS = "Boreal White & Black Spruce",
+             ESSF = "Engelmann Spruce--Subalpine Fir",
              CMA = "Coastal Mountain-heather Alpine",
              SBS = "Sub-Boreal Spruce",
              MH = "Mountain Hemlock",
              CWH = "Coastal Western Hemlock",
-             ICH = "Interior Cedar&mdash;Hemlock",
+             ICH = "Interior Cedar--Hemlock",
              IMA = "Interior Mountain-heather Alpine",
-             SBPS = "Sob-Boreal Pine&mdash;Spruce",
+             SBPS = "Sub-Boreal Pine--Spruce",
              MS = "Montane Spruce",
              IDF = "Interior Douglas-fir",
              BG = "Bunchgrass",
@@ -64,9 +64,9 @@ gg_ld_class <- function(class, reg_cd) {
       class_df <- gg_ecoreg[gg_ecoreg$CRGNCD == reg_cd, ]
       title <- ecoreg_nms[ecoreg_ids == reg_cd]
     } else if (class == "bec") {
-      ld_df <- gg_ld_x_bec[gg_ld_x_bec$ZONE == reg_cd]
-      class_df <- gg_bec[gg_bec$ZONE == reg_cd]
-      title <- reg_cd
+      ld_df <- gg_ld_x_bec[gg_ld_x_bec$ZONE == reg_cd, ]
+      # class_df <- gg_bec[gg_bec$ZONE == reg_cd, ]
+      title <- bec_nms[reg_cd]
     }
   } else {
     ld_df <- gg_ld_x_ecoreg
@@ -75,7 +75,7 @@ gg_ld_class <- function(class, reg_cd) {
   }
 
   ggplot(ld_df, aes(x = long, y = lat, group = group)) +
-    geom_polygon(data = class_df, fill = "grey85", colour = "gray40") +
+    # geom_polygon(data = class_df, fill = "grey85", colour = "gray40") +
     geom_polygon(aes(fill = cons_cat)) +
     ggtitle(title) +
     coord_fixed() +
@@ -101,6 +101,12 @@ ecoreg_proxy <- function(...) leafletProxy("bc_ecoreg_map", ...)
 bec_proxy <- function(...) leafletProxy("bc_bec_map", ...)
 
 bc_view <- function(map) setView(map, lng = -126.5, lat = 54.5, zoom = 5)
+
+htmlize <- function(x) {
+  x <- gsub("\\b&\\b", "&amp;", x, useBytes = TRUE)
+  x <- gsub("--", "&mdash;", x, useBytes = TRUE)
+  x
+}
 
 shinyServer(function(input, output, session) {
 
@@ -156,12 +162,14 @@ shinyServer(function(input, output, session) {
     code
   })
 
+  ## Subset map of ecoregion with land designations
   output$ecoreg_map <- renderPlot({
     ecoreg_code <- ecoreg_re()
 
     gg_ld_class(class = "ecoreg", ecoreg_code)
   })
 
+  ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderPlotly({
     ecoreg_code <- ecoreg_re()
     df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
@@ -202,7 +210,7 @@ shinyServer(function(input, output, session) {
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE)) %>%
       addPolygons(layerId = bec_zones$ZONE, color = "",
-                  fillColor = unname(bec_colors), fillOpacity = 0.8)
+                  fillColor = unname(bec_colors), fillOpacity = 0.7)
   })
 
   ## Observers for clearing old and adding new popups to BEC leaflet map
@@ -210,7 +218,7 @@ shinyServer(function(input, output, session) {
     reg_id <- input$bc_bec_map_shape_mouseover$id
     reg_name <- bec_nms[reg_id]
     bec_proxy() %>%
-      addControl(reg_name, position = "topright", layerId = "bec_label")
+      addControl(htmlize(reg_name), position = "topright", layerId = "bec_label")
   })
 
   observeEvent(input$bc_bec_map_shape_mouseout$id, {
@@ -226,4 +234,17 @@ shinyServer(function(input, output, session) {
   # })
   #
   # ## BEC map and barchart
+  bec_re <- reactive({
+    code <- input$bc_bec_map_shape_click$id
+    if (is.null(code)) return("BC")
+    code
+  })
+
+  ## Subset map of bec zone with land designations
+  output$bec_map <- renderPlot({
+    bec_code <- bec_re()
+
+    gg_ld_class(class = "bec", bec_code)
+  })
+
 })
