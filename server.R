@@ -30,20 +30,32 @@ rownames(ecoregion_centroids) <- ecoreg_ids
 
 ## TODO:
 bec_zones <- readRDS("data/bec_leaflet.rds")
-# gg_ld_x_bec <-
-# gg_bec <-
+gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather")
+gg_bec <- read_feather("data/gg_bec.feather")
 # ld_bec_summary <-
 bec_ids <- bec_zones$ZONE
-# bec_nms <-
+bec_nms <- c(BAFA = "Boreal Altai Fescue Alpine",
+             SWB = "Spruce--Willow--Birch",
+             BWBS = "Boreal White & Black Spruce",
+             ESSF = "Engelmann Spruce--Subalpine Fir",
+             CMA = "Coastal Mountain-heather Alpine",
+             SBS = "Sub-Boreal Spruce",
+             MH = "Mountain Hemlock",
+             CWH = "Coastal Western Hemlock",
+             ICH = "Interior Cedar--Hemlock",
+             IMA = "Interior Mountain-heather Alpine",
+             SBPS = "Sub-Boreal Pine--Spruce",
+             MS = "Montane Spruce",
+             IDF = "Interior Douglas-fir",
+             BG = "Bunchgrass",
+             PP = "Ponderosa Pine",
+             CDF = "Coastal Douglas-fir")
 bec_colors <- c(BAFA = "#E5D8B1", SWB = "#A3D1AB", BWBS = "#ABE7FF",
-                ESSF = "#9E33D3", CMA = "#E5C7C7", SBS = "#2D8CBD", MH = "#A599FF",
-                CWH = "#208500", ICH = "#85A303", IMA = "#B2B2B2", SBPS = "#36DEFC",
-                MS = "#FF46A3", IDF = "#FFCF00", BG = "#FF0000", PP = "#DE7D00",
+                ESSF = "#9E33D3", CMA = "#E5C7C7", SBS = "#2D8CBD",
+                MH = "#A599FF", CWH = "#208500", ICH = "#85A303",
+                IMA = "#B2B2B2", SBPS = "#36DEFC", MS = "#FF46A3",
+                IDF = "#FFCF00", BG = "#FF0000", PP = "#DE7D00",
                 CDF = "#FFFF00")[bec_ids]
-# bec_centroids <- as.data.frame(coordinates(bec_zones))
-# names(bec_centroids) <- c("long", "lat")
-# rownames(bec_centroids) <- bec_ids
-
 
 gg_ld_class <- function(class, reg_cd) {
   if (reg_cd != "BC") {
@@ -52,9 +64,9 @@ gg_ld_class <- function(class, reg_cd) {
       class_df <- gg_ecoreg[gg_ecoreg$CRGNCD == reg_cd, ]
       title <- ecoreg_nms[ecoreg_ids == reg_cd]
     } else if (class == "bec") {
-      ld_df <- gg_ld_x_bec[gg_ld_x_bec$ZONE == reg_cd]
-      class_df <- gg_bec[gg_bec$ZONE == reg_cd]
-      title <- reg_cd
+      ld_df <- gg_ld_x_bec[gg_ld_x_bec$ZONE == reg_cd, ]
+      class_df <- gg_bec[gg_bec$ZONE == reg_cd, ]
+      title <- bec_nms[reg_cd]
     }
   } else {
     ld_df <- gg_ld_x_ecoreg
@@ -63,7 +75,7 @@ gg_ld_class <- function(class, reg_cd) {
   }
 
   ggplot(ld_df, aes(x = long, y = lat, group = group)) +
-    geom_polygon(data = class_df, fill = "grey85", colour = "gray40") +
+    geom_polygon(data = class_df, fill = "grey80", colour = "gray80") +
     geom_polygon(aes(fill = cons_cat)) +
     ggtitle(title) +
     coord_fixed() +
@@ -85,9 +97,20 @@ plotly_barchart <- function(df) {
   ggplotly(gg, tooltip = "text") %>% layout(showlegend = FALSE)
 }
 
-shinyServer(function(input, output, session) {
+ecoreg_proxy <- function(...) leafletProxy("bc_ecoreg_map", ...)
+bec_proxy <- function(...) leafletProxy("bc_bec_map", ...)
 
+bc_view <- function(map) setView(map, lng = -126.5, lat = 54.5, zoom = 5)
+
+htmlize <- function(x) {
+  x <- gsub("\\b&\\b", "&amp;", x, useBytes = TRUE)
+  x <- gsub("--", "&mdash;", x, useBytes = TRUE)
+  x
+}
+
+shinyServer(function(input, output, session) {
   ecoreg_click_ids <- reactiveValues(ids = character(0))
+
 
   observeEvent(input$bc_ecoreg_map_shape_click$id, {
     if (!is.null(input$bc_ecoreg_map_shape_click$id)) {
@@ -116,20 +139,10 @@ shinyServer(function(input, output, session) {
   #   }
   # })
 
-  add_ecoregion_popup <- reactive({
-    reg_id <- input$bc_ecoreg_map_shape_mouseover$id
-    lat <- ecoregion_centroids[reg_id, "lat"]
-    lng <- ecoregion_centroids[reg_id, "long"]
-    reg_name <- ecoreg_nms[ecoreg_ids == reg_id]
-
-    function(map_id) addPopups(map_id, lat = lat, lng = lng, reg_name,
-                               options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
-  })
-
   ## Ecoregion leaflet map
   output$bc_ecoreg_map <- renderLeaflet({
     leaflet(ecoregions) %>%
-      fitBounds(-139, 48, -114, 60) %>%
+      bc_view() %>%
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE)) %>%
       addPolygons(layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
@@ -149,14 +162,17 @@ shinyServer(function(input, output, session) {
                   weight = 2, fillOpacity = 0.8)
   })
 
-  ## Observers for clearing old and adding new popups to ecoregion leaflet map
-  observeEvent(input$bc_ecoreg_map_shape_mouseout$id, {
-    leafletProxy("bc_ecoreg_map") %>% clearPopups()
+  # Observers for clearing old and adding new popups to ecoregion leaflet map
+  observeEvent(input$bc_ecoreg_map_shape_mouseover$id, {
+    reg_id <- input$bc_ecoreg_map_shape_mouseover$id
+    reg_name <- ecoreg_nms[ecoreg_ids == reg_id]
+    ecoreg_proxy() %>%
+      addControl(reg_name, position = "topright", layerId = "ecoreg_label")
   })
 
-  observe({
-    add_popup <- add_ecoregion_popup()
-    leafletProxy("bc_ecoreg_map") %>% add_popup()
+  observeEvent(input$bc_ecoreg_map_shape_mouseout$id, {
+    ecoreg_proxy() %>%
+      removeControl(layerId = "ecoreg_label")
   })
 
   ## Ecoregion map and barchart
@@ -166,6 +182,7 @@ shinyServer(function(input, output, session) {
   #   code
   # })
 
+  ## Subset map of ecoregion with land designations
   output$ecoreg_map <- renderPlot({
     ecoreg_code <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
     if (length(ecoreg_code) == 0) ecoreg_code <- "BC"
@@ -173,6 +190,7 @@ shinyServer(function(input, output, session) {
     gg_ld_class(class = "ecoreg", ecoreg_code)
   })
 
+  ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderPlotly({
     ecoreg_code <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
     if (is.null(ecoreg_code)) ecoreg_code <- "BC"
@@ -211,35 +229,45 @@ shinyServer(function(input, output, session) {
   # ## BEC leaflet map
   output$bc_bec_map <- renderLeaflet({
     leaflet(bec_zones) %>%
-      fitBounds(-139, 48, -114, 60) %>%
+      bc_view() %>%
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE)) %>%
       addPolygons(layerId = bec_zones$ZONE, color = "",
-                  fillColor = unname(bec_colors), fillOpacity = 0.8)
-  })
-  #
-  # ## Observers for clearing old and adding new popups to BEC leaflet map
-  observeEvent(input$bc_bec_map_shape_mouseout$id, {
-    leafletProxy("bc_bec_map") %>% clearPopups()
+                  fillColor = unname(bec_colors), fillOpacity = 0.7)
   })
 
+  ## Observers for clearing old and adding new popups to BEC leaflet map
   observeEvent(input$bc_bec_map_shape_mouseover$id, {
     reg_id <- input$bc_bec_map_shape_mouseover$id
-    lat <- input$bc_bec_map_shape_mouseover$lat
-    lng <- input$bc_bec_map_shape_mouseover$lng
-    reg_name <- reg_id
+    reg_name <- bec_nms[reg_id]
+    bec_proxy() %>%
+      addControl(htmlize(reg_name), position = "topright", layerId = "bec_label")
+  })
 
-    leafletProxy("bc_bec_map") %>%
-      addPopups(lat = lat, lng = lng, reg_name,
-                options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
+  observeEvent(input$bc_bec_map_shape_mouseout$id, {
+    bec_proxy() %>%
+      removeControl(layerId = "bec_label")
   })
 
   ## Observer for highlighting polygon on click
   # observe({
   #   add_polygons <- add_bec_polys()
-  #   leafletProxy("bc_bec_map", data = bec_zones) %>%
+  #   bec_proxy() %>%
   #     add_polygons()
   # })
   #
   # ## BEC map and barchart
+  bec_re <- reactive({
+    code <- input$bc_bec_map_shape_click$id
+    if (is.null(code)) return("BC")
+    code
+  })
+
+  ## Subset map of bec zone with land designations
+  output$bec_map <- renderPlot({
+    bec_code <- bec_re()
+
+    gg_ld_class(class = "bec", bec_code)
+  })
+
 })
