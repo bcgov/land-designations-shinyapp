@@ -108,38 +108,32 @@ htmlize <- function(x) {
   x
 }
 
+highlight_clicked_poly <- function(map, clicked_polys) {
+  if (length(clicked_polys) > 1) {
+    wts <- c(1, 2)
+    opac <- c(0.2, 0.8)
+  } else {
+    wts <- 2
+    opac <- 0.8
+  }
+  addPolygons(map, layerId = clicked_polys,
+              color = "#00441b", fillColor = "#006d2c",
+              weight = wts, fillOpacity = opac)
+}
+
 shinyServer(function(input, output, session) {
+  # Reactive values list to keep track of clicked polygons
   ecoreg_click_ids <- reactiveValues(ids = character(0))
 
-
+  # Keep track of current clicked polygon and previous
   observeEvent(input$bc_ecoreg_map_shape_click$id, {
-    if (!is.null(input$bc_ecoreg_map_shape_click$id)) {
-      ecoreg_click_ids$ids <- c(ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)],
-                                input$bc_ecoreg_map_shape_click$id)
-    }
+    prev_click_id <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
+    ecoreg_click_ids$ids <- c(prev_click_id, input$bc_ecoreg_map_shape_click$id)
   })
 
-  output$click_ids <- renderText(ecoreg_click_ids$ids)
+  # output$click_ids <- renderText(ecoreg_click_ids$ids)
 
-  ## Ecoregion reactives
-  # add_ecoregion_polys <- reactive({
-  #   er_code <- input$bc_ecoreg_map_shape_click$id
-  #
-  #   wts <- rep(1, length(ecoreg_ids))
-  #   opac <- rep(0.2, length(ecoreg_ids))
-  #   names(wts) <- names(opac) <- ecoreg_ids
-  #   if (!is.null(er_code)) {
-  #     wts[er_code] <- 2
-  #     opac[er_code] <- 0.8
-  #   }
-  #
-  #   function(mapid) {
-  #     addPolygons(mapid, layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
-  #                 weight = unname(wts), fillOpacity = unname(opac))
-  #   }
-  # })
-
-  ## Ecoregion leaflet map
+  ## Ecoregion leaflet map - draw all polygons once at startup
   output$bc_ecoreg_map <- renderLeaflet({
     leaflet(ecoregions) %>%
       bc_view() %>%
@@ -152,14 +146,10 @@ shinyServer(function(input, output, session) {
   # Observer for highlighting ecoregion polygon on click
   observe({
     clicked_polys <- ecoreg_click_ids$ids
-    ecoreg_subset <- ecoregions[ecoregions$CRGNCD %in% clicked_polys,]
+    ecoreg_subset <- ecoregions[match(clicked_polys, ecoregions$CRGNCD), ]
 
-    leafletProxy("bc_ecoreg_map", data = ecoreg_subset) %>%
-      removeShape(clicked_polys) %>%
-      addPolygons(layerId = clicked_polys[1], color = "#00441b", fillColor = "#006d2c",
-                  weight = 1, fillOpacity = 0.2) %>%
-      addPolygons(layerId = clicked_polys[2], color = "#00441b", fillColor = "#006d2c",
-                  weight = 2, fillOpacity = 0.8)
+    ecoreg_proxy(data = ecoreg_subset) %>%
+      highlight_clicked_poly(clicked_polys)
   })
 
   # Observers for clearing old and adding new popups to ecoregion leaflet map
@@ -193,12 +183,12 @@ shinyServer(function(input, output, session) {
   ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderPlotly({
     ecoreg_code <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
-    if (is.null(ecoreg_code)) ecoreg_code <- "BC"
+    if (length(ecoreg_code) == 0) ecoreg_code <- "BC"
 
     df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
 
     plotly_barchart(df)
-  })
+})
 
   # ## BEC Reactives
   ## Highlighting BEC polygons on click is too slow
