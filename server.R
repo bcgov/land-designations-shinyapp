@@ -115,7 +115,7 @@ highlight_clicked_poly <- function(map, clicked_polys, class) {
     fill <- "#006d2c"
     opac <- c(0.2, 0.8)
   } else if (class == "bec") {
-    colr <- c("", "#2F4F4F") # unname(bec_colors[clicked_polys])
+    colr <- c("", "#2F4F4F")
     fill <- unname(bec_colors[clicked_polys])
     opac <- c(0.7, 0.9)
   }
