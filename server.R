@@ -135,15 +135,16 @@ highlight_clicked_poly <- function(map, clicked_polys, class) {
 
 shinyServer(function(input, output, session) {
   # Reactive values list to keep track of clicked polygons
-  ecoreg_click_ids <- reactiveValues(ids = character(0))
+  click_ids <- reactiveValues(ecoreg_ids = character(0),
+                              bec_ids = character(0))
 
   # Keep track of current clicked polygon and previous. Store in reactive values list
   observeEvent(input$bc_ecoreg_map_shape_click$id, {
-    prev_click_id <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
-    ecoreg_click_ids$ids <- c(prev_click_id, input$bc_ecoreg_map_shape_click$id)
+    prev_click_id <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
+    click_ids$ecoreg_ids <- c(prev_click_id, input$bc_ecoreg_map_shape_click$id)
   })
 
-  # output$click_ids <- renderText(ecoreg_click_ids$ids) # For debugging click
+  # output$click_ids <- renderText(click_ids$ecoreg_ids) # For debugging click
 
   ## Ecoregion leaflet map - draw all polygons once at startup
   output$bc_ecoreg_map <- renderLeaflet({
@@ -157,7 +158,7 @@ shinyServer(function(input, output, session) {
 
   # Observer for highlighting ecoregion polygon on click
   observe({
-    clicked_polys <- ecoreg_click_ids$ids
+    clicked_polys <- click_ids$ecoreg_ids
     # subset the ecoregions to be updated to those that are either currently clicked
     # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
     # clicked_polys, as the first one is the previously clicked one, and the second
@@ -184,7 +185,7 @@ shinyServer(function(input, output, session) {
 
   ## Subset map of ecoregion with land designations
   output$ecoreg_map <- renderPlot({
-    ecoreg_code <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
+    ecoreg_code <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
     if (length(ecoreg_code) == 0) ecoreg_code <- "BC"
 
     gg_ld_class(class = "ecoreg", ecoreg_code)
@@ -192,7 +193,7 @@ shinyServer(function(input, output, session) {
 
   ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderPlotly({
-    ecoreg_code <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
+    ecoreg_code <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
     if (length(ecoreg_code) == 0) ecoreg_code <- "BC"
 
     df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
@@ -202,13 +203,10 @@ shinyServer(function(input, output, session) {
 
   #### BEC #####################################################################
 
-  # Reactive values list to keep track of clicked polygons
-  bec_click_ids <- reactiveValues(ids = character(0))
-
   # Keep track of current clicked polygon and previous. Store in reactive values list
   observeEvent(input$bc_bec_map_shape_click$id, {
-    prev_click_id <- bec_click_ids$ids[length(bec_click_ids$ids)]
-    bec_click_ids$ids <- c(prev_click_id, input$bc_bec_map_shape_click$id)
+    prev_click_id <- click_ids$bec_ids[length(click_ids$bec_ids)]
+    click_ids$bec_ids <- c(prev_click_id, input$bc_bec_map_shape_click$id)
   })
 
   # Render initial BEC map
@@ -223,7 +221,7 @@ shinyServer(function(input, output, session) {
 
   # Observer for highlighting ecoregion polygon on click
   observe({
-    clicked_polys <- bec_click_ids$ids
+    clicked_polys <- click_ids$bec_ids
     # subset the bec polygons to be updated to those that are either currently clicked
     # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
     # clicked_polys, as the first one is the previously clicked one, and the second
@@ -252,7 +250,7 @@ shinyServer(function(input, output, session) {
 
   ## Subset map of bec zone with land designations
   output$bec_map <- renderPlot({
-    bec_code <- bec_click_ids$ids[length(bec_click_ids$ids)]
+    bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
     if (length(bec_code) == 0) bec_code <- "BC"
 
     gg_ld_class(class = "bec", bec_code)
