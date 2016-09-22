@@ -137,7 +137,7 @@ shinyServer(function(input, output, session) {
   # Reactive values list to keep track of clicked polygons
   ecoreg_click_ids <- reactiveValues(ids = character(0))
 
-  # Keep track of current clicked polygon and previous
+  # Keep track of current clicked polygon and previous. Store in reactive values list
   observeEvent(input$bc_ecoreg_map_shape_click$id, {
     prev_click_id <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
     ecoreg_click_ids$ids <- c(prev_click_id, input$bc_ecoreg_map_shape_click$id)
@@ -158,6 +158,11 @@ shinyServer(function(input, output, session) {
   # Observer for highlighting ecoregion polygon on click
   observe({
     clicked_polys <- ecoreg_click_ids$ids
+    # subset the ecoregions to be updated to those that are either currently clicked
+    # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
+    # clicked_polys, as the first one is the previously clicked one, and the second
+    # is the currently clicked. The polygons must be in the same order as the aesthetics
+    # (col, fill, weight, etc)
     ecoreg_subset <- ecoregions[match(clicked_polys, ecoregions$CRGNCD), ]
 
     ecoreg_proxy(data = ecoreg_subset) %>%
@@ -177,13 +182,6 @@ shinyServer(function(input, output, session) {
       removeControl(layerId = "ecoreg_label")
   })
 
-  ## Ecoregion map and barchart
-  # ecoreg_re <- reactive({
-  #   code <- input$bc_ecoreg_map_shape_click$id
-  #   if (is.null(code)) return("BC")
-  #   code
-  # })
-
   ## Subset map of ecoregion with land designations
   output$ecoreg_map <- renderPlot({
     ecoreg_code <- ecoreg_click_ids$ids[length(ecoreg_click_ids$ids)]
@@ -202,32 +200,18 @@ shinyServer(function(input, output, session) {
     plotly_barchart(df)
 })
 
-  # ## BEC Reactives
-  ## Highlighting BEC polygons on click is too slow
-  # add_bec_polys <- reactive({
-  #   bec_code <- input$bc_bec_map_shape_click$id
-  #   opac <- rep(0.6, length(bec_ids))
-  #   names(opac) <- bec_ids
-  #   if (!is.null(bec_code)) {
-  #     opac[bec_code] <- 0.8
-  #   }
-  #
-  #   function(mapid) {
-  #     addPolygons(mapid, layerId = bec_zones$ZONE, color = "",
-  #                 fillColor = unname(bec_colors), fillOpacity = unname(opac))
-  #   }
-  # })
-  #
-  # ## BEC leaflet map
+  #### BEC #####################################################################
+
   # Reactive values list to keep track of clicked polygons
   bec_click_ids <- reactiveValues(ids = character(0))
 
-  # Keep track of current clicked polygon and previous
+  # Keep track of current clicked polygon and previous. Store in reactive values list
   observeEvent(input$bc_bec_map_shape_click$id, {
     prev_click_id <- bec_click_ids$ids[length(bec_click_ids$ids)]
     bec_click_ids$ids <- c(prev_click_id, input$bc_bec_map_shape_click$id)
   })
 
+  # Render initial BEC map
   output$bc_bec_map <- renderLeaflet({
     leaflet(bec_zones) %>%
       bc_view() %>%
@@ -240,6 +224,11 @@ shinyServer(function(input, output, session) {
   # Observer for highlighting ecoregion polygon on click
   observe({
     clicked_polys <- bec_click_ids$ids
+    # subset the bec polygons to be updated to those that are either currently clicked
+    # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
+    # clicked_polys, as the first one is the previously clicked one, and the second
+    # is the currently clicked. The polygons must be in the same order as the aesthetics
+    # (col, fill, weight, etc)
     bec_subset <- bec_zones[match(clicked_polys, bec_zones$ZONE), ]
 
     bec_proxy(data = bec_subset) %>%
@@ -260,11 +249,6 @@ shinyServer(function(input, output, session) {
   })
 
   ## BEC map and barchart
-  # bec_re <- reactive({
-  #   code <- input$bc_bec_map_shape_click$id
-  #   if (is.null(code)) return("BC")
-  #   code
-  # })
 
   ## Subset map of bec zone with land designations
   output$bec_map <- renderPlot({
