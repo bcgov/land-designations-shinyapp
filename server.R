@@ -109,21 +109,23 @@ htmlize <- function(x) {
 }
 
 highlight_clicked_poly <- function(map, clicked_polys, class) {
+
   if (class == "ecoreg") {
-    colr <- "#00441b"
+    colr <- rep("#00441b",2)
     fill <- "#006d2c"
     opac <- c(0.2, 0.8)
   } else if (class == "bec") {
-    colr <- unname(bec_colors[clicked_polys])
+    colr <- c("", "#2F4F4F") # unname(bec_colors[clicked_polys])
     fill <- unname(bec_colors[clicked_polys])
-    opac <- c(0.4, 0.9)
+    opac <- c(0.7, 0.9)
   }
 
-  if (length(clicked_polys) > 1) {
-    wts <- c(1, 2)
-  } else {
-    wts <- 2
+  wts <- c(1, 2)
+
+  if (length(clicked_polys) == 1) {
+    wts <- wts[2]
     opac <- opac[2]
+    colr <- colr[2]
   }
 
   addPolygons(map, layerId = clicked_polys,
@@ -232,7 +234,7 @@ shinyServer(function(input, output, session) {
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE)) %>%
       addPolygons(layerId = bec_zones$ZONE, color = "",
-                  fillColor = unname(bec_colors), fillOpacity = 0.4)
+                  fillColor = unname(bec_colors), fillOpacity = 0.7)
   })
 
   # Observer for highlighting ecoregion polygon on click
@@ -257,23 +259,17 @@ shinyServer(function(input, output, session) {
       removeControl(layerId = "bec_label")
   })
 
-  ## Observer for highlighting polygon on click
-  # observe({
-  #   add_polygons <- add_bec_polys()
-  #   bec_proxy() %>%
-  #     add_polygons()
+  ## BEC map and barchart
+  # bec_re <- reactive({
+  #   code <- input$bc_bec_map_shape_click$id
+  #   if (is.null(code)) return("BC")
+  #   code
   # })
-  #
-  # ## BEC map and barchart
-  bec_re <- reactive({
-    code <- input$bc_bec_map_shape_click$id
-    if (is.null(code)) return("BC")
-    code
-  })
 
   ## Subset map of bec zone with land designations
   output$bec_map <- renderPlot({
-    bec_code <- bec_re()
+    bec_code <- bec_click_ids$ids[length(bec_click_ids$ids)]
+    if (length(bec_code) == 0) bec_code <- "BC"
 
     gg_ld_class(class = "bec", bec_code)
   })
