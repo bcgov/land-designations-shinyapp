@@ -31,7 +31,7 @@ rownames(ecoregion_centroids) <- ecoreg_ids
 ## TODO:
 bec_zones <- readRDS("data/bec_leaflet.rds")
 gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather")
-# gg_bec <-
+gg_bec <- read_feather("data/gg_bec.feather")
 # ld_bec_summary <-
 bec_ids <- bec_zones$ZONE
 bec_nms <- c(BAFA = "Boreal Altai Fescue Alpine",
@@ -65,7 +65,7 @@ gg_ld_class <- function(class, reg_cd) {
       title <- ecoreg_nms[ecoreg_ids == reg_cd]
     } else if (class == "bec") {
       ld_df <- gg_ld_x_bec[gg_ld_x_bec$ZONE == reg_cd, ]
-      # class_df <- gg_bec[gg_bec$ZONE == reg_cd, ]
+      class_df <- gg_bec[gg_bec$ZONE == reg_cd, ]
       title <- bec_nms[reg_cd]
     }
   } else {
@@ -75,7 +75,7 @@ gg_ld_class <- function(class, reg_cd) {
   }
 
   ggplot(ld_df, aes(x = long, y = lat, group = group)) +
-    # geom_polygon(data = class_df, fill = "grey85", colour = "gray40") +
+    geom_polygon(data = class_df, fill = "grey80", colour = "gray80") +
     geom_polygon(aes(fill = cons_cat)) +
     ggtitle(title) +
     coord_fixed() +
