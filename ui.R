@@ -28,7 +28,7 @@ shinyUI(fluidPage(
     tabPanel(
       "Ecoregions",
       fluidRow(column(6, leafletOutput("bc_ecoreg_map", height = 600)),
-               # textOutput("click_ids")),
+               # textOutput("click_ids")), # for debugging click
                column(6,
                       plotOutput(outputId = "ecoreg_map"),
                       plotlyOutput(outputId = "ecoreg_barchart",

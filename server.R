@@ -131,7 +131,7 @@ shinyServer(function(input, output, session) {
     ecoreg_click_ids$ids <- c(prev_click_id, input$bc_ecoreg_map_shape_click$id)
   })
 
-  # output$click_ids <- renderText(ecoreg_click_ids$ids)
+  # output$click_ids <- renderText(ecoreg_click_ids$ids) # For debugging click
 
   ## Ecoregion leaflet map - draw all polygons once at startup
   output$bc_ecoreg_map <- renderLeaflet({
@@ -204,16 +204,6 @@ shinyServer(function(input, output, session) {
   #     addPolygons(mapid, layerId = bec_zones$ZONE, color = "",
   #                 fillColor = unname(bec_colors), fillOpacity = unname(opac))
   #   }
-  # })
-  #
-  # add_bec_popup <- reactive({
-  #   reg_id <- input$bc_bec_map_shape_mouseover$id
-  #   lat <- bec_centroids[reg_id, "lat"]
-  #   lng <- bec_centroids[reg_id, "long"]
-  #   reg_name <- reg_id
-  #
-  #   function(map_id) addPopups(map_id, lat = lat, lng = lng, reg_name,
-  #                              options = popupOptions(closeButton = FALSE, className = 'ecoreg-popup'))
   # })
   #
   # ## BEC leaflet map
