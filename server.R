@@ -108,16 +108,26 @@ htmlize <- function(x) {
   x
 }
 
-highlight_clicked_poly <- function(map, clicked_polys) {
+highlight_clicked_poly <- function(map, clicked_polys, class) {
+  if (class == "ecoreg") {
+    colr <- "#00441b"
+    fill <- "#006d2c"
+    opac <- c(0.2, 0.8)
+  } else if (class == "bec") {
+    colr <- unname(bec_colors[clicked_polys])
+    fill <- unname(bec_colors[clicked_polys])
+    opac <- c(0.4, 0.9)
+  }
+
   if (length(clicked_polys) > 1) {
     wts <- c(1, 2)
-    opac <- c(0.2, 0.8)
   } else {
     wts <- 2
-    opac <- 0.8
+    opac <- opac[2]
   }
+
   addPolygons(map, layerId = clicked_polys,
-              color = "#00441b", fillColor = "#006d2c",
+              color = colr, fillColor = fill,
               weight = wts, fillOpacity = opac)
 }
 
@@ -149,7 +159,7 @@ shinyServer(function(input, output, session) {
     ecoreg_subset <- ecoregions[match(clicked_polys, ecoregions$CRGNCD), ]
 
     ecoreg_proxy(data = ecoreg_subset) %>%
-      highlight_clicked_poly(clicked_polys)
+      highlight_clicked_poly(clicked_polys, class = "ecoreg")
   })
 
   # Observers for clearing old and adding new popups to ecoregion leaflet map
@@ -207,13 +217,31 @@ shinyServer(function(input, output, session) {
   # })
   #
   # ## BEC leaflet map
+  # Reactive values list to keep track of clicked polygons
+  bec_click_ids <- reactiveValues(ids = character(0))
+
+  # Keep track of current clicked polygon and previous
+  observeEvent(input$bc_bec_map_shape_click$id, {
+    prev_click_id <- bec_click_ids$ids[length(bec_click_ids$ids)]
+    bec_click_ids$ids <- c(prev_click_id, input$bc_bec_map_shape_click$id)
+  })
+
   output$bc_bec_map <- renderLeaflet({
     leaflet(bec_zones) %>%
       bc_view() %>%
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE)) %>%
       addPolygons(layerId = bec_zones$ZONE, color = "",
-                  fillColor = unname(bec_colors), fillOpacity = 0.7)
+                  fillColor = unname(bec_colors), fillOpacity = 0.4)
+  })
+
+  # Observer for highlighting ecoregion polygon on click
+  observe({
+    clicked_polys <- bec_click_ids$ids
+    bec_subset <- bec_zones[match(clicked_polys, bec_zones$ZONE), ]
+
+    bec_proxy(data = bec_subset) %>%
+      highlight_clicked_poly(clicked_polys, class = "bec")
   })
 
   ## Observers for clearing old and adding new popups to BEC leaflet map
