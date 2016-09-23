@@ -24,9 +24,9 @@ gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
 ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather")
 ecoreg_ids <- ecoregions$CRGNCD
 ecoreg_nms <- ecoregions$CRGNNM
-ecoregion_centroids <- as.data.frame(coordinates(ecoregions))
-names(ecoregion_centroids) <- c("long", "lat")
-rownames(ecoregion_centroids) <- ecoreg_ids
+# ecoregion_centroids <- as.data.frame(coordinates(ecoregions))
+# names(ecoregion_centroids) <- c("long", "lat")
+# rownames(ecoregion_centroids) <- ecoreg_ids
 
 ## TODO:
 bec_zones <- readRDS("data/bec_leaflet.rds")
