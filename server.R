@@ -18,6 +18,8 @@ library(ggthemes)
 library(plotly)
 
 bc_bound <- read_feather("data/gg_bc_bound.feather")
+
+## Ecoregion data
 ecoregions <- readRDS("data/ecoregions_t_leaflet.rds")
 gg_ld_x_ecoreg <- read_feather("data/gg_ld_ecoreg.feather")
 gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
@@ -28,7 +30,7 @@ ecoreg_nms <- ecoregions$CRGNNM
 # names(ecoregion_centroids) <- c("long", "lat")
 # rownames(ecoregion_centroids) <- ecoreg_ids
 
-## TODO:
+# BEC Data
 bec_zones <- readRDS("data/bec_leaflet.rds")
 gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather")
 gg_bec <- read_feather("data/gg_bec.feather")
@@ -55,8 +57,9 @@ bec_colors <- c(BAFA = "#E5D8B1", SWB = "#A3D1AB", BWBS = "#ABE7FF",
                 MH = "#A599FF", CWH = "#208500", ICH = "#85A303",
                 IMA = "#B2B2B2", SBPS = "#36DEFC", MS = "#FF46A3",
                 IDF = "#FFCF00", BG = "#FF0000", PP = "#DE7D00",
-                CDF = "#FFFF00")[bec_ids]
+                CDF = "#FFFF00")[bec_ids] # index by bec_ids to put in order
 
+## Plot selected ecoregion/bec zone with designations
 gg_ld_class <- function(class, reg_cd) {
   if (reg_cd != "BC") {
     if (class == "ecoreg") {
@@ -83,6 +86,7 @@ gg_ld_class <- function(class, reg_cd) {
     guides(fill = "none")
 }
 
+## Interactive bar chart for % designated in selected ecoregion/zone
 plotly_barchart <- function(df) {
   gg <- ggplot(df,
                aes(x = cons_cat, y = percent_des, fill = cons_cat,
@@ -97,11 +101,15 @@ plotly_barchart <- function(df) {
   ggplotly(gg, tooltip = "text") %>% layout(showlegend = FALSE)
 }
 
+## Shortcuts functions to initialize modifying ecoregion and bec leaflet maps
+## (e.g., hover tips, highlight etc)
 ecoreg_proxy <- function(...) leafletProxy("bc_ecoreg_map", ...)
 bec_proxy <- function(...) leafletProxy("bc_bec_map", ...)
 
+## Set view to BC
 bc_view <- function(map) setView(map, lng = -126.5, lat = 54.5, zoom = 5)
 
+## Convert & and emdashes to html strings for representing on the map
 htmlize <- function(x) {
   x <- gsub("\\b&\\b", "&amp;", x, useBytes = TRUE)
   x <- gsub("--", "&mdash;", x, useBytes = TRUE)
