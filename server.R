@@ -13,6 +13,7 @@
 library(shiny)
 library(leaflet)
 library(feather)
+library(dplyr)
 library(ggplot2)
 library(ggthemes)
 library(plotly)
@@ -214,7 +215,7 @@ shinyServer(function(input, output, session) {
     }
 
     plotly_barchart(df, type)
-})
+  })
 
   #### BEC #####################################################################
 
@@ -269,6 +270,28 @@ shinyServer(function(input, output, session) {
     if (length(bec_code) == 0) bec_code <- "BC"
 
     gg_ld_class(class = "bec", bec_code)
+  })
+
+  ## Bar chart of land designations for selected bec zone
+  output$bec_barchart <- renderPlotly({
+    bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
+    if (length(bec_code) == 0) {
+      bec_code <- "BC"
+      df <- bc_ld_summary
+      type <- "British Columbia"
+    } else {
+      df <- ld_bec_summary %>%
+        filter(ZONE == bec_code) %>%
+        group_by(cons_cat) %>%
+        summarize(area_des = sum(area_des, na.rm = TRUE),
+                  bec_area = sum(bec_area, na.rm = TRUE),
+                  percent_des = area_des / bec_area * 100,
+                  area_des_ha = sum(area_des_ha, na.rm = TRUE))
+
+      type <- "biogeoclimatic zone"
+    }
+
+    plotly_barchart(df, type)
   })
 
 })
