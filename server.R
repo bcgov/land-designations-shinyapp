@@ -35,7 +35,7 @@ ecoreg_nms <- ecoregions$CRGNNM
 bec_zones <- readRDS("data/bec_leaflet.rds")
 gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather")
 gg_bec <- read_feather("data/gg_bec.feather")
-# ld_bec_summary <-
+ld_bec_summary <- read_feather("data/ld_bec_summary.feather")
 bec_ids <- bec_zones$ZONE
 bec_nms <- c(BAFA = "Boreal Altai Fescue Alpine",
              SWB = "Spruce--Willow--Birch",
@@ -88,7 +88,7 @@ gg_ld_class <- function(class, reg_cd) {
 }
 
 ## Interactive bar chart for % designated in selected ecoregion/zone
-plotly_barchart <- function(df) {
+plotly_barchart <- function(df, type) {
   gg <- ggplot(df,
                aes(x = cons_cat, y = percent_des, fill = cons_cat,
                    text = paste0("Area: ", round(area_des_ha), " ha (",
@@ -96,7 +96,8 @@ plotly_barchart <- function(df) {
     geom_bar(stat = "identity") +
     theme_minimal() +
     coord_flip() +
-    labs(x = "Designation type", y = "Percent of ecoregion designated", fill = NULL) +
+    labs(x = "Designation type", y = paste0("Percent of ", type, " designated"),
+         fill = NULL) +
     guides(fill = "none")
 
   ggplotly(gg, tooltip = "text") %>% layout(showlegend = FALSE)
@@ -206,11 +207,13 @@ shinyServer(function(input, output, session) {
     if (length(ecoreg_code) == 0) {
       ecoreg_code <- "BC"
       df <- bc_ld_summary
+      type <- "British Columbia"
     } else {
       df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
+      type <- "ecoregion"
     }
 
-    plotly_barchart(df)
+    plotly_barchart(df, type)
 })
 
   #### BEC #####################################################################
