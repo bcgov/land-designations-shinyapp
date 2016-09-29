@@ -18,6 +18,7 @@ library(ggthemes)
 library(plotly)
 
 bc_bound <- read_feather("data/gg_bc_bound.feather")
+bc_ld_summary <- read_feather("data/bc_ld_summary.feather")
 
 ## Ecoregion data
 ecoregions <- readRDS("data/ecoregions_t_leaflet.rds")
@@ -202,9 +203,12 @@ shinyServer(function(input, output, session) {
   ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderPlotly({
     ecoreg_code <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
-    if (length(ecoreg_code) == 0) ecoreg_code <- "BC"
-
-    df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
+    if (length(ecoreg_code) == 0) {
+      ecoreg_code <- "BC"
+      df <- bc_ld_summary
+    } else {
+      df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
+    }
 
     plotly_barchart(df)
 })
@@ -227,7 +231,7 @@ shinyServer(function(input, output, session) {
                   fillColor = unname(bec_colors), fillOpacity = 0.7)
   })
 
-  # Observer for highlighting ecoregion polygon on click
+  # Observer for highlighting bec polygon on click
   observe({
     clicked_polys <- click_ids$bec_ids
     # subset the bec polygons to be updated to those that are either currently clicked
