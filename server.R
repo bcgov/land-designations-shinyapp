@@ -90,18 +90,18 @@ gg_ld_class <- function(class, reg_cd) {
 
 ## Interactive bar chart for % designated in selected ecoregion/zone
 plotly_barchart <- function(df, type) {
+  df$hovertip <- paste0("Area: ", round(df$area_des_ha), " ha (",
+                        round(df$percent_des, 1), "%)")
   gg <- ggplot(df,
-               aes(x = cons_cat, y = percent_des, fill = cons_cat,
-                   text = paste0("Area: ", round(area_des_ha), " ha (",
-                                 round(percent_des, 1), "%)"))) +
-    geom_bar(stat = "identity") +
+               aes(x = cons_cat, y = percent_des)) +
+    geom_bar(stat = "identity", aes(fill = cons_cat, text = hovertip)) +
     theme_minimal() +
     coord_flip() +
-    labs(x = "Designation type", y = paste0("Percent of ", type, " designated"),
-         fill = NULL) +
+    labs(x = "Designation type", y = paste0("Percent of ", type, " designated")) +
     guides(fill = "none")
 
-  ggplotly(gg, tooltip = "text") %>% layout(showlegend = FALSE)
+  ggplotly(gg, tooltip = "text") %>%
+    layout(showlegend = FALSE)
 }
 
 ## Shortcuts functions to initialize modifying ecoregion and bec leaflet maps
