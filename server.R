@@ -307,4 +307,20 @@ shinyServer(function(input, output, session) {
     ggiraph_barchart(df, type)
   })
 
+  output$bec_table <- renderDataTable({
+    bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
+    if (length(bec_code) == 0) {
+      NULL
+    } else {
+      df <- ld_bec_summary %>%
+        filter(ZONE == bec_code) %>%
+        group_by(Label = MAP_LABEL, Subzone = SBZNNM, Variant = VRNTNM,
+                 `Conservation Category` = cons_cat) %>%
+        summarize(`Area designated (ha)` = sum(area_des_ha, na.rm = TRUE),
+                  `Percent Designated` = (sum(area_des, na.rm = TRUE) /
+                    sum(bec_area, na.rm = TRUE)) * 100)
+    }
+    df
+  })
+
 })

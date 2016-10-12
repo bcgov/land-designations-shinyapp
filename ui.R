@@ -39,7 +39,9 @@ shinyUI(fluidPage(
                column(6,
                       plotOutput(outputId = "bec_map"),
                       ggiraphOutput(outputId = "bec_barchart",
-                                   height = "400px"))))
+                                   height = "400px"))),
+      fluidRow(column(12,
+                      dataTableOutput("bec_table"))))
   )
 
 
