@@ -17,6 +17,7 @@ library(dplyr)
 library(ggplot2)
 library(ggthemes)
 library(ggiraph)
+library(DT)
 
 bc_bound <- read_feather("data/gg_bc_bound.feather")
 bc_ld_summary <- read_feather("data/bc_ld_summary.feather")
@@ -97,10 +98,9 @@ ggiraph_barchart <- function(df, type) {
   hover_css <- "opacity:0.5;stroke:white;"
 
   df$hovertip <- paste0("Area: ",
-                        format(df$area_des_ha, digits = 0, big.mark = ",",
-                               scientific = FALSE),
+                        format_ha(df$area_des_ha),
                         " ha (",
-                        round(df$percent_des, 1), "%)")
+                        format_percent(df$percent_des), "%)")
   gg <- ggplot(df,
                aes(x = cons_cat, y = percent_des)) +
     geom_bar_interactive(stat = "identity",
@@ -131,6 +131,9 @@ htmlize <- function(x) {
   x <- gsub("--", "&mdash;", x, useBytes = TRUE)
   x
 }
+
+format_ha <- function(x) format(x, digits = 0, big.mark = ",", scientific = FALSE)
+format_percent <- function(x) round(x, 1)
 
 highlight_clicked_poly <- function(map, clicked_polys, class) {
 
@@ -307,20 +310,31 @@ shinyServer(function(input, output, session) {
     ggiraph_barchart(df, type)
   })
 
-  output$bec_table <- renderDataTable({
+  output$bec_table <- DT::renderDataTable({
     bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
     if (length(bec_code) == 0) {
-      NULL
+      df <- ld_bec_summary %>%
+        group_by(`BGC Label` = MAP_LABEL, Subzone = SBZNNM, Variant = VRNTNM,
+                 `Conservation Category` = cons_cat) %>%
+        summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
+                  `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
+                                                           sum(bec_area, na.rm = TRUE)) * 100))
     } else {
       df <- ld_bec_summary %>%
         filter(ZONE == bec_code) %>%
-        group_by(Label = MAP_LABEL, Subzone = SBZNNM, Variant = VRNTNM,
+        group_by(`BGC Label` = MAP_LABEL, Subzone = SBZNNM, Variant = VRNTNM,
                  `Conservation Category` = cons_cat) %>%
-        summarize(`Area designated (ha)` = sum(area_des_ha, na.rm = TRUE),
-                  `Percent Designated` = (sum(area_des, na.rm = TRUE) /
-                    sum(bec_area, na.rm = TRUE)) * 100)
+        summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
+                  `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
+                    sum(bec_area, na.rm = TRUE)) * 100))
     }
-    df
+    datatable(df, filter = "top", options = list(pageLength = 25)) %>%
+      formatStyle('Percent Designated',
+                  background = styleColorBar(df$`Percent Designated`, 'green')) %>%
+      formatStyle('Conservation Category', target = "cell",
+                  backgroundColor = styleEqual(unique(ld_bec_summary$cons_cat),
+                                               c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF", 'lightgrey')),
+                  fillOpacity = 0.7)
   })
 
 })
