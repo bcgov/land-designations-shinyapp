@@ -160,6 +160,15 @@ highlight_clicked_poly <- function(map, clicked_polys, class) {
               weight = wts, fillOpacity = opac)
 }
 
+summarize_bec <- function(df) {
+  df %>%
+  group_by(`BGC Label` = MAP_LABEL, Subzone = SBZNNM, Variant = VRNTNM,
+           `Conservation Category` = cons_cat) %>%
+    summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
+              `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
+                                                       sum(bec_area, na.rm = TRUE)) * 100))
+}
+
 shinyServer(function(input, output, session) {
   # Reactive values list to keep track of clicked polygons
   click_ids <- reactiveValues(ecoreg_ids = character(0),
@@ -314,19 +323,11 @@ shinyServer(function(input, output, session) {
     bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
     if (length(bec_code) == 0) {
       df <- ld_bec_summary %>%
-        group_by(`BGC Label` = MAP_LABEL, Subzone = SBZNNM, Variant = VRNTNM,
-                 `Conservation Category` = cons_cat) %>%
-        summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
-                  `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
-                                                           sum(bec_area, na.rm = TRUE)) * 100))
+        summarize_bec()
     } else {
       df <- ld_bec_summary %>%
         filter(ZONE == bec_code) %>%
-        group_by(`BGC Label` = MAP_LABEL, Subzone = SBZNNM, Variant = VRNTNM,
-                 `Conservation Category` = cons_cat) %>%
-        summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
-                  `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
-                    sum(bec_area, na.rm = TRUE)) * 100))
+        summarize_bec()
     }
     datatable(df, filter = "top", options = list(pageLength = 25)) %>%
       formatStyle('Percent Designated',
