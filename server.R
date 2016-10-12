@@ -93,15 +93,15 @@ plotly_barchart <- function(df, type) {
   df$hovertip <- paste0("Area: ", round(df$area_des_ha), " ha (",
                         round(df$percent_des, 1), "%)")
   gg <- ggplot(df,
-               aes(x = cons_cat, y = percent_des)) +
-    geom_bar(stat = "identity", aes(fill = cons_cat, text = hovertip)) +
+               aes(x = cons_cat, y = percent_des, text = hovertip)) +
+    geom_bar(stat = "identity", aes(fill = cons_cat)) +
     theme_minimal() +
     coord_flip() +
     labs(x = "Designation type", y = paste0("Percent of ", type, " designated")) +
     guides(fill = "none")
 
   ggplotly(gg, tooltip = "text") %>%
-    layout(showlegend = FALSE)
+     layout(showlegend = FALSE)
 }
 
 ## Shortcuts functions to initialize modifying ecoregion and bec leaflet maps
