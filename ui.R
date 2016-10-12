@@ -12,7 +12,7 @@
 
 library(shiny)
 library(leaflet)
-library(plotly)
+library(ggiraph)
 
 shinyUI(fluidPage(
 
@@ -28,18 +28,18 @@ shinyUI(fluidPage(
     tabPanel(
       "Ecoregions",
       fluidRow(column(6, leafletOutput("bc_ecoreg_map", height = 600)),
-               # textOutput("click_ids")), # for debugging click
+               textOutput("click_ids"), # for debugging click
                column(6,
                       plotOutput(outputId = "ecoreg_map"),
-                      plotlyOutput(outputId = "ecoreg_barchart",
+                      ggiraphOutput(outputId = "ecoreg_barchart",
                                    height = "200px")))),
     tabPanel(
       "BEC",
       fluidRow(column(6, leafletOutput("bc_bec_map", height = 600)),
                column(6,
                       plotOutput(outputId = "bec_map"),
-                      plotlyOutput(outputId = "bec_barchart",
-                                   height = "200px"))))
+                      ggiraphOutput(outputId = "bec_barchart",
+                                   height = "400px"))))
   )
 
 

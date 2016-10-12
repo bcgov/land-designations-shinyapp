@@ -16,7 +16,7 @@ library(feather)
 library(dplyr)
 library(ggplot2)
 library(ggthemes)
-library(plotly)
+library(ggiraph)
 
 bc_bound <- read_feather("data/gg_bc_bound.feather")
 bc_ld_summary <- read_feather("data/bc_ld_summary.feather")
@@ -89,19 +89,32 @@ gg_ld_class <- function(class, reg_cd) {
 }
 
 ## Interactive bar chart for % designated in selected ecoregion/zone
-plotly_barchart <- function(df, type) {
-  df$hovertip <- paste0("Area: ", round(df$area_des_ha), " ha (",
+ggiraph_barchart <- function(df, type) {
+  tooltip_css = "background-color:white;
+  padding:5px;
+  border-radius:10px;"
+
+  hover_css <- "opacity:0.5;stroke:white;"
+
+  df$hovertip <- paste0("Area: ",
+                        format(df$area_des_ha, digits = 0, big.mark = ",",
+                               scientific = FALSE),
+                        " ha (",
                         round(df$percent_des, 1), "%)")
   gg <- ggplot(df,
-               aes(x = cons_cat, y = percent_des, text = hovertip)) +
-    geom_bar(stat = "identity", aes(fill = cons_cat)) +
-    theme_minimal() +
+               aes(x = cons_cat, y = percent_des)) +
+    geom_bar_interactive(stat = "identity",
+                         aes(fill = cons_cat, tooltip = hovertip, data_id = hovertip)) +
+    theme_minimal(base_size = 16) +
+    scale_y_continuous(expand = c(0,0)) +
+    scale_x_discrete(expand = c(0,0)) +
     coord_flip() +
     labs(x = "Designation type", y = paste0("Percent of ", type, " designated")) +
     guides(fill = "none")
 
-  ggplotly(gg, tooltip = "text") %>%
-     layout(showlegend = FALSE)
+  ggiraph(code = print(gg), width = 1, height_svg = 3,
+          tooltip_extra_css = tooltip_css, tooltip_opacity = 0.75,
+          hover_css = hover_css, tooltip_offx = -20)
 }
 
 ## Shortcuts functions to initialize modifying ecoregion and bec leaflet maps
@@ -155,7 +168,7 @@ shinyServer(function(input, output, session) {
     click_ids$ecoreg_ids <- c(prev_click_id, input$bc_ecoreg_map_shape_click$id)
   })
 
-  # output$click_ids <- renderText(click_ids$ecoreg_ids) # For debugging click
+  output$click_ids <- renderText(click_ids$ecoreg_ids) # For debugging click
 
   ## Ecoregion leaflet map - draw all polygons once at startup
   output$bc_ecoreg_map <- renderLeaflet({
@@ -203,7 +216,7 @@ shinyServer(function(input, output, session) {
   })
 
   ## Bar chart of land designations for selected ecoregion
-  output$ecoreg_barchart <- renderPlotly({
+  output$ecoreg_barchart <- renderggiraph({
     ecoreg_code <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
     if (length(ecoreg_code) == 0) {
       ecoreg_code <- "BC"
@@ -214,7 +227,7 @@ shinyServer(function(input, output, session) {
       type <- "ecoregion"
     }
 
-    plotly_barchart(df, type)
+    ggiraph_barchart(df, type)
   })
 
   #### BEC #####################################################################
@@ -273,7 +286,7 @@ shinyServer(function(input, output, session) {
   })
 
   ## Bar chart of land designations for selected bec zone
-  output$bec_barchart <- renderPlotly({
+  output$bec_barchart <- renderggiraph({
     bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
     if (length(bec_code) == 0) {
       bec_code <- "BC"
@@ -291,7 +304,7 @@ shinyServer(function(input, output, session) {
       type <- "biogeoclimatic zone"
     }
 
-    plotly_barchart(df, type)
+    ggiraph_barchart(df, type)
   })
 
 })
