@@ -334,7 +334,8 @@ shinyServer(function(input, output, session) {
                   background = styleColorBar(df$`Percent Designated`, 'green')) %>%
       formatStyle('Conservation Category', target = "cell",
                   backgroundColor = styleEqual(unique(ld_bec_summary$cons_cat),
-                                               c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF", 'lightgrey')),
+                                               c("#F8766D", "#7CAE00", "#00BFC4",
+                                                 "#C77CFF", 'lightgrey')),
                   fillOpacity = 0.7)
   })
 
