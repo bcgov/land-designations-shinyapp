@@ -28,21 +28,21 @@ shinyUI(fluidPage(
     tabPanel(
       "Ecoregions",
       fluidRow(column(6, leafletOutput("bc_ecoreg_map", height = 600)),
-               textOutput("click_ids"), # for debugging click
+               # textOutput("click_ids"), # for debugging click
                column(6,
                       plotOutput(outputId = "ecoreg_map"),
                       ggiraphOutput(outputId = "ecoreg_barchart",
-                                   height = "200px")))),
+                                    height = "100%")))),
     tabPanel(
       "BEC",
       fluidRow(column(6, leafletOutput("bc_bec_map", height = 600)),
                column(6,
-                      plotOutput(outputId = "bec_map"),
+                      plotOutput(outputId = "bec_map", height = 400),
                       ggiraphOutput(outputId = "bec_barchart",
-                                   height = "400px"))),
+                                    height = 200))),
       fluidRow(column(12,
                       dataTableOutput("bec_table"))))
-  )
+  , type = "pill")
 
 
 ))

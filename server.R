@@ -101,7 +101,7 @@ ggiraph_barchart <- function(df, type) {
                         format_ha(df$area_des_ha),
                         " ha (",
                         format_percent(df$percent_des), "%)")
-  gg <- ggplot(df,
+  gg <- ggplot(df[!is.na(df$cons_cat), ],
                aes(x = cons_cat, y = percent_des)) +
     geom_bar_interactive(stat = "identity",
                          aes(fill = cons_cat, tooltip = hovertip, data_id = hovertip)) +
@@ -112,7 +112,7 @@ ggiraph_barchart <- function(df, type) {
     labs(x = "Designation type", y = paste0("Percent of ", type, " designated")) +
     guides(fill = "none")
 
-  ggiraph(code = print(gg), width = 1, height_svg = 3,
+  ggiraph(code = print(gg), width = 0.9, height_svg = 2.5,
           tooltip_extra_css = tooltip_css, tooltip_opacity = 0.75,
           hover_css = hover_css, tooltip_offx = -20)
 }
@@ -180,7 +180,7 @@ shinyServer(function(input, output, session) {
     click_ids$ecoreg_ids <- c(prev_click_id, input$bc_ecoreg_map_shape_click$id)
   })
 
-  output$click_ids <- renderText(click_ids$ecoreg_ids) # For debugging click
+  # output$click_ids <- renderText(click_ids$ecoreg_ids) # For debugging click
 
   ## Ecoregion leaflet map - draw all polygons once at startup
   output$bc_ecoreg_map <- renderLeaflet({
