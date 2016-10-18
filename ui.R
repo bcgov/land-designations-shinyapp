@@ -9,9 +9,10 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
+library(shinythemes)
 
-shinyUI(fluidPage(
-
+shinyUI(fixedPage(
+  theme = shinytheme("yeti"),
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
   ),
@@ -23,7 +24,7 @@ shinyUI(fluidPage(
   tabsetPanel(
     tabPanel(
       "Ecoregions",
-      fluidRow(column(6, leafletOutput("bc_ecoreg_map", height = 600)),
+      fixedRow(column(6, leafletOutput("bc_ecoreg_map", height = 600)),
                # textOutput("click_ids"), # for debugging click
                column(6,
                       plotOutput(outputId = "ecoreg_map"),
@@ -31,14 +32,13 @@ shinyUI(fluidPage(
                                     height = "100%")))),
     tabPanel(
       "BEC",
-      fluidRow(column(6, leafletOutput("bc_bec_map", height = 600)),
+      fixedRow(column(6, leafletOutput("bc_bec_map", height = 600)),
                column(6,
                       plotOutput(outputId = "bec_map", height = 400),
                       ggiraphOutput(outputId = "bec_barchart",
                                     height = 200))),
-      fluidRow(column(12,
-                      dataTableOutput("bec_table"))))
-  , type = "pill")
+      fixedRow(column(12,
+                      dataTableOutput("bec_table")))))
 
 
 ))

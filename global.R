@@ -34,7 +34,7 @@ ecoreg_nms <- ecoregions$CRGNNM
 # rownames(ecoregion_centroids) <- ecoreg_ids
 
 # BEC Data
-bec_zones <- readRDS("data/bec_leaflet.rds")
+bec_zones <- readRDS("data/bec_leaflet.rds") # SpatialPolygonsDataFrame
 gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather")
 gg_bec <- read_feather("data/gg_bec.feather")
 ld_bec_summary <- read_feather("data/ld_bec_summary.feather")
