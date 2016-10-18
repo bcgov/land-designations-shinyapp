@@ -116,3 +116,12 @@ summarize_bec <- function(df) {
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
                                                        sum(bec_area, na.rm = TRUE)) * 100))
 }
+
+summarize_ecoreg <- function(df) {
+  df$Ecoregion <- ecoreg_nms[df$CRGNCD]
+  df %>%
+    group_by(Ecoregion, `Conservation Category` = cons_cat) %>%
+    summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
+              `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
+                                                       sum(ecoreg_area, na.rm = TRUE)) * 100))
+}

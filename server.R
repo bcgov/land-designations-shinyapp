@@ -85,6 +85,18 @@ shinyServer(function(input, output, session) {
     ggiraph_barchart(df, type)
   })
 
+  output$ecoreg_table <- DT::renderDataTable({
+    df <- summarize_ecoreg(ld_ecoreg_summary)
+    datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 25)) %>%
+      formatStyle('Percent Designated',
+                  background = styleColorBar(df$`Percent Designated`, 'green')) %>%
+      formatStyle('Conservation Category', target = "cell",
+                  backgroundColor = styleEqual(unique(ld_ecoreg_summary$cons_cat),
+                                               c("#F8766D", "#7CAE00", "#00BFC4",
+                                                 "#C77CFF")),
+                  fillOpacity = 0.7)
+  })
+
   #### BEC #####################################################################
 
   # Keep track of current clicked polygon and previous. Store in reactive values list
@@ -130,6 +142,8 @@ shinyServer(function(input, output, session) {
       removeControl(layerId = "bec_label")
   })
 
+
+
   ## BEC map and barchart
 
   ## Subset map of bec zone with land designations
@@ -172,7 +186,7 @@ shinyServer(function(input, output, session) {
         filter(ZONE == bec_code) %>%
         summarize_bec()
     }
-    datatable(df, filter = "top", options = list(pageLength = 25)) %>%
+    datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 25)) %>%
       formatStyle('Percent Designated',
                   background = styleColorBar(df$`Percent Designated`, 'green')) %>%
       formatStyle('Conservation Category', target = "cell",

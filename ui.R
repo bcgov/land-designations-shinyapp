@@ -20,18 +20,22 @@ shinyUI(fixedPage(
     img(width = "200px", src = "ER_Logo.png")
   ),
 
-  titlePanel("Land Designations in Ecoregions and Biogeoclimatic Zones"),
+  titlePanel("Land Designations that Contribute to Conservation"),
   tabsetPanel(
     tabPanel(
       "Ecoregions",
+      fixedRow(column(12, h2("Representation by Ecoregion"))),
       fixedRow(column(6, leafletOutput("bc_ecoreg_map", height = 600)),
                # textOutput("click_ids"), # for debugging click
                column(6,
                       plotOutput(outputId = "ecoreg_map"),
                       ggiraphOutput(outputId = "ecoreg_barchart",
-                                    height = "100%")))),
+                                    height = "100%"))),
+      fixedRow(column(12,
+                      dataTableOutput("ecoreg_table")))),
     tabPanel(
       "BEC",
+      fixedRow(column(12, h2("Representation by Biogeoclimatic Zone"))),
       fixedRow(column(6, leafletOutput("bc_bec_map", height = 600)),
                column(6,
                       plotOutput(outputId = "bec_map", height = 400),
