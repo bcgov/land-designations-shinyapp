@@ -135,8 +135,6 @@ shinyServer(function(input, output, session) {
       removeControl(layerId = "bec_label")
   })
 
-
-
   ## BEC map and barchart
 
   ## Subset map of bec zone with land designations

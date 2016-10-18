@@ -29,8 +29,8 @@ gg_ld_class <- function(class, reg_cd) {
   }
 
   ggplot(ld_df, aes(x = long, y = lat, group = group)) +
-    geom_polygon(data = class_df, fill = "grey80", colour = "gray80") +
-    geom_polygon(aes(fill = cons_cat)) +
+    geom_polypath(data = class_df, fill = "grey80", colour = "gray80") +
+    geom_polypath(aes(fill = cons_cat)) +
     ggtitle(title) +
     coord_fixed() +
     theme_map() +
