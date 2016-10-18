@@ -87,14 +87,7 @@ shinyServer(function(input, output, session) {
 
   output$ecoreg_table <- DT::renderDataTable({
     df <- summarize_ecoreg(ld_ecoreg_summary)
-    datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 25)) %>%
-      formatStyle('Percent Designated',
-                  background = styleColorBar(df$`Percent Designated`, 'green')) %>%
-      formatStyle('Conservation Category', target = "cell",
-                  backgroundColor = styleEqual(unique(ld_ecoreg_summary$cons_cat),
-                                               c("#F8766D", "#7CAE00", "#00BFC4",
-                                                 "#C77CFF")),
-                  fillOpacity = 0.7)
+    make_dt(df)
   })
 
   #### BEC #####################################################################
@@ -179,21 +172,13 @@ shinyServer(function(input, output, session) {
   output$bec_table <- DT::renderDataTable({
     bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
     if (length(bec_code) == 0) {
-      df <- ld_bec_summary %>%
-        summarize_bec()
+      df <- summarize_bec(ld_bec_summary)
     } else {
       df <- ld_bec_summary %>%
         filter(ZONE == bec_code) %>%
         summarize_bec()
     }
-    datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 25)) %>%
-      formatStyle('Percent Designated',
-                  background = styleColorBar(df$`Percent Designated`, 'green')) %>%
-      formatStyle('Conservation Category', target = "cell",
-                  backgroundColor = styleEqual(unique(ld_bec_summary$cons_cat),
-                                               c("#F8766D", "#7CAE00", "#00BFC4",
-                                                 "#C77CFF", 'lightgrey')),
-                  fillOpacity = 0.7)
+    make_dt(df)
   })
 
 })

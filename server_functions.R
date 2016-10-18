@@ -125,3 +125,17 @@ summarize_ecoreg <- function(df) {
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
                                                        sum(ecoreg_area, na.rm = TRUE)) * 100))
 }
+
+make_dt <- function(df) {
+  categories <- unique(df[["Conservation Category"]])
+  cat_colours <- c("#F8766D", "#7CAE00", "#00BFC4",
+                   "#C77CFF")
+  if (anyNA(categories)) cat_colours <- c(cat_colours, 'lightgrey')
+
+  datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 25)) %>%
+    formatStyle('Percent Designated',
+                background = styleColorBar(df[["Percent Designated"]], 'green')) %>%
+    formatStyle('Conservation Category', target = "cell",
+                backgroundColor = styleEqual(categories, cat_colours),
+                fillOpacity = 0.7)
+}
