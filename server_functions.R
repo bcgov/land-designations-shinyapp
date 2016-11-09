@@ -46,7 +46,8 @@ ggiraph_barchart <- function(df, type) {
 
   hover_css <- "opacity:0.5;stroke:white;"
 
-  df$hovertip <- paste0("Area: ",
+  df$hovertip <- paste0(des_labels[df$cons_cat],
+                        ". Area: ",
                         format_ha(df$area_des_ha),
                         " ha (",
                         format_percent(df$percent_des), "%)")
@@ -57,7 +58,7 @@ ggiraph_barchart <- function(df, type) {
     scale_fill_manual(values = des_cols) +
     theme_minimal(base_size = 16) +
     scale_y_continuous(expand = c(0,0)) +
-    scale_x_discrete(expand = c(0,0)) +
+    scale_x_discrete(expand = c(0,0), labels = prot_rollup_labels) +
     coord_flip() +
     labs(x = "Designation type", y = paste0("Percent of ", type, " designated")) +
     guides(fill = "none")

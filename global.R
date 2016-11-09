@@ -80,7 +80,16 @@ des_cols <- c("A" = "#004529",
               "B" = "#238443",
               "C" = "#addd8e",
               "D" = "#f7fcb9")
-des_labels = c("01_PPA"                    = "Parks and Protected Areas",
-               "02_Protected_Other"        = "Other Protected Lands",
-               "03_Exclude_1_2_Activities" = "Exclude 1 or 2 Actitivies",
-               "04_Managed"                = "Managed Lands")
+# des_labels = c("01_PPA"                    = "Parks and Protected Areas",
+#                "02_Protected_Other"        = "Other Protected Lands",
+#                "03_Exclude_1_2_Activities" = "Exclude 1 or 2 Actitivies",
+#                "04_Managed"                = "Managed Lands")
+
+des_labels <- c("A" = "Parks and Protected Areas",
+                "B" = "Other Protected Lands",
+                "C" = "Exclude 1 or 2 Actitivies",
+                "D" = "Managed Lands")
+
+prot_rollup_labels <- c("Prot" = "Protected",
+                        "C" = "Exclude 1 or 2 Actitivies",
+                        "D" = "Managed Lands")
