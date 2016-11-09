@@ -31,6 +31,7 @@ gg_ld_class <- function(class, reg_cd) {
   ggplot(ld_df, aes(x = long, y = lat, group = group)) +
     geom_polypath(data = class_df, fill = "grey80", colour = "gray80") +
     geom_polypath(aes(fill = cons_cat)) +
+    scale_fill_manual(values = des_cols) +
     ggtitle(title) +
     coord_fixed() +
     theme_map() +
@@ -53,6 +54,7 @@ ggiraph_barchart <- function(df, type) {
                aes(x = cons_cat, y = percent_des)) +
     geom_bar_interactive(stat = "identity",
                          aes(fill = cons_cat, tooltip = hovertip, data_id = hovertip)) +
+    scale_fill_manual(values = des_cols) +
     theme_minimal(base_size = 16) +
     scale_y_continuous(expand = c(0,0)) +
     scale_x_discrete(expand = c(0,0)) +
@@ -137,8 +139,7 @@ format_if_exists <- function(dt, column) {
 
 make_dt <- function(df) {
   categories <- unique(df[["Conservation Category"]])
-  cat_colours <- c("#F8766D", "#7CAE00", "#00BFC4",
-                   "#C77CFF")
+  cat_colours <- des_cols
   if (anyNA(categories)) cat_colours <- c(cat_colours, 'lightgrey')
 
   datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 25)) %>%
