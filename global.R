@@ -49,6 +49,9 @@ bec_zones <- readRDS("data/bec_leaflet.rds") # SpatialPolygonsDataFrame
 gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather")
 gg_bec <- read_feather("data/gg_bec.feather")
 ld_bec_summary <- read_feather("data/ld_bec_summary.feather")
+
+ld_bec_summary$prot_rollup <- rollup_category(ld_bec_summary$cons_cat)
+
 bec_ids <- bec_zones$ZONE
 bec_nms <- c(BAFA = "Boreal Altai Fescue Alpine",
              SWB = "Spruce--Willow--Birch",

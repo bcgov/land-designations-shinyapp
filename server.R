@@ -155,7 +155,7 @@ shinyServer(function(input, output, session) {
     } else {
       df <- ld_bec_summary %>%
         filter(ZONE == bec_code) %>%
-        group_by(cons_cat) %>%
+        group_by(prot_rollup, cons_cat) %>%
         summarize(area_des = sum(area_des, na.rm = TRUE),
                   bec_area = sum(bec_area, na.rm = TRUE),
                   percent_des = area_des / bec_area * 100,
