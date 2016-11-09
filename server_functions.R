@@ -51,7 +51,7 @@ ggiraph_barchart <- function(df, type) {
                         " ha (",
                         format_percent(df$percent_des), "%)")
   gg <- ggplot(df[!is.na(df$cons_cat), ],
-               aes(x = cons_cat, y = percent_des)) +
+               aes(x = prot_rollup, y = percent_des)) +
     geom_bar_interactive(stat = "identity",
                          aes(fill = cons_cat, tooltip = hovertip, data_id = hovertip)) +
     scale_fill_manual(values = des_cols) +

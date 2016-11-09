@@ -20,8 +20,16 @@ library(ggpolypath)
 library(ggiraph)
 library(DT)
 
+rollup_category <- function(category) {
+  factor(ifelse(category %in% c("A", "B"),
+                "Prot", category),
+         levels = c("Prot", "C", "D"), ordered = TRUE)
+}
+
 bc_bound <- read_feather("data/gg_bc_bound.feather")
 bc_ld_summary <- read_feather("data/bc_ld_summary.feather")
+
+bc_ld_summary$prot_rollup <- rollup_category(bc_ld_summary$cons_cat)
 
 ## Ecoregion data
 ecoregions <- readRDS("data/ecoregions_t_leaflet.rds")
@@ -33,6 +41,8 @@ ecoreg_nms <- structure(ecoregions$CRGNNM, names = ecoreg_ids)
 # ecoregion_centroids <- as.data.frame(coordinates(ecoregions))
 # names(ecoregion_centroids) <- c("long", "lat")
 # rownames(ecoregion_centroids) <- ecoreg_ids
+
+ld_ecoreg_summary$prot_rollup <- rollup_category(ld_ecoreg_summary$cons_cat)
 
 # BEC Data
 bec_zones <- readRDS("data/bec_leaflet.rds") # SpatialPolygonsDataFrame
