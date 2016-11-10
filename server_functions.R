@@ -123,8 +123,8 @@ highlight_clicked_poly <- function(map, clicked_polys, class) {
 
 summarize_bec <- function(df) {
   df %>%
-    group_by(`BGC Label` = MAP_LABEL, Subzone = SBZNNM, Variant = VRNTNM,
-             `Conservation Category` = cons_cat) %>%
+    group_by(Zone = ZONE, Subzone = SBZNNM, Variant = VRNTNM, `BGC Label` = MAP_LABEL,
+             `Category` = cons_cat) %>%
     summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
               `BGC Unit Area (ha)` = format_ha(bec_area * 1e-4),
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
@@ -134,7 +134,7 @@ summarize_bec <- function(df) {
 summarize_ecoreg <- function(df) {
   df$Ecoregion <- ecoreg_nms[df$CRGNCD]
   df %>%
-    group_by(Ecoregion, `Conservation Category` = cons_cat) %>%
+    group_by(Ecoregion, `Category` = cons_cat) %>%
     summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
               `Ecoregion Area (ha)` = format_ha(ecoreg_area * 1e-4),
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
@@ -149,14 +149,14 @@ format_if_exists <- function(dt, column) {
 }
 
 make_dt <- function(df) {
-  categories <- unique(df[["Conservation Category"]])
+  categories <- unique(df[["Category"]])
   cat_colours <- des_cols
   if (anyNA(categories)) cat_colours <- c(cat_colours, 'lightgrey')
 
   datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 15)) %>%
     formatStyle('Percent Designated',
                 background = styleColorBar(df[["Percent Designated"]], 'green')) %>%
-    formatStyle('Conservation Category', target = "cell",
+    formatStyle('Category', target = "cell",
                 backgroundColor = styleEqual(categories, cat_colours),
                 fillOpacity = 0.7) %>%
     formatCurrency('Percent Designated', currency = "%", before = FALSE, digits = 1) %>%

@@ -92,8 +92,14 @@ shinyServer(function(input, output, session) {
   })
 
   output$ecoreg_table <- DT::renderDataTable({
-    df <- summarize_ecoreg(ld_ecoreg_summary)
-    make_dt(df)
+    ecoreg_code <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
+    if (length(ecoreg_code) == 0 || ecoreg_code == "BC") {
+      df <- ld_ecoreg_summary
+    } else {
+      df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
+    }
+    summarize_ecoreg(df) %>%
+      make_dt()
   })
 
   #### BEC #####################################################################
