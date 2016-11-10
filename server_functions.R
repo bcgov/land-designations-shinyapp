@@ -149,6 +149,7 @@ format_if_exists <- function(dt, column) {
 }
 
 make_dt <- function(df) {
+  df[["Category"]] <- des_labels[df[["Category"]]]
   categories <- unique(df[["Category"]])
   cat_colours <- des_cols
   if (anyNA(categories)) cat_colours <- c(cat_colours, 'lightgrey')
@@ -156,9 +157,8 @@ make_dt <- function(df) {
   datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 15)) %>%
     formatStyle('Percent Designated',
                 background = styleColorBar(df[["Percent Designated"]], 'green')) %>%
-    formatStyle('Category', target = "cell",
-                backgroundColor = styleEqual(categories, cat_colours),
-                fillOpacity = 0.7) %>%
+    formatStyle('Category', target = "cell", fontWeight = 'bold',
+                color = styleEqual(categories, cat_colours)) %>%
     formatCurrency('Percent Designated', currency = "%", before = FALSE, digits = 1) %>%
     formatCurrency('Area designated (ha)', currency = "", digits = 0) %>%
     format_if_exists('Ecoregion Area (ha)') %>%
