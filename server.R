@@ -23,7 +23,12 @@ shinyServer(function(input, output, session) {
     click_ids$ecoreg_ids <- c(prev_click_id, input$bc_ecoreg_map_shape_click$id)
   })
 
-  # output$click_ids <- renderText(click_ids$ecoreg_ids) # For debugging click
+  observeEvent(input$reset_bc, {
+    prev_click_id <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
+    click_ids$ecoreg_ids <- c(prev_click_id, "BC")
+  })
+
+  output$reset_bc <- renderText(input$reset_bc) # For debugging click
 
   ## Ecoregion leaflet map - draw all polygons once at startup
   output$bc_ecoreg_map <- renderLeaflet({
@@ -38,6 +43,7 @@ shinyServer(function(input, output, session) {
   # Observer for highlighting ecoregion polygon on click
   observe({
     clicked_polys <- click_ids$ecoreg_ids
+
     # subset the ecoregions to be updated to those that are either currently clicked
     # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
     # clicked_polys, as the first one is the previously clicked one, and the second
@@ -73,7 +79,7 @@ shinyServer(function(input, output, session) {
   ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderggiraph({
     ecoreg_code <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
-    if (length(ecoreg_code) == 0) {
+    if (length(ecoreg_code) == 0 || ecoreg_code == "BC") {
       ecoreg_code <- "BC"
       df <- bc_ld_summary
       type <- "British Columbia"

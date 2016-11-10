@@ -104,6 +104,11 @@ highlight_clicked_poly <- function(map, clicked_polys, class) {
     wts <- wts[2]
     opac <- opac[2]
     colr <- colr[2]
+  } else if (length(clicked_polys) == 1 && clicked_polys[2] == "BC") { # Deal with 'reset to BC' button
+    clicked_polys <- clicked_polys[1]
+    wts <- wts[1]
+    opac <- opac[1]
+    colr <- colr[1]
   }
 
   addPolygons(map, layerId = clicked_polys,

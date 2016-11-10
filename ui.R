@@ -25,8 +25,9 @@ shinyUI(fixedPage(
     tabPanel(
       "Ecoregions",
       fixedRow(column(12, h2("Representation by Ecoregion"))),
-      fixedRow(column(6, leafletOutput("bc_ecoreg_map", height = 600)),
-               # textOutput("click_ids"), # for debugging click
+      fixedRow(column(6, leafletOutput("bc_ecoreg_map", height = 600),
+               actionButton(inputId = "reset_bc", "Click to reset to B.C."),
+               textOutput("reset_bc")), # for debugging click
                column(6,
                       plotOutput(outputId = "ecoreg_map"),
                       ggiraphOutput(outputId = "ecoreg_barchart",
