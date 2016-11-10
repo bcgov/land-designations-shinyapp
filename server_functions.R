@@ -94,22 +94,22 @@ highlight_clicked_poly <- function(map, clicked_polys, class) {
     opac <- c(0.2, 0.8)
   } else if (class == "bec") {
     colr <- c("", "#2F4F4F")
-    fill <- unname(bec_colors[clicked_polys])
+    fill <- unname(na.omit(bec_colors[clicked_polys]))
     opac <- c(0.7, 0.9)
   }
 
   wts <- c(1, 2)
 
   if (length(clicked_polys) == 2 && clicked_polys[2] == "BC") {
-      clicked_polys <- clicked_polys[1]
-      wts <- wts[1]
-      opac <- opac[1]
-      colr <- colr[1]
+    clicked_polys <- clicked_polys[1]
+    wts <- wts[1]
+    opac <- opac[1]
+    colr <- colr[1]
   } else if (length(clicked_polys) == 2 && clicked_polys[1] == "BC") {
-      clicked_polys <- clicked_polys[2]
-      wts <- wts[2]
-      opac <- opac[2]
-      colr <- colr[2]
+    clicked_polys <- clicked_polys[2]
+    wts <- wts[2]
+    opac <- opac[2]
+    colr <- colr[2]
   } else if (length(clicked_polys) == 1) {
     wts <- wts[2]
     opac <- opac[2]

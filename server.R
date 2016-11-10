@@ -28,8 +28,6 @@ shinyServer(function(input, output, session) {
     click_ids$ecoreg_ids <- c(prev_click_id, "BC")
   })
 
-  # output$reset_bc <- renderText(input$reset_bc) # For debugging click
-
   ## Ecoregion leaflet map - draw all polygons once at startup
   output$bc_ecoreg_map <- renderLeaflet({
     leaflet(ecoregions) %>%
@@ -44,7 +42,7 @@ shinyServer(function(input, output, session) {
   observe({
     clicked_polys <- click_ids$ecoreg_ids
 
-    output$reset_bc <- renderText(clicked_polys)
+    output$reset_bc_ecoreg <- renderText(clicked_polys)
 
     # subset the ecoregions to be updated to those that are either currently clicked
     # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
@@ -106,6 +104,11 @@ shinyServer(function(input, output, session) {
     click_ids$bec_ids <- c(prev_click_id, input$bc_bec_map_shape_click$id)
   })
 
+
+  observeEvent(input$reset_bc_bec, {
+    prev_click_id <- click_ids$bec_ids[length(click_ids$bec_ids)]
+    click_ids$bec_ids <- c(prev_click_id, "BC")
+  })
   # Render initial BEC map
   output$bc_bec_map <- renderLeaflet({
     leaflet(bec_zones) %>%
@@ -119,12 +122,14 @@ shinyServer(function(input, output, session) {
   # Observer for highlighting bec polygon on click
   observe({
     clicked_polys <- click_ids$bec_ids
+
+    output$reset_bc_bec <- renderText(clicked_polys)
     # subset the bec polygons to be updated to those that are either currently clicked
     # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
     # clicked_polys, as the first one is the previously clicked one, and the second
     # is the currently clicked. The polygons must be in the same order as the aesthetics
     # (col, fill, weight, etc)
-    bec_subset <- bec_zones[match(clicked_polys, bec_zones$ZONE), ]
+    bec_subset <- bec_zones[na.omit(match(clicked_polys, bec_zones$ZONE)), ]
 
     bec_proxy(data = bec_subset) %>%
       highlight_clicked_poly(clicked_polys, class = "bec")
@@ -156,7 +161,7 @@ shinyServer(function(input, output, session) {
   ## Bar chart of land designations for selected bec zone
   output$bec_barchart <- renderggiraph({
     bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
-    if (length(bec_code) == 0) {
+    if (length(bec_code) == 0 || bec_code == "BC") {
       bec_code <- "BC"
       df <- bc_ld_summary
       type <- "British Columbia"
@@ -177,7 +182,7 @@ shinyServer(function(input, output, session) {
 
   output$bec_table <- DT::renderDataTable({
     bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
-    if (length(bec_code) == 0) {
+    if (length(bec_code) == 0 || bec_code == "BC") {
       df <- summarize_bec(ld_bec_summary)
     } else {
       df <- ld_bec_summary %>%
