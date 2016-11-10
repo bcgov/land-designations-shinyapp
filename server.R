@@ -23,12 +23,12 @@ shinyServer(function(input, output, session) {
     click_ids$ecoreg_ids <- c(prev_click_id, input$bc_ecoreg_map_shape_click$id)
   })
 
-  observeEvent(input$reset_bc, {
+  observeEvent(input$reset_bc_ecoreg, {
     prev_click_id <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
     click_ids$ecoreg_ids <- c(prev_click_id, "BC")
   })
 
-  output$reset_bc <- renderText(input$reset_bc) # For debugging click
+  # output$reset_bc <- renderText(input$reset_bc) # For debugging click
 
   ## Ecoregion leaflet map - draw all polygons once at startup
   output$bc_ecoreg_map <- renderLeaflet({
@@ -44,12 +44,14 @@ shinyServer(function(input, output, session) {
   observe({
     clicked_polys <- click_ids$ecoreg_ids
 
+    output$reset_bc <- renderText(clicked_polys)
+
     # subset the ecoregions to be updated to those that are either currently clicked
     # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
     # clicked_polys, as the first one is the previously clicked one, and the second
     # is the currently clicked. The polygons must be in the same order as the aesthetics
     # (col, fill, weight, etc)
-    ecoreg_subset <- ecoregions[match(clicked_polys, ecoregions$CRGNCD), ]
+    ecoreg_subset <- ecoregions[na.omit(match(clicked_polys, ecoregions$CRGNCD)), ]
 
     ecoreg_proxy(data = ecoreg_subset) %>%
       highlight_clicked_poly(clicked_polys, class = "ecoreg")
