@@ -14,18 +14,24 @@ source("server_functions.R")
 
 shinyServer(function(input, output, session) {
   # Reactive values list to keep track of clicked polygons
-  click_ids <- reactiveValues(ecoreg_ids = character(0),
-                              bec_ids = character(0))
+  ecoreg_reactives <- reactiveValues(ecoreg_ids = character(0),
+                                     ecoreg_summary = ld_ecoreg_summary)
 
   # Keep track of current clicked polygon and previous. Store in reactive values list
   observeEvent(input$bc_ecoreg_map_shape_click$id, {
-    prev_click_id <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
-    click_ids$ecoreg_ids <- c(prev_click_id, input$bc_ecoreg_map_shape_click$id)
+    clicked_id <- input$bc_ecoreg_map_shape_click$id
+    prev_click_id <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
+    ecoreg_reactives$ecoreg_ids <- c(prev_click_id, clicked_id)
+
+    ecoreg_reactives$ecoreg_summary <- ld_ecoreg_summary %>%
+      filter(CRGNCD == clicked_id)
   })
 
   observeEvent(input$reset_bc_ecoreg, {
-    prev_click_id <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
-    click_ids$ecoreg_ids <- c(prev_click_id, "BC")
+    prev_click_id <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
+    ecoreg_reactives$ecoreg_ids <- c(prev_click_id, "BC")
+
+    ecoreg_reactives$ecoreg_summary <- ld_ecoreg_summary
   })
 
   ## Ecoregion leaflet map - draw all polygons once at startup
@@ -40,7 +46,7 @@ shinyServer(function(input, output, session) {
 
   # Observer for highlighting ecoregion polygon on click
   observe({
-    clicked_polys <- click_ids$ecoreg_ids
+    clicked_polys <- ecoreg_reactives$ecoreg_ids
 
     # output$reset_bc_ecoreg <- renderText(clicked_polys)
 
@@ -70,7 +76,7 @@ shinyServer(function(input, output, session) {
 
   ## Subset map of ecoregion with land designations
   output$ecoreg_map <- renderPlot({
-    ecoreg_code <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
+    ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
     if (length(ecoreg_code) == 0) ecoreg_code <- "BC"
 
     gg_ld_class(class = "ecoreg", ecoreg_code)
@@ -78,43 +84,58 @@ shinyServer(function(input, output, session) {
 
   ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderggiraph({
-    ecoreg_code <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
+    ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
+
     if (length(ecoreg_code) == 0 || ecoreg_code == "BC") {
       ecoreg_code <- "BC"
-      df <- bc_ld_summary
       type <- "British Columbia"
+      df <- bc_ld_summary
     } else {
-      df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
       type <- "ecoregion"
+      df <- ecoreg_reactives$ecoreg_summary
     }
 
     ggiraph_barchart(df, type)
   })
 
   output$ecoreg_table <- DT::renderDataTable({
-    ecoreg_code <- click_ids$ecoreg_ids[length(click_ids$ecoreg_ids)]
-    if (length(ecoreg_code) == 0 || ecoreg_code == "BC") {
-      df <- ld_ecoreg_summary
-    } else {
-      df <- ld_ecoreg_summary[ld_ecoreg_summary$CRGNCD == ecoreg_code, ]
-    }
+    ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
+    df <- ecoreg_reactives$ecoreg_summary
+
     summarize_ecoreg(df) %>%
       make_dt()
   })
 
+  output$download_ecoreg_data <- downloadHandler(
+    filename = function() "ecoregion.csv",
+    content = function(file) {
+      write.csv(ecoreg_reactives$ecoreg_summary, file, row.names = FALSE)
+    },
+    contentType = "text/csv"
+  )
+
   #### BEC #####################################################################
+
+  bec_reactives <- reactiveValues(bec_ids = character(0),
+                                  bec_summary = ld_bec_summary)
 
   # Keep track of current clicked polygon and previous. Store in reactive values list
   observeEvent(input$bc_bec_map_shape_click$id, {
-    prev_click_id <- click_ids$bec_ids[length(click_ids$bec_ids)]
-    click_ids$bec_ids <- c(prev_click_id, input$bc_bec_map_shape_click$id)
-  })
+    clicked_id <- input$bc_bec_map_shape_click$id
+    prev_click_id <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+    bec_reactives$bec_ids <- c(prev_click_id, clicked_id)
 
+    bec_reactives$bec_summary <- ld_bec_summary %>%
+      filter(ZONE == clicked_id)
+  })
 
   observeEvent(input$reset_bc_bec, {
-    prev_click_id <- click_ids$bec_ids[length(click_ids$bec_ids)]
-    click_ids$bec_ids <- c(prev_click_id, "BC")
+    prev_click_id <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+    bec_reactives$bec_ids <- c(prev_click_id, "BC")
+
+    bec_reactives$bec_summary <- ld_bec_summary
   })
+
   # Render initial BEC map
   output$bc_bec_map <- renderLeaflet({
     leaflet(bec_zones) %>%
@@ -127,7 +148,7 @@ shinyServer(function(input, output, session) {
 
   # Observer for highlighting bec polygon on click
   observe({
-    clicked_polys <- click_ids$bec_ids
+    clicked_polys <- bec_reactives$bec_ids
 
     # output$reset_bc_bec <- renderText(clicked_polys)
 
@@ -159,7 +180,7 @@ shinyServer(function(input, output, session) {
 
   ## Subset map of bec zone with land designations
   output$bec_map <- renderPlot({
-    bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
+    bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
     if (length(bec_code) == 0) bec_code <- "BC"
 
     gg_ld_class(class = "bec", bec_code)
@@ -167,14 +188,13 @@ shinyServer(function(input, output, session) {
 
   ## Bar chart of land designations for selected bec zone
   output$bec_barchart <- renderggiraph({
-    bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
+    bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
     if (length(bec_code) == 0 || bec_code == "BC") {
       bec_code <- "BC"
       df <- bc_ld_summary
       type <- "British Columbia"
     } else {
-      df <- ld_bec_summary %>%
-        filter(ZONE == bec_code) %>%
+      df <- bec_reactives$bec_summary %>%
         group_by(prot_rollup, cons_cat) %>%
         summarize(area_des = sum(area_des, na.rm = TRUE),
                   bec_area = sum(bec_area, na.rm = TRUE),
@@ -188,14 +208,19 @@ shinyServer(function(input, output, session) {
   })
 
   output$bec_table <- DT::renderDataTable({
-    bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
-    if (length(bec_code) == 0 || bec_code == "BC") {
-      df <- ld_bec_summary
-    } else {
-      df <- ld_bec_summary %>% filter(ZONE == bec_code)
-    }
+    bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+    df <- bec_reactives$bec_summary
+
     summarize_bec(df) %>%
       make_dt()
   })
+
+  output$download_bec_data <- downloadHandler(
+    filename = function() "bec.csv",
+    content = function(file) {
+      write.csv(bec_reactives$bec_summary, file, row.names = FALSE)
+    },
+    contentType = "text/csv"
+  )
 
 })
