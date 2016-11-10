@@ -20,20 +20,17 @@ gg_ld_class <- function(class, reg_cd) {
     } else if (class == "bec") {
       ld_df <- gg_ld_x_bec[gg_ld_x_bec$ZONE == reg_cd, ]
       class_df <- gg_bec[gg_bec$ZONE == reg_cd, ]
-      title <- bec_nms[reg_cd]
     }
   } else {
     ld_df <- gg_ld_x_ecoreg
     class_df <- bc_bound
-    title <- "British Columbia"
   }
 
   ggplot(ld_df, aes(x = long, y = lat, group = group)) +
     geom_polypath(data = class_df, fill = "grey80", colour = "gray80") +
     geom_polypath(aes(fill = cons_cat)) +
     scale_fill_manual(values = des_cols) +
-    ggtitle(title) +
-    coord_fixed() +
+    coord_fixed(expand = FALSE) +
     theme_map() +
     guides(fill = "none")
 }

@@ -9,5 +9,9 @@
 }
 
 .dl-button {
-  margin-left: 40px;
+  float: right;
+}
+
+#ecoreg_title, #bec_title {
+  text-align: center;
 }

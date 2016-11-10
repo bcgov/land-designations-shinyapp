@@ -74,6 +74,12 @@ shinyServer(function(input, output, session) {
       removeControl(layerId = "ecoreg_label")
   })
 
+  output$ecoreg_title <- renderText({
+    ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
+    if (length(ecoreg_code) == 0) return("British Columbia")
+    ecoreg_nms[ecoreg_code]
+  })
+
   ## Subset map of ecoregion with land designations
   output$ecoreg_map <- renderPlot({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
@@ -177,6 +183,12 @@ shinyServer(function(input, output, session) {
   })
 
   ## BEC map and barchart
+
+  output$bec_title <- renderText({
+    bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+    if (length(bec_code) == 0) return("British Columbia")
+    htmlize(bec_nms[bec_code])
+  })
 
   ## Subset map of bec zone with land designations
   output$bec_map <- renderPlot({
