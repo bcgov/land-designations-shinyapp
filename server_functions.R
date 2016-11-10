@@ -166,3 +166,9 @@ make_dt <- function(df) {
     format_if_exists('Ecoregion Area (ha)') %>%
     format_if_exists('BGC Unit Area (ha)')
 }
+
+rollup_category <- function(category) {
+  factor(ifelse(category %in% c("A", "B"),
+                "Prot", category),
+         levels = c("Prot", "C", "D"), ordered = TRUE)
+}

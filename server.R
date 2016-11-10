@@ -10,7 +10,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-source("server_functions.R")
+source("server_functions.R", local = TRUE)
+source("server_objects.R", local = TRUE)
 
 shinyServer(function(input, output, session) {
   # Reactive values list to keep track of clicked polygons
