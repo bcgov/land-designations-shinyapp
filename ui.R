@@ -26,8 +26,8 @@ shinyUI(fixedPage(
       "Ecoregions",
       fixedRow(column(12, h2("Representation by Ecoregion"))),
       fixedRow(column(6, leafletOutput("bc_ecoreg_map", height = 600),
-               actionButton(inputId = "reset_bc_ecoreg", "Click to reset to B.C."),
-               textOutput("reset_bc_ecoreg")), # for debugging click
+               actionButton(inputId = "reset_bc_ecoreg", "Click to reset to B.C.")),
+               # textOutput("reset_bc_ecoreg")), # for debugging click
                column(6,
                       plotOutput(outputId = "ecoreg_map"),
                       ggiraphOutput(outputId = "ecoreg_barchart",
@@ -38,8 +38,8 @@ shinyUI(fixedPage(
       "BEC",
       fixedRow(column(12, h2("Representation by Biogeoclimatic Zone"))),
       fixedRow(column(6, leafletOutput("bc_bec_map", height = 600),
-                      actionButton(inputId = "reset_bc_bec", "Click to reset to B.C."),
-                      textOutput("reset_bc_bec")), # for debugging click
+                      actionButton(inputId = "reset_bc_bec", "Click to reset to B.C.")),
+                      # textOutput("reset_bc_bec")), # for debugging click
                column(6,
                       plotOutput(outputId = "bec_map", height = 400),
                       ggiraphOutput(outputId = "bec_barchart",

@@ -42,7 +42,7 @@ shinyServer(function(input, output, session) {
   observe({
     clicked_polys <- click_ids$ecoreg_ids
 
-    output$reset_bc_ecoreg <- renderText(clicked_polys)
+    # output$reset_bc_ecoreg <- renderText(clicked_polys)
 
     # subset the ecoregions to be updated to those that are either currently clicked
     # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
@@ -129,7 +129,8 @@ shinyServer(function(input, output, session) {
   observe({
     clicked_polys <- click_ids$bec_ids
 
-    output$reset_bc_bec <- renderText(clicked_polys)
+    # output$reset_bc_bec <- renderText(clicked_polys)
+
     # subset the bec polygons to be updated to those that are either currently clicked
     # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
     # clicked_polys, as the first one is the previously clicked one, and the second
