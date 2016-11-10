@@ -189,13 +189,12 @@ shinyServer(function(input, output, session) {
   output$bec_table <- DT::renderDataTable({
     bec_code <- click_ids$bec_ids[length(click_ids$bec_ids)]
     if (length(bec_code) == 0 || bec_code == "BC") {
-      df <- summarize_bec(ld_bec_summary)
+      df <- ld_bec_summary
     } else {
-      df <- ld_bec_summary %>%
-        filter(ZONE == bec_code) %>%
-        summarize_bec()
+      df <- ld_bec_summary %>% filter(ZONE == bec_code)
     }
-    make_dt(df)
+    summarize_bec(df) %>%
+      make_dt()
   })
 
 })
