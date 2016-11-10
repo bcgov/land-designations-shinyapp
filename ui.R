@@ -32,7 +32,7 @@ shinyUI(fixedPage(
                                      class = "dl-button")),
                # textOutput("reset_bc_ecoreg")), # for debugging click
                column(6,
-                      plotOutput(outputId = "ecoreg_map"),
+                      plotOutput(outputId = "ecoreg_map", height = 500),
                       ggiraphOutput(outputId = "ecoreg_barchart",
                                     height = "100%"))),
       br(),
@@ -48,7 +48,7 @@ shinyUI(fixedPage(
                                      class = "dl-button")),
                       # textOutput("reset_bc_bec")), # for debugging click
                column(6,
-                      plotOutput(outputId = "bec_map", height = 400),
+                      plotOutput(outputId = "bec_map", height = 500),
                       ggiraphOutput(outputId = "bec_barchart",
                                     height = 200))),
       br(),

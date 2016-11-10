@@ -40,15 +40,17 @@ gg_ld_class <- function(class, reg_cd) {
 
 ## Interactive bar chart for % designated in selected ecoregion/zone
 ggiraph_barchart <- function(df, type) {
-  tooltip_css = "background-color:white;
+  tooltip_css = "
+  color:white;
+  background-color:dimgray;
   padding:5px;
-  border-radius:10px;"
+  border-radius:5px;"
 
   hover_css <- "opacity:0.5;stroke:white;"
 
   df$hovertip <- paste0(des_labels[df$cons_cat],
-                        ". Area: ",
-                        format_ha(df$area_des_ha),
+                        "<br>Area: ",
+                        format_ha_comma(df$area_des_ha),
                         " ha (",
                         format_percent(df$percent_des), "%)")
   gg <- ggplot(df[!is.na(df$cons_cat), ],
@@ -56,16 +58,18 @@ ggiraph_barchart <- function(df, type) {
     geom_bar_interactive(stat = "identity",
                          aes(fill = cons_cat, tooltip = hovertip, data_id = hovertip)) +
     scale_fill_manual(values = des_cols) +
-    theme_minimal(base_size = 16) +
+    theme_minimal(base_size = 15) +
+    theme(axis.title.x = element_text(hjust = 1)) +
     scale_y_continuous(expand = c(0,0)) +
     scale_x_discrete(expand = c(0,0), labels = prot_rollup_labels) +
     coord_flip() +
-    labs(x = "Designation type", y = paste0("Percent of ", type, " designated")) +
+    labs(x = "Land Designation type", y = paste0("Percent of ", type, " Designated")) +
     guides(fill = "none")
 
   ggiraph(code = print(gg), width = 0.9, height_svg = 2.5,
-          tooltip_extra_css = tooltip_css, tooltip_opacity = 0.75,
-          hover_css = hover_css, tooltip_offx = -20)
+          tooltip_extra_css = tooltip_css, tooltip_opacity = 0.9,
+          hover_css = hover_css,
+          tooltip_offx = -20)
 }
 
 ## Shortcuts functions to initialize modifying ecoregion and bec leaflet maps
@@ -84,6 +88,7 @@ htmlize <- function(x) {
 }
 
 format_ha <- function(x) round(x, 0)
+format_ha_comma <- function(x) format(x, digits = 0, big.mark = ",", scientific = FALSE)
 format_percent <- function(x) round(x, 1)
 
 highlight_clicked_poly <- function(map, clicked_polys, class) {
