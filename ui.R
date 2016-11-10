@@ -28,7 +28,8 @@ shinyUI(fixedPage(
       fixedRow(column(6, leafletOutput("bc_ecoreg_map", height = 600),
                       br(),
                       actionButton(inputId = "reset_bc_ecoreg", "Click to reset to B.C."),
-                      downloadButton(outputId = "download_ecoreg_data", "Download csv")),
+                      downloadButton(outputId = "download_ecoreg_data", "Download csv",
+                                     class = "dl-button")),
                # textOutput("reset_bc_ecoreg")), # for debugging click
                column(6,
                       plotOutput(outputId = "ecoreg_map"),
@@ -43,7 +44,8 @@ shinyUI(fixedPage(
       fixedRow(column(6, leafletOutput("bc_bec_map", height = 600),
                       br(),
                       actionButton(inputId = "reset_bc_bec", "Click to reset to B.C."),
-                      downloadButton(outputId = "download_bec_data", "Download csv")),
+                      downloadButton(outputId = "download_bec_data", "Download csv",
+                                     class = "dl-button")),
                       # textOutput("reset_bc_bec")), # for debugging click
                column(6,
                       plotOutput(outputId = "bec_map", height = 400),
