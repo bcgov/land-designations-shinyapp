@@ -19,3 +19,5 @@ library('ggthemes')
 library('ggpolypath')
 library('ggiraph')
 library('DT')
+
+options(shiny.sanitize.errors = FALSE)
