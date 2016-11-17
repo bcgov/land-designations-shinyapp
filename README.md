@@ -11,7 +11,8 @@ This is a very early exploration, using mock data, for an SoE indicator.
 ## Usage
 
 This is built to be deployed in a Docker image to be run in Openshift, and based 
-on the template [here](https://github.com/BCDevExchange/simple-shiny-test).
+on the template [here](https://github.com/BCDevExchange/simple-shiny-test), which 
+provides more comprehensive instructions.
 
 You will need to **Install Docker**. Instructions for installing docker on your 
 local OS are [provided here](https://docs.docker.com/engine/installation/ "Yeah! Install Docker").
@@ -20,10 +21,11 @@ local OS are [provided here](https://docs.docker.com/engine/installation/ "Yeah!
 
 The Shiny app and all related resources are in the `app` folder.
 
-### Packages:
+### R Packages
 
 All necessary R packages must be listed in `packages.txt` so they can be 
-installed on the Docker image.
+installed on the Docker image. It's not necessary to list 'shiny' or 'rmarkdown' packages
+here as they are installed automatically.
 
 ### Running the app
 
@@ -34,14 +36,14 @@ To build the Docker image and run the app, in your terminal type:
 ```
 
 This command will build a local Dockerfile and run it for you.  All of your code will be added to the container and run.  Especially important is that new directories
-will appear in the root of your project under the '_mount' directory:
+will appear in the root of your project under the `_mount` directory:
 
 - **_mount/bookmarks** : This is where shiny will write its bookmarks
 - **_mount/logs**      : Pretty much what you  might expect
 - **_mount/output**    : In your program, if you write to '/srv/shiny-server-output' it will show up here
 - **_mount/tmp**       : The /tmp directory if you need to debug the temporary files created by shiny
 
-Note: If you are on Windows and using Docker with VirtualBox, , you will need to use the *Docker Quickstart Terminal*.  Run `./dev-win.sh` instead of `./dev.sh` - It unfortunately won't be able to mount the logs and bookmarks folders locally, but it will build and lanch the app.
+Note: If you are on Windows and using Docker with VirtualBox, , you will use the *Docker Quickstart Terminal*.  Run `./dev-win.sh` instead of `./dev.sh` - It unfortunately won't be able to mount the logs and bookmarks folders locally, but it will build and lanch the app.
 
 ## Pathway to open source
 
@@ -51,7 +53,7 @@ developed in the open.
 
 ## Getting Help or Reporting an Issue
 
-To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov/<repo-name>/issues/).
+To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov-c/land-designations-shinyapp/issues/).
 
 ## How to Contribute
 
