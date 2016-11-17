@@ -11,7 +11,8 @@ This is a very early exploration, using mock data, for an SoE indicator.
 ## Usage
 
 This is built to be deployed in a Docker image to be run in Openshift, and based 
-on the template [here](https://github.com/BCDevExchange/simple-shiny-test).
+on the template [here](https://github.com/BCDevExchange/simple-shiny-test), which 
+provides more comprehensive instructions.
 
 You will need to **Install Docker**. Instructions for installing docker on your 
 local OS are [provided here](https://docs.docker.com/engine/installation/ "Yeah! Install Docker").
