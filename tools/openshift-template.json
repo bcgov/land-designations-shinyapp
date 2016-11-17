@@ -1,0 +1,324 @@
+{
+	"kind": "Template",
+	"apiVersion": "v1",
+	"metadata": {
+		"name": "rshiny",
+		"annotations": {
+			"description": "Template for building and deploying simple one-app shiny apps using open source r and open source shiny",
+			"tags": "r-language,r,shiny,shiny server"
+		}
+	},
+	"objects": [
+	{
+		"kind": "BuildConfig",
+		"apiVersion": "v1",
+		"metadata": {
+			"name": "${NAME}",
+			"creationTimestamp": null,
+			"labels": {
+				"template": "rshiny"
+			},
+			"annotations": {
+				"description": "Defines how to build the application"
+			}
+		},
+		"spec": {
+			"runPolicy": "Serial",
+			"resources": {},
+			"postCommit": {},
+			"source": {
+				"type": "Git",
+				"git": {
+					"uri": "${SOURCE_REPOSITORY_URL}",
+					"ref": "${SOURCE_REPOSITORY_REF}"
+				},
+				"contextDir": ""
+			},
+			"strategy": {
+				"type": "Docker",
+				"dockerStrategy": {
+					"noCache": false,
+					"forcePull": false,
+					"env": [{
+						"name": "RLIBS",
+						"value": "${R_LIBRARIES}"
+					}]
+				}
+			},
+			"output": {
+				"to": {
+					"kind": "ImageStreamTag",
+					"name": "${NAME}:latest"
+				}
+			},
+			"triggers": [
+				{
+					"type": "ImageChange"
+				},
+				{
+					"type": "ConfigChange"
+				},
+				{
+					"type": "GitHub",
+					"github": {
+						"secret": "${GITHUB_WEBHOOK_SECRET}"
+					}
+				},
+				{
+					"type": "Generic",
+					"generic": {
+						"secret": "${GENERIC_WEBHOOK_SECRET}"
+					}
+				}
+			]
+		}
+	},
+	{
+		"kind": "Service",
+		"apiVersion": "v1",
+		"metadata": {
+			"name": "${NAME}",
+			"annotations": {
+				"description": "Exposes and load balances the application pods"
+			}
+		},
+		"spec": {
+			"ports": [
+				{
+					"name": "web",
+					"port": 3838,
+					"targetPort": 3838,
+					"protocol": "TCP"
+				}
+			],
+			"selector": {
+				"name": "${NAME}"
+			}
+		}
+	},
+	{
+		"kind": "Route",
+		"apiVersion": "v1",
+		"metadata": {
+			"name": "${NAME}"
+		},
+		"spec": {
+			"host": "",
+			"to": {
+				"kind": "Service",
+				"name": "${NAME}"
+			}
+		}
+	},
+	{
+		"kind": "ImageStream",
+		"apiVersion": "v1",
+		"metadata": {
+			"name": "${NAME}",
+			"annotations": {
+				"description": "Keeps track of changes in the application image"
+			},
+			"labels": {
+				"template": "rshiny"
+			}
+		}
+	},
+	{
+		"kind": "DeploymentConfig",
+		"apiVersion": "v1",
+		"metadata": {
+			"name": "${NAME}",
+			"annotations": {
+				"description": "Defines how to deploy the application server"
+			}
+		},
+		"spec": {
+			"strategy": {
+				"type": "Rolling"
+			},
+			"revisionHistoryLimit": 2,
+			"triggers": [
+				{
+					"type": "ImageChange",
+					"imageChangeParams": {
+						"automatic": true,
+						"containerNames": [
+							"${NAME}"
+						],
+						"from": {
+							"kind": "ImageStreamTag",
+							"name": "${NAME}:latest"
+						}
+					}
+				},
+				{
+					"type": "ConfigChange"
+				}
+			],
+			"replicas": 1,
+			"selector": {
+				"name": "${NAME}"
+			},
+			"template": {
+				"metadata": {
+					"name": "${NAME}",
+					"labels": {
+						"name": "${NAME}"
+					}
+				},
+				"spec": {
+					"containers": [
+						{
+							"name": "${NAME}",
+							"image": "${NAME}:latest",
+							"ports": [{
+								"containerPort": 3838,
+								"protocol": "TCP"
+							}],
+							"env": [{
+								"name": "SOME_VAR",
+								"value": "some value"
+							}],
+							"resources": {
+								"limits": {
+									"memory": "${MEMORY_LIMIT}"
+								}
+							},
+							"volumeMounts": [
+								{
+									"name": "${NAME}-docs",
+									"mountPath": "/srv/shiny-server/output"
+								},
+								{
+									"name": "${NAME}-logs",
+									"mountPath": "/var/shinylogs"
+								},
+								{
+									"name": "${NAME}-bookmarks",
+									"mountPath": "/var/lib/shiny-server"
+								}
+							]
+						}
+					],
+					"volumes": [
+						{
+							"name": "${NAME}-docs",
+							"persistentVolumeClaim": {
+								"claimName": "${NAME}-docs-pvc"
+							}
+						},
+						{
+							"name": "${NAME}-logs",
+							"persistentVolumeClaim": {
+								"claimName": "${NAME}-logs-pvc"
+							}
+						},
+						{
+							"name": "${NAME}-bookmarks",
+							"persistentVolumeClaim": {
+								"claimName": "${NAME}-bookmarks-pvc"
+							}
+						}
+					]
+				}
+			}
+		}
+	},
+    {
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${NAME}-docs-pvc"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "${DOCUMENT_VOLUME_CAPACITY}"
+          }
+        }
+      }
+	},
+    {
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${NAME}-bookmarks-pvc"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "${DOCUMENT_VOLUME_CAPACITY}"
+          }
+        }
+      }
+	},
+    {
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${NAME}-logs-pvc"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "${DOCUMENT_VOLUME_CAPACITY}"
+          }
+        }
+      }
+	}
+	],
+	"parameters": [{
+		"name": "NAME",
+		"displayName": "Name",
+		"description": "The name assigned to all of the frontend objects defined in this template.",
+		"required": true,
+		"value": "rshiny"
+	},{
+		"name": "SOURCE_REPOSITORY_URL",
+		"displayName": "Git Repository URL",
+		"description": "The URL of the repository with your application source code.",
+		"value": "https://github.com/BCDevExchange/simple-shiny-test"
+	},{
+		"name": "SOURCE_REPOSITORY_REF",
+		"displayName": "Git Reference",
+		"description": "Set this to a branch name, tag or other ref of your repository if you are not using the default branch.",
+		"value": "master"
+	},{
+		"name": "GITHUB_WEBHOOK_SECRET",
+		"displayName": "GitHub Webhook Secret",
+		"description": "A secret string used to configure the GitHub webhook.",
+		"generate": "expression",
+		"from": "[a-zA-Z0-9]{40}"
+	},{
+		"name": "GENERIC_WEBHOOK_SECRET",
+		"displayName": "Generic Webhook Secret",
+		"description": "A secret string used to configure the Generic webhook.",
+		"generate": "expression",
+		"from": "[a-zA-Z0-9]{40}"
+	},{
+		"name": "DOCUMENT_VOLUME_CAPACITY",
+		"displayName": "Document Volume Capacity",
+		"description": "Volume space available for Document uploads, e.g. 512Mi, 2Gi.",
+		"value": "512Mi",
+		"required": true
+	},{
+		"name": "MEMORY_LIMIT",
+		"displayName": "Memory Limit",
+		"description": "Maximum amount of memory the container can use.",
+		"value": "512Mi"
+	},{
+		"name": "R_LIBRARIES",
+		"displayName": "R Libraries",
+		"description": "R Libraries that need to be installed. Each encolsed in single quoates and seperated by commas, eg: 'shiny', 'datasets', 'ggplot2'"	,
+		"value": "'ggplot2'"
+	}]
+}

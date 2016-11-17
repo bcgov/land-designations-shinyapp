@@ -10,12 +10,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-library(shiny)
-library(leaflet)
-library(feather)
-library(dplyr)
-library(ggplot2)
-library(ggthemes)
-library(ggpolypath)
-library(ggiraph)
-library(DT)
+library('shiny')
+library('leaflet')
+library('feather')
+library('dplyr')
+library('ggplot2')
+library('ggthemes')
+library('ggpolypath')
+library('ggiraph')
+library('DT')
