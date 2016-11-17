@@ -71,7 +71,8 @@ RUN apt-get update && apt-get install -y -t unstable \
     pandoc-citeproc \
     libcurl4-gnutls-dev \
     libcairo2-dev/unstable \
-    libxt-dev
+    libxt-dev \
+    libxml2-dev
 
 # --------------------------------------------------------
 #
