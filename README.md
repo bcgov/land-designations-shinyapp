@@ -27,6 +27,11 @@ All necessary R packages must be listed in `packages.txt` so they can be
 installed on the Docker image. It's not necessary to list 'shiny' or 'rmarkdown' packages
 here as they are installed automatically.
 
+### System dependencies
+
+The R package ggiraph requires the xml2 package, which depends on libxml2-dev 
+being installed on the system. This is listed in `system-libraries.txt`.
+
 ### Running the app
 
 To build the Docker image and run the app, in your terminal type:
