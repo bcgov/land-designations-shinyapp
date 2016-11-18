@@ -6,4 +6,5 @@ README.html
 
 _mount
 .packages.txt
+.system-libraries.txt
 Dockerfile.local

@@ -11,18 +11,14 @@
 # create the local dockerfile
 #
 # --------------------------------------------------------
-if [[ $(diff packages.txt .packages.txt) ]] || [[ ! -f Dockerfile.local ]]
-then
-	sed -e "s/\${RLIBS}/$(head -n 1 packages.txt)/"  Dockerfile > Dockerfile.local
-fi
-cp packages.txt .packages.txt
+sh make-docker-local.sh
 
 # --------------------------------------------------------
 #
 # Build
 #
 # --------------------------------------------------------
-docker build -t shinylands -f Dockerfile.local .
+docker build -t myshiny -f Dockerfile.local .
 
 # --------------------------------------------------------
 #
@@ -38,6 +34,6 @@ docker run --rm --name shiny \
 	-v `pwd`/_mount/output:/srv/shiny-server-output \
 	-v `pwd`/_mount/tmp:/tmp \
 	-v `pwd`/app:/srv/shiny-server \
-	shinylands
+	myshiny
 
 

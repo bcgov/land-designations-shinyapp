@@ -11,24 +11,19 @@
 # create the local dockerfile
 #
 # --------------------------------------------------------
-if [[ $(diff packages.txt .packages.txt) ]] || [[ ! -f Dockerfile.local ]]
-then
-	sed -e "s/\${RLIBS}/$(head -n 1 packages.txt)/"  Dockerfile > Dockerfile.local
-fi
-cp packages.txt .packages.txt
+sh make-docker-local.sh
 
 # --------------------------------------------------------
 #
 # Build
 #
 # --------------------------------------------------------
-docker build -t shinylands -f Dockerfile.local .
+docker build -t myshiny -f Dockerfile.local .
 
 # --------------------------------------------------------
 #
-# Run the image
+# Run the image - unfortunately won't mount the logs and
+# bookmarks locally
 #
 # --------------------------------------------------------
-docker run -i -t --rm --name shinylands -p 3838:3838 shinylands
-
-
+docker run -i -t --rm --name shiny -p 3838:3838 myshiny

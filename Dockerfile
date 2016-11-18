@@ -71,8 +71,7 @@ RUN apt-get update && apt-get install -y -t unstable \
     pandoc-citeproc \
     libcurl4-gnutls-dev \
     libcairo2-dev/unstable \
-    libxt-dev \
-    libxml2-dev
+    libxt-dev
 
 # --------------------------------------------------------
 #
@@ -121,20 +120,28 @@ EXPOSE 3838
 COPY app/*.R /srv/shiny-server/
 COPY app/data /srv/shiny-server/data
 COPY app/www /srv/shiny-server/www
-RUN R -e "install.packages(c( ${RLIBS} ))"
 
-# -----------------------------------------
+# --------------------------------------------------------
+#
+# Install system libraries and R packages if required
+#
+# --------------------------------------------------------
+${SYSLIBS}
+
+${RLIBS}
+
+# --------------------------------------------------------
 #
 # run the server
 #
-# -----------------------------------------
+# --------------------------------------------------------
 USER shiny
 CMD ["shiny-server"]
 
-# -----------------------------------------
+# --------------------------------------------------------
 #
 # dumb server test
 #
-# -----------------------------------------
+# --------------------------------------------------------
 #ADD tools/server.pl /
 #CMD ["perl", "/server.pl"]
