@@ -18,7 +18,7 @@ sh make-docker-local.sh
 # Build
 #
 # --------------------------------------------------------
-docker build -t myshiny -f Dockerfile.local .
+docker build -t shinylands -f Dockerfile.local .
 
 # --------------------------------------------------------
 #
@@ -26,4 +26,4 @@ docker build -t myshiny -f Dockerfile.local .
 # bookmarks locally
 #
 # --------------------------------------------------------
-docker run -i -t --rm --name shiny -p 3838:3838 myshiny
+docker run -i -t --rm --name shiny -p 3838:3838 shinylands
