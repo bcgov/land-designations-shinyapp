@@ -28,7 +28,7 @@ gg_ld_class <- function(class, reg_cd) {
 
   ggplot(ld_df, aes(x = long, y = lat, group = group)) +
     geom_polypath(data = class_df, fill = "grey80", colour = "gray80") +
-    geom_polypath(aes(fill = cons_cat)) +
+    geom_polypath(aes(fill = category)) +
     scale_fill_manual(values = des_cols) +
     coord_fixed(expand = FALSE) +
     theme_map() +
@@ -45,15 +45,15 @@ ggiraph_barchart <- function(df, type) {
 
   hover_css <- "opacity:0.5;stroke:white;"
 
-  df$hovertip <- paste0(des_labels[df$cons_cat],
+  df$hovertip <- paste0(des_labels[df$category],
                         "<br>Area: ",
                         format_ha_comma(df$area_des_ha),
                         " ha (",
                         format_percent(df$percent_des), "%)")
-  gg <- ggplot(df[!is.na(df$cons_cat), ],
+  gg <- ggplot(df[!is.na(df$category), ],
                aes(x = prot_rollup, y = percent_des)) +
     geom_bar_interactive(stat = "identity",
-                         aes(fill = cons_cat, tooltip = hovertip, data_id = hovertip)) +
+                         aes(fill = category, tooltip = hovertip, data_id = hovertip)) +
     scale_fill_manual(values = des_cols) +
     theme_minimal(base_size = 15) +
     theme(axis.title.x = element_text(hjust = 1)) +
@@ -125,8 +125,8 @@ highlight_clicked_poly <- function(map, clicked_polys, class) {
 
 summarize_bec <- function(df) {
   df %>%
-    group_by(Zone = ZONE, Subzone = SBZNNM, Variant = VRNTNM, `BGC Label` = MAP_LABEL,
-             `Category` = cons_cat) %>%
+    group_by(Zone = ZONE, Subzone = SUBZONE_NAME, Variant = VARIANT_NAME, `BGC Label` = MAP_LABEL,
+             `Category` = category) %>%
     summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
               `BGC Unit Area (ha)` = format_ha(bec_area * 1e-4),
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
@@ -136,7 +136,7 @@ summarize_bec <- function(df) {
 summarize_ecoreg <- function(df) {
   df$Ecoregion <- ecoreg_nms[df$CRGNCD]
   df %>%
-    group_by(Ecoregion, `Category` = cons_cat) %>%
+    group_by(Ecoregion, `Category` = category) %>%
     summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
               `Ecoregion Area (ha)` = format_ha(ecoreg_area * 1e-4),
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
@@ -168,7 +168,7 @@ make_dt <- function(df) {
 }
 
 rollup_category <- function(category) {
-  factor(ifelse(category %in% c("A", "B"),
+  factor(ifelse(category %in% c("01_PPA", "02_Protected_Other"),
                 "Prot", category),
-         levels = c("Prot", "C", "D"), ordered = TRUE)
+         levels = c("Prot", "03_Exclude_1_2_Activities", "04_Managed"), ordered = TRUE)
 }

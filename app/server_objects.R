@@ -13,28 +13,49 @@
 bc_bound <- read_feather("data/gg_bc_bound.feather")
 bc_ld_summary <- read_feather("data/bc_ld_summary.feather")
 
-bc_ld_summary$prot_rollup <- rollup_category(bc_ld_summary$cons_cat)
+bc_ld_summary$prot_rollup <- rollup_category(bc_ld_summary$category)
 
 ## Ecoregion data
 ecoregions <- readRDS("data/ecoregions_t_leaflet.rds")
-gg_ld_x_ecoreg <- read_feather("data/gg_ld_ecoreg.feather")
+gg_ld_x_ecoreg <- read_feather("data/gg_ld_ecoreg.feather") %>%
+  rename(category = cons_cat) %>%
+  mutate(category = recode(category,
+                           "A" = "01_PPA",
+                           "B" = "02_Protected_Other",
+                           "C" = "03_Exclude_1_2_Activities",
+                           "D" = "04_Managed"
+  ))
 gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
-ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather")
+ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather") %>%
+  rename(category = cons_cat) %>%
+  mutate(category = recode(category,
+                           "A" = "01_PPA",
+                           "B" = "02_Protected_Other",
+                           "C" = "03_Exclude_1_2_Activities",
+                           "D" = "04_Managed"
+  ))
 ecoreg_ids <- ecoregions$CRGNCD
 ecoreg_nms <- structure(ecoregions$CRGNNM, names = ecoreg_ids)
 # ecoregion_centroids <- as.data.frame(coordinates(ecoregions))
 # names(ecoregion_centroids) <- c("long", "lat")
 # rownames(ecoregion_centroids) <- ecoreg_ids
 
-ld_ecoreg_summary$prot_rollup <- rollup_category(ld_ecoreg_summary$cons_cat)
+ld_ecoreg_summary$prot_rollup <- rollup_category(ld_ecoreg_summary$category)
 
 # BEC Data
 bec_zones <- readRDS("data/bec_leaflet.rds") # SpatialPolygonsDataFrame
-gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather")
+gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather") %>%
+  rename(category = cons_cat) %>%
+  mutate(category = recode(category,
+                           "A" = "01_PPA",
+                           "B" = "02_Protected_Other",
+                           "C" = "03_Exclude_1_2_Activities",
+                           "D" = "04_Managed"
+  ))
 gg_bec <- read_feather("data/gg_bec.feather")
 ld_bec_summary <- read_feather("data/ld_bec_summary.feather")
 
-ld_bec_summary$prot_rollup <- rollup_category(ld_bec_summary$cons_cat)
+ld_bec_summary$prot_rollup <- rollup_category(ld_bec_summary$category)
 
 bec_ids <- bec_zones$ZONE
 bec_nms <- c(BAFA = "Boreal Altai Fescue Alpine",
@@ -60,31 +81,31 @@ bec_colors <- c(BAFA = "#E5D8B1", SWB = "#A3D1AB", BWBS = "#ABE7FF",
                 IDF = "#FFCF00", BG = "#FF0000", PP = "#DE7D00",
                 CDF = "#FFFF00")[bec_ids] # index by bec_ids to put in order
 
-des_cols <- c("A" = "#00441b",
-              "B" = "#006d2c",
-              "C" = "#a6d96a",
-              "D" = "#fdbf6f")
-
-
-des_labels <- c("A" = "Parks and Protected Areas",
-                "B" = "Other Protected Lands",
-                "C" = "Exclude 1 or 2 Actitivies",
-                "D" = "Managed Lands")
-
-prot_rollup_labels <- c("Prot" = "Protected",
-                        "C"    = "Exclude 1 or 2 Actitivies",
-                        "D"    = "Managed Lands")
-
-# des_cols <- c("01_PPA"                    = "#00441b",
-#               "02_Protected_Other"        = "#006d2c",
-#               "03_Exclude_1_2_Activities" = "#a6d96a",
-#               "04_Managed"                = "#fdbf6f")
+# des_cols <- c("A" = "#00441b",
+#               "B" = "#006d2c",
+#               "C" = "#a6d96a",
+#               "D" = "#fdbf6f")
 #
-# des_labels = c("01_PPA"                    = "Parks and Protected Areas",
-#                "02_Protected_Other"        = "Other Protected Lands",
-#                "03_Exclude_1_2_Activities" = "Exclude 1 or 2 Actitivies",
-#                "04_Managed"                = "Managed Lands")
 #
-# prot_rollup_labels <- c("Protected"                 = "Protected",
-#                         "03_Exclude_1_2_Activities" = "Exclude 1 or 2 Actitivies",
-#                         "04_Managed"                = "Managed Lands")
+# des_labels <- c("A" = "Parks and Protected Areas",
+#                 "B" = "Other Protected Lands",
+#                 "C" = "Exclude 1 or 2 Actitivies",
+#                 "D" = "Managed Lands")
+#
+# prot_rollup_labels <- c("Prot" = "Protected",
+#                         "C"    = "Exclude 1 or 2 Actitivies",
+#                         "D"    = "Managed Lands")
+
+des_cols <- c("01_PPA"                    = "#00441b",
+              "02_Protected_Other"        = "#006d2c",
+              "03_Exclude_1_2_Activities" = "#a6d96a",
+              "04_Managed"                = "#fdbf6f")
+
+des_labels = c("01_PPA"                    = "Parks and Protected Areas",
+               "02_Protected_Other"        = "Other Protected Lands",
+               "03_Exclude_1_2_Activities" = "Exclude 1 or 2 Actitivies",
+               "04_Managed"                = "Managed Lands")
+
+prot_rollup_labels <- c("Prot"                 = "Protected",
+                        "03_Exclude_1_2_Activities" = "Exclude 1 or 2 Actitivies",
+                        "04_Managed"                = "Managed Lands")

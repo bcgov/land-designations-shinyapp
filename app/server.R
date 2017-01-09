@@ -208,7 +208,7 @@ shinyServer(function(input, output, session) {
       type <- "British Columbia"
     } else {
       df <- bec_reactives$bec_summary %>%
-        group_by(prot_rollup, cons_cat) %>%
+        group_by(prot_rollup, category) %>%
         summarize(area_des = sum(area_des, na.rm = TRUE),
                   bec_area = sum(bec_area, na.rm = TRUE),
                   percent_des = area_des / bec_area * 100,
