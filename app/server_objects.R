@@ -25,22 +25,16 @@ gg_ld_x_ecoreg <- read_feather("data/gg_ld_ecoreg.feather") %>%
                            "C" = "03_Exclude_1_2_Activities",
                            "D" = "04_Managed"
   ))
+
 gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
 ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather") %>%
-  rename(category = cons_cat) %>%
-  mutate(category = recode(category,
-                           "A" = "01_PPA",
-                           "B" = "02_Protected_Other",
-                           "C" = "03_Exclude_1_2_Activities",
-                           "D" = "04_Managed"
-  ))
+  mutate(prot_rollup = rollup_category(category))
+
 ecoreg_ids <- ecoregions$CRGNCD
 ecoreg_nms <- structure(ecoregions$CRGNNM, names = ecoreg_ids)
 # ecoregion_centroids <- as.data.frame(coordinates(ecoregions))
 # names(ecoregion_centroids) <- c("long", "lat")
 # rownames(ecoregion_centroids) <- ecoreg_ids
-
-ld_ecoreg_summary$prot_rollup <- rollup_category(ld_ecoreg_summary$category)
 
 # BEC Data
 bec_zones <- readRDS("data/bec_leaflet.rds") # SpatialPolygonsDataFrame
@@ -52,10 +46,10 @@ gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather") %>%
                            "C" = "03_Exclude_1_2_Activities",
                            "D" = "04_Managed"
   ))
-gg_bec <- read_feather("data/gg_bec.feather")
-ld_bec_summary <- read_feather("data/ld_bec_summary.feather")
 
-ld_bec_summary$prot_rollup <- rollup_category(ld_bec_summary$category)
+gg_bec <- read_feather("data/gg_bec.feather")
+ld_bec_summary <- read_feather("data/ld_bec_summary.feather") %>%
+  mutate(prot_rollup = rollup_category(category))
 
 bec_ids <- bec_zones$ZONE
 bec_nms <- c(BAFA = "Boreal Altai Fescue Alpine",

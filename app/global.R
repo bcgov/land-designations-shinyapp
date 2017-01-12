@@ -21,3 +21,4 @@ library('ggiraph')
 library('DT')
 
 options(shiny.sanitize.errors = FALSE)
+# options(shiny.reactlog = TRUE)
