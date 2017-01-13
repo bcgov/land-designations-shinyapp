@@ -67,6 +67,21 @@ ggiraph_barchart <- function(df, type) {
           tooltip_extra_css = tooltip_css, tooltip_opacity = 0.9,
           hover_css = hover_css,
           tooltip_offx = -20)
+
+  ## Simple plotly code
+  # gg <- ggplot(df[!is.na(df$category), ],
+  #              aes(x = prot_rollup, y = percent_des)) +
+  #   geom_bar(stat = "identity",
+  #            aes(fill = category)) +
+  #   scale_fill_manual(values = des_cols) +
+  #   theme_minimal(base_size = 15) +
+  #   theme(axis.title.x = element_text(hjust = 1)) +
+  #   scale_y_continuous(expand = c(0,0)) +
+  #   scale_x_discrete(expand = c(0,0), labels = prot_rollup_labels) +
+  #   coord_flip() +
+  #   labs(x = "Land Designation type", y = paste0("Percent of ", type, " Designated")) +
+  #   guides(fill = "none")
+  # ggplotly(gg)
 }
 
 ## Shortcuts functions to initialize modifying ecoregion and bec leaflet maps

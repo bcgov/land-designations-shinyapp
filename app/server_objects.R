@@ -17,14 +17,7 @@ bc_ld_summary$prot_rollup <- rollup_category(bc_ld_summary$category)
 
 ## Ecoregion data
 ecoregions <- readRDS("data/ecoregions_t_leaflet.rds")
-gg_ld_x_ecoreg <- read_feather("data/gg_ld_ecoreg.feather") %>%
-  rename(category = cons_cat) %>%
-  mutate(category = recode(category,
-                           "A" = "01_PPA",
-                           "B" = "02_Protected_Other",
-                           "C" = "03_Exclude_1_2_Activities",
-                           "D" = "04_Managed"
-  ))
+gg_ld_x_ecoreg <- read_feather("data/gg_ld_ecoreg.feather")
 
 gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
 ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather") %>%
