@@ -41,7 +41,7 @@ shinyServer(function(input, output, session) {
       bc_view() %>%
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE)) %>%
-      addPolygons(layerId = ecoregions$CRGNCD, color = "#00441b", fillColor = "#006d2c",
+      addPolygons(layerId = ~CRGNCD, color = "#00441b", fillColor = "#006d2c",
                   weight = 1, fillOpacity = 0.2)
   })
 
@@ -149,7 +149,7 @@ shinyServer(function(input, output, session) {
       bc_view() %>%
       addProviderTiles("Stamen.TonerLite",
                        options = providerTileOptions(noWrap = TRUE)) %>%
-      addPolygons(layerId = bec_zones$ZONE, color = "",
+      addPolygons(layerId = ~ZONE, color = "",
                   fillColor = unname(bec_colors), fillOpacity = 0.7)
   })
 
