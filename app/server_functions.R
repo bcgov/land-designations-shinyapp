@@ -60,7 +60,7 @@ ggiraph_barchart <- function(df, type) {
     scale_y_continuous(expand = c(0,0)) +
     scale_x_discrete(expand = c(0,0), labels = prot_rollup_labels) +
     coord_flip() +
-    labs(x = "Land Designation type", y = paste0("Percent of ", type, " Designated")) +
+    labs(x = "Land Designation Type", y = paste0("Percent of ", tools::toTitleCase(type), " Designated")) +
     guides(fill = "none")
 
   ggiraph(code = print(gg), width = 0.9, height_svg = 2.5,
@@ -142,7 +142,7 @@ summarize_bec <- function(df) {
   df %>%
     group_by(Zone = ZONE, Subzone = SUBZONE_NAME, Variant = VARIANT_NAME, `BGC Label` = MAP_LABEL,
              `Category` = category) %>%
-    summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
+    summarize(`Area Designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
               `BGC Unit Area (ha)` = format_ha(bec_area * 1e-4),
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
                                                        sum(bec_area, na.rm = TRUE)) * 100))
@@ -152,7 +152,7 @@ summarize_ecoreg <- function(df) {
   df$Ecoregion <- ecoreg_nms[df$CRGNCD]
   df %>%
     group_by(Ecoregion, `Category` = category) %>%
-    summarize(`Area designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
+    summarize(`Area Designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
               `Ecoregion Area (ha)` = format_ha(ecoreg_area * 1e-4),
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
                                                        sum(ecoreg_area, na.rm = TRUE)) * 100))
@@ -177,7 +177,7 @@ make_dt <- function(df) {
     formatStyle('Category', target = "cell", fontWeight = 'bold',
                 color = styleEqual(categories, cat_colours)) %>%
     formatCurrency('Percent Designated', currency = "%", before = FALSE, digits = 1) %>%
-    formatCurrency('Area designated (ha)', currency = "", digits = 0) %>%
+    formatCurrency('Area Designated (ha)', currency = "", digits = 0) %>%
     format_if_exists('Ecoregion Area (ha)') %>%
     format_if_exists('BGC Unit Area (ha)')
 }
