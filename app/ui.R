@@ -16,9 +16,9 @@ shinyUI(fixedPage(
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
   ),
-  tags$body(
-    img(width = "200px", src = "ER_Logo.png")
-  ),
+  #tags$body(
+  #  img(width = "200px", src = "ER_Logo.png")
+  #),
 
   titlePanel("Land Designations that Contribute to Conservation"),
   tabsetPanel(
