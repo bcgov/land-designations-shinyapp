@@ -185,5 +185,5 @@ make_dt <- function(df) {
 rollup_category <- function(category) {
   factor(ifelse(category %in% c("01_PPA", "02_Protected_Other"),
                 "Prot", category),
-         levels = c("Prot", "03_Exclude_1_2_Activities", "04_Managed"), ordered = TRUE)
+         levels = c("04_Managed", "03_Exclude_1_2_Activities", "Prot"), ordered = TRUE)
 }
