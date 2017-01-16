@@ -53,7 +53,7 @@ ggiraph_barchart <- function(df, type) {
   gg <- ggplot(df[!is.na(df$category), ],
                aes(x = prot_rollup, y = percent_des)) +
     suppressWarnings(geom_bar_interactive(stat = "identity",
-                         aes(fill = category, tooltip = hovertip, data_id = hovertip))) +
+                         aes(fill = reverse_factor(category), tooltip = hovertip, data_id = hovertip))) +
     scale_fill_manual(values = des_cols) +
     theme_minimal(base_size = 15) +
     theme(axis.title.x = element_text(hjust = 1)) +
@@ -192,4 +192,9 @@ rollup_category <- function(category) {
   factor(ifelse(category %in% c("01_PPA", "02_Protected_Other"),
                 "Prot", category),
          levels = c("04_Managed", "03_Exclude_1_2_Activities", "Prot"), ordered = TRUE)
+}
+
+reverse_factor <- function(x) {
+  if (!is.factor(x)) x <- factor(x)
+  ordered(x, levels = rev(levels(x)))
 }
