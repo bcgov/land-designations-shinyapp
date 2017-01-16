@@ -31,14 +31,7 @@ ecoreg_nms <- structure(ecoregions$CRGNNM, names = ecoreg_ids)
 
 # BEC Data
 bec_zones <- readRDS("data/bec_leaflet.rds") # SpatialPolygonsDataFrame
-gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather") %>%
-  rename(category = cons_cat) %>%
-  mutate(category = recode(category,
-                           "A" = "01_PPA",
-                           "B" = "02_Protected_Other",
-                           "C" = "03_Exclude_1_2_Activities",
-                           "D" = "04_Managed"
-  ))
+gg_ld_x_bec <- read_feather("data/gg_ld_bec.feather")
 
 gg_bec <- read_feather("data/gg_bec.feather")
 ld_bec_summary <- read_feather("data/ld_bec_summary.feather") %>%
