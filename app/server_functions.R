@@ -138,12 +138,18 @@ highlight_clicked_poly <- function(map, clicked_polys, class) {
               weight = wts, fillOpacity = opac)
 }
 
-summarize_bec <- function(df) {
+summarize_bec <- function(df, by_zone) {
+  if (by_zone) {
+    df <- df %>%
+      group_by(Zone = ZONE, `Category` = category)
+  } else {
+    df <- df %>%
+      group_by(Zone = ZONE, Subzone = SUBZONE_NAME, Variant = VARIANT_NAME, `BGC Label` = MAP_LABEL,
+               `Category` = category)
+  }
   df %>%
-    group_by(Zone = ZONE, Subzone = SUBZONE_NAME, Variant = VARIANT_NAME, `BGC Label` = MAP_LABEL,
-             `Category` = category) %>%
     summarize(`Area Designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
-              `BGC Unit Area (ha)` = format_ha(bec_area * 1e-4),
+              `BGC Unit Area (ha)` = format_ha(sum(bec_area, na.rm = TRUE) * 1e-4),
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
                                                        sum(bec_area, na.rm = TRUE)) * 100))
 }

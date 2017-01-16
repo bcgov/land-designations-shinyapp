@@ -224,7 +224,9 @@ shinyServer(function(input, output, session) {
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
     df <- bec_reactives$bec_summary
 
-    summarize_bec(df) %>%
+    by_zone <- ifelse(length(bec_code) == 0 || bec_code == "BC", TRUE, FALSE)
+
+    summarize_bec(df, by_zone = by_zone) %>%
       make_dt()
   })
 
