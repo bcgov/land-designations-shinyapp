@@ -52,8 +52,8 @@ ggiraph_barchart <- function(df, type) {
                         format_percent(df$percent_des), "%)")
   gg <- ggplot(df[!is.na(df$category), ],
                aes(x = prot_rollup, y = percent_des)) +
-    geom_bar_interactive(stat = "identity",
-                         aes(fill = category, tooltip = hovertip, data_id = hovertip)) +
+    suppressWarnings(geom_bar_interactive(stat = "identity",
+                         aes(fill = category, tooltip = hovertip, data_id = hovertip))) +
     scale_fill_manual(values = des_cols) +
     theme_minimal(base_size = 15) +
     theme(axis.title.x = element_text(hjust = 1)) +
