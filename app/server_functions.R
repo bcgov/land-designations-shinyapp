@@ -63,7 +63,7 @@ ggiraph_barchart <- function(df, type) {
     labs(x = "Land Designation Type", y = paste0("Percent of ", tools::toTitleCase(type), " Designated")) +
     guides(fill = "none")
 
-  ggiraph(code = print(gg), width = 0.9, height_svg = 2.5,
+  ggiraph(ggobj = gg, width = 0.9, height_svg = 2.5,
           tooltip_extra_css = tooltip_css, tooltip_opacity = 0.9,
           hover_css = hover_css, selection_type = "none",
           tooltip_offx = -20)

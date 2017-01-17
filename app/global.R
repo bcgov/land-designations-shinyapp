@@ -20,5 +20,5 @@ library('ggpolypath')
 library('ggiraph')
 library('DT')
 
-options(shiny.sanitize.errors = FALSE)
+# options(shiny.sanitize.errors = FALSE)
 # options(shiny.reactlog = TRUE)
