@@ -65,7 +65,7 @@ ggiraph_barchart <- function(df, type) {
 
   ggiraph(code = print(gg), width = 0.9, height_svg = 2.5,
           tooltip_extra_css = tooltip_css, tooltip_opacity = 0.9,
-          hover_css = hover_css,
+          hover_css = hover_css, selection_type = "none",
           tooltip_offx = -20)
 
   ## Simple plotly code
