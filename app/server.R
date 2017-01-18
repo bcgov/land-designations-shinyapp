@@ -25,7 +25,7 @@ shinyServer(function(input, output, session) {
     ecoreg_reactives$ecoreg_ids <- c(prev_click_id, clicked_id)
 
     ecoreg_reactives$ecoreg_summary <- ld_ecoreg_summary %>%
-      filter(CRGNCD == clicked_id)
+      filter(ecoregion_code == clicked_id)
   })
 
   observeEvent(input$reset_bc_ecoreg, {
