@@ -116,7 +116,7 @@ shinyServer(function(input, output, session) {
   output$download_ecoreg_data <- downloadHandler(
     filename = function() "ecoregion.csv",
     content = function(file) {
-      write.csv(ecoreg_reactives$ecoreg_summary, file, row.names = FALSE)
+      write.csv(summarize_ecoreg(ecoreg_reactives$ecoreg_summary), file, row.names = FALSE)
     },
     contentType = "text/csv"
   )
@@ -233,7 +233,10 @@ shinyServer(function(input, output, session) {
   output$download_bec_data <- downloadHandler(
     filename = function() "bec.csv",
     content = function(file) {
-      write.csv(bec_reactives$bec_summary, file, row.names = FALSE)
+      bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+      by_zone <- ifelse(length(bec_code) == 0 || bec_code == "BC", TRUE, FALSE)
+      write.csv(summarize_bec(bec_reactives$bec_summary,
+                              by_zone), file, row.names = FALSE)
     },
     contentType = "text/csv"
   )
