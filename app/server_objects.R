@@ -22,8 +22,57 @@ gg_ecoreg <- read_feather("data/gg_ecoreg.feather")
 ld_ecoreg_summary <- read_feather("data/ld_ecoreg_summary.feather") %>%
   mutate(prot_rollup = rollup_category(category))
 
-ecoreg_ids <- ecoregions$CRGNCD
-ecoreg_nms <- structure(ecoregions$CRGNNM, names = ecoreg_ids)
+ecoreg_nms <- c(
+  TPC = "Transitional Pacific",
+  HCS = "Hecate Continental Shelf",
+  COG = "Coastal Gap",
+  EHM = "Eastern Hazelton Mountains",
+  OPS = "Outer Pacific Shelf",
+  NRM = "Northern Canadian Rocky Mountains",
+  OKH = "Okanogan Highland",
+  CMI = "Chugach Mountains and Icefields",
+  STE = "St Elias Mountains",
+  BOU = "Boundary Ranges",
+  YSL = "Yukon Southern Lakes",
+  NUP = "Northern Alberta Upland",
+  PEM = "Pelly Mountains",
+  LIB = "Liard Basin",
+  HHI = "Hyland Highland",
+  HSL = "Hay-Slave Lowland",
+  BMP = "Boreal Mountains and Plateaus",
+  MPL = "Muskwa Plateau",
+  CAU = "Central Alberta Upland",
+  CRM = "Central Canadian Rocky Mountains",
+  PRB = "Peace River Basin",
+  OMM = "Omineca Mountains",
+  SKM = "Skeena Mountains",
+  FAB = "Fraser Basin",
+  NRA = "Nass Ranges",
+  SBC = "Sub-Arctic Pacific",
+  FAP = "Fraser Plateau",
+  WRA = "Western Continental Ranges",
+  GWH = "Gwaii Haanas",
+  CHR = "Chilcotin Ranges",
+  SRT = "Southern Rocky Mountain Trench",
+  IPS = "Inner Pacific Shelf",
+  ITR = "Interior Transition Ranges",
+  PAC = "Pacific Ranges",
+  TOP = "Thompson-Okanagan Plateau",
+  NCM = "Northern Columbia Mountains",
+  NCR = "Northern Cascade Ranges",
+  EVI = "Eastern Vancouver Island",
+  PTR = "Purcell Transitional Ranges",
+  NCD = "Northern Continental Divide",
+  LOM = "Lower Mainland",
+  WVI = "Western Vancouver Island",
+  GPB = "Georgia-Puget Basin",
+  YSH = "Yukon-Stikine Highlands",
+  COH = "Columbia Highlands",
+  SBF = "Selkirk-Bitterroot Foothills",
+  SAU = "Southern Alberta Upland",
+  ECR = "Eastern Continental Ranges"
+)
+
 # ecoregion_centroids <- as.data.frame(coordinates(ecoregions))
 # names(ecoregion_centroids) <- c("long", "lat")
 # rownames(ecoregion_centroids) <- ecoreg_ids
@@ -36,7 +85,6 @@ gg_bec <- read_feather("data/gg_bec.feather")
 ld_bec_summary <- read_feather("data/ld_bec_summary.feather") %>%
   mutate(prot_rollup = rollup_category(category))
 
-bec_ids <- bec_zones$ZONE
 bec_nms <- c(BAFA = "Boreal Altai Fescue Alpine",
              SWB = "Spruce--Willow--Birch",
              BWBS = "Boreal White & Black Spruce",
@@ -53,6 +101,8 @@ bec_nms <- c(BAFA = "Boreal Altai Fescue Alpine",
              BG = "Bunchgrass",
              PP = "Ponderosa Pine",
              CDF = "Coastal Douglas-fir")
+bec_ids <- sort(names(bec_nms))
+
 bec_colors <- c(BAFA = "#E5D8B1", SWB = "#A3D1AB", BWBS = "#ABE7FF",
                 ESSF = "#9E33D3", CMA = "#E5C7C7", SBS = "#2D8CBD",
                 MH = "#A599FF", CWH = "#208500", ICH = "#85A303",
