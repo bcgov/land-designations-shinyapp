@@ -19,7 +19,9 @@ local OS are [provided here](https://docs.docker.com/engine/installation/ "Yeah!
 
 ### R Code
 
-The Shiny app and all related resources are in the `app` folder.
+The Shiny app and all related resources are in the `app` folder. If you have R 
+installed on your machine, you can open an R session in this directory, and 
+type `shiny::runApp("app")` to start the app.
 
 ### R Packages
 

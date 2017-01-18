@@ -72,6 +72,7 @@ ecoreg_nms <- c(
   SAU = "Southern Alberta Upland",
   ECR = "Eastern Continental Ranges"
 )
+ecoreg_ids <- names(ecoreg_nms)
 
 # ecoregion_centroids <- as.data.frame(coordinates(ecoregions))
 # names(ecoregion_centroids) <- c("long", "lat")
