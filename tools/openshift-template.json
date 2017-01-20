@@ -324,8 +324,8 @@
 	},{
 		"name": "R_LIBRARIES",
 		"displayName": "R Libraries",
-		"description": "R Libraries that need to be installed. Each enclosed in single quotes and seperated by commas, eg: 'shiny', 'datasets', 'ggplot2'"	,
-		"value": "'ggplot2'"
+		"description": "R Libraries that need to be installed. Each enclosed in single quotes and seperated by commas, eg: 'shiny', 'datasets', 'ggplot2'",
+		"value": "'shinythemes', 'leaflet', 'feather', 'dplyr', 'ggplot2', 'ggthemes', 'ggpolypath', 'ggiraph', 'DT'"
 	},{
 		"name": "SYS_LIBRARIES",
 		"displayName": "System Libraries",
