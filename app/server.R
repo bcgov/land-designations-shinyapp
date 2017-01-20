@@ -48,6 +48,7 @@ shinyServer(function(input, output, session) {
   # Observer for highlighting ecoregion polygon on click
   observe({
     clicked_polys <- ecoreg_reactives$ecoreg_ids
+    is_bc <- length(clicked_polys) > 0 && clicked_polys[length(clicked_polys)] == "BC"
 
     # output$reset_bc_ecoreg <- renderText(clicked_polys)
 
@@ -59,7 +60,8 @@ shinyServer(function(input, output, session) {
     ecoreg_subset <- ecoregions[na.omit(match(clicked_polys, ecoregions$CRGNCD)), ]
 
     ecoreg_proxy(data = ecoreg_subset) %>%
-      highlight_clicked_poly(clicked_polys, class = "ecoreg")
+      highlight_clicked_poly(clicked_polys, class = "ecoreg") %>%
+      {if (is_bc) bc_view(.) else .}
   })
 
   # Observers for clearing old and adding new popups to ecoregion leaflet map
@@ -156,6 +158,7 @@ shinyServer(function(input, output, session) {
   # Observer for highlighting bec polygon on click
   observe({
     clicked_polys <- bec_reactives$bec_ids
+    is_bc <- length(clicked_polys) > 0 && clicked_polys[length(clicked_polys)] == "BC"
 
     # output$reset_bc_bec <- renderText(clicked_polys)
 
@@ -167,7 +170,8 @@ shinyServer(function(input, output, session) {
     bec_subset <- bec_zones[na.omit(match(clicked_polys, bec_zones$ZONE)), ]
 
     bec_proxy(data = bec_subset) %>%
-      highlight_clicked_poly(clicked_polys, class = "bec")
+      highlight_clicked_poly(clicked_polys, class = "bec") %>%
+      {if (is_bc) bc_view(.) else .}
   })
 
   ## Observers for clearing old and adding new popups to BEC leaflet map
