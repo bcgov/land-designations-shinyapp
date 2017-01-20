@@ -10,7 +10,7 @@ then
 
   if [[ $(head -n 1 packages.txt | wc -w) -gt 0 ]]
   then
-    rlib_str="RUN R -e \"install.packages(c( $(head -n 1 packages.txt) ))\""
+    rlib_str="$(head -n 1 packages.txt)"
   else
     rlib_str=""
   fi

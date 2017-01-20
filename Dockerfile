@@ -128,7 +128,8 @@ COPY app/www /srv/shiny-server/www
 # Install R packages if required
 #
 # --------------------------------------------------------
-${RLIBS}
+ENV R_LIBS "${RLIBS}"
+RUN if [ "$R_LIBS" ]; then R -e "install.packages(c($R_LIBS))"; fi
 
 # --------------------------------------------------------
 #
