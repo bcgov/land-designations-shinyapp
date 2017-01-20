@@ -65,6 +65,7 @@ RUN apt-get update \
 # Install all the pre-reqs (and optional supplied in system-libraries.txt)
 #
 # --------------------------------------------------------
+ENV SYS_LIBS ${SYSLIBS}
 RUN apt-get update && apt-get install -y -t unstable \
     sudo \
     gdebi-core \
@@ -74,7 +75,7 @@ RUN apt-get update && apt-get install -y -t unstable \
     libcairo2-dev/unstable \
     libxt-dev \
     libnss-wrapper \
-    gettext ${SYSLIBS}
+    gettext $SYS_LIBS
 
 # --------------------------------------------------------
 #

@@ -39,12 +39,18 @@ cp system-libraries.txt .system-libraries.txt
 # Build
 #
 # --------------------------------------------------------
-docker build -t myshiny -f Dockerfile.local .
+docker build --no-cache -t shinylands -f Dockerfile.local .
+
+# --------------------------------------------------------
+#
+# Run
+#
+# --------------------------------------------------------
 
 os=$OSTYPE
 if [[ "$os" == 'msys' ]] || [[ "$os" == 'cygwin' ]] || [[ "$os" == 'win32' ]]
 then
-
+ echo "Running on Windows"
   # --------------------------------------------------------
   #
   # Run the image - unfortunately won't mount the logs and
@@ -68,7 +74,7 @@ else
   	-v `pwd`/_mount/output:/srv/shiny-server-output \
   	-v `pwd`/_mount/tmp:/tmp \
   	-v `pwd`/app:/srv/shiny-server \
-  	myshiny
+  	shinylands
 
   # docker run --rm --name shiny \
   # 	-p 3838:3838 \
