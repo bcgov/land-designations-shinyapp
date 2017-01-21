@@ -177,7 +177,7 @@ make_dt <- function(df) {
   cat_colours <- des_cols
   if (anyNA(categories)) cat_colours <- c(cat_colours, 'lightgrey')
 
-  datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 15)) %>%
+  datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 10)) %>%
     formatStyle('Percent Designated',
                 background = styleColorBar(df[["Percent Designated"]], 'green')) %>%
     formatStyle('Category', target = "cell", fontWeight = 'bold',
