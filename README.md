@@ -11,7 +11,7 @@ This is a very early exploration, using mock data, for an SoE indicator.
 ## Usage
 
 This is built to be deployed in a Docker image to be run in Openshift, and based 
-on the template [here](https://github.com/BCDevExchange/simple-shiny-test), which 
+on the template [here](https://github.com/bcgov/simple-R-shiny), which 
 provides more comprehensive instructions.
 
 You will need to **Install Docker**. Instructions for installing docker on your 
@@ -36,7 +36,8 @@ being installed on the system. This is listed in `system-libraries.txt`.
 
 ### Running the app
 
-To build the Docker image and run the app, in your terminal type:
+To build the Docker image and run the app, in your terminal (on Windows use the
+*Docker Quickstart Terminal*) type:
 
 ```
 ./dev.sh
@@ -50,7 +51,9 @@ will appear in the root of your project under the `_mount` directory:
 - **_mount/output**    : In your program, if you write to '/srv/shiny-server-output' it will show up here
 - **_mount/tmp**       : The /tmp directory if you need to debug the temporary files created by shiny
 
-Note: If you are on Windows and using Docker with VirtualBox, , you will use the *Docker Quickstart Terminal*.  Run `./dev-win.sh` instead of `./dev.sh` - It unfortunately won't be able to mount the logs and bookmarks folders locally, but it will build and lanch the app.
+Note: If you are on Windows and using Docker with VirtualBox, it unfortunately 
+won't be able to mount the logs and bookmarks folders locally, but it will build 
+and lanch the app.
 
 ## Pathway to open source
 
