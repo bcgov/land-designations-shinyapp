@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and limitations under the License.
 library(shinythemes)
 
-shinyUI(fixedPage(
+shinyUI(fluidPage(
   theme = shinytheme("yeti"),
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
@@ -20,12 +20,12 @@ shinyUI(fixedPage(
   #  img(width = "200px", src = "ER_Logo.png")
   #),
 
-  titlePanel("Land Designations that Contribute to Conservation"),
+  titlePanel("Explore Land Designations by Ecoregions & Biogeoclimatic Zones Across B.C."),
   tabsetPanel(
     tabPanel(
       "Ecoregions",
-      fixedRow(column(12, h2("Representation by Ecoregion"))),
-      fixedRow(column(6,
+      # fluidRow(column(12, h3("Representation by Ecoregion"))),
+      fluidRow(column(6,
                       div(class = "plot-container",
                           tags$img(src = "spinner.gif",
                                    class = "loading-spinner"),
@@ -44,12 +44,12 @@ shinyUI(fixedPage(
                       ggiraphOutput(outputId = "ecoreg_barchart",
                                     height = "100%"))),
       br(),
-      fixedRow(column(12,
+      fluidRow(column(12,
                       dataTableOutput("ecoreg_table")))),
     tabPanel(
       "Biogeoclimatic Zones",
-      fixedRow(column(12, h2("Representation by Biogeoclimatic Zone"))),
-      fixedRow(column(6,
+      # fluidRow(column(12, h3("Representation by Biogeoclimatic Zone"))),
+      fluidRow(column(6,
                       div(class = "plot-container",
                           tags$img(src = "spinner.gif",
                                    class = "loading-spinner"),
@@ -68,7 +68,7 @@ shinyUI(fixedPage(
                       ggiraphOutput(outputId = "bec_barchart",
                                     height = 200))),
       br(),
-      fixedRow(column(12,
+      fluidRow(column(12,
                       dataTableOutput("bec_table")))))
 
 
