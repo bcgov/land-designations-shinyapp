@@ -28,3 +28,7 @@
   margin-top: -33px;  /* half of the spinner's height */
   margin-left: -33px; /* half of the spinner's width */
 }
+
+#ecoreg_barchart text, #bec_barchart text {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
