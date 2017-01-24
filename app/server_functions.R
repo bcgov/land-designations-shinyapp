@@ -55,8 +55,9 @@ ggiraph_barchart <- function(df, type) {
     suppressWarnings(geom_bar_interactive(stat = "identity",
                          aes(fill = reverse_factor(category), tooltip = hovertip, data_id = hovertip))) +
     scale_fill_manual(values = des_cols) +
-    theme_minimal(base_size = 15) +
-    theme(axis.title.x = element_text(hjust = 1),
+    theme_minimal(base_size = 14) +
+    theme(axis.title.x = element_text(hjust = 0),
+          axis.title.y = element_text(hjust = 1),
           panel.grid.major.y = element_blank(),
           panel.grid.minor.y = element_blank(),
           axis.text.y = element_text(hjust = 1)) +
