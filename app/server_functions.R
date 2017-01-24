@@ -58,7 +58,8 @@ ggiraph_barchart <- function(df, type) {
     theme_minimal(base_size = 15) +
     theme(axis.title.x = element_text(hjust = 1),
           panel.grid.major.y = element_blank(),
-          panel.grid.minor.y = element_blank()) +
+          panel.grid.minor.y = element_blank(),
+          axis.text.y = element_text(hjust = 1)) +
     scale_y_continuous(expand = c(0,0)) +
     scale_x_discrete(expand = c(0,0), labels = prot_rollup_labels) +
     coord_flip() +
