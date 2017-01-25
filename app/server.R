@@ -79,14 +79,14 @@ shinyServer(function(input, output, session) {
 
   output$ecoreg_title <- renderText({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
-    if (length(ecoreg_code) == 0 || ecoreg_code == "BC") return("British Columbia")
+    if (!isTruthy(ecoreg_code) || ecoreg_code == "BC") return("British Columbia")
     ecoreg_nms[ecoreg_code]
   })
 
   ## Subset map of ecoregion with land designations
   output$ecoreg_map <- renderPlot({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
-    if (length(ecoreg_code) == 0) ecoreg_code <- "BC"
+    if (!isTruthy(ecoreg_code)) ecoreg_code <- "BC"
 
     gg_ld_class(class = "ecoreg", ecoreg_code)
   })
@@ -95,7 +95,7 @@ shinyServer(function(input, output, session) {
   output$ecoreg_barchart <- renderggiraph({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
 
-    if (length(ecoreg_code) == 0 || ecoreg_code == "BC") {
+    if (!isTruthy(ecoreg_code) || ecoreg_code == "BC") {
       ecoreg_code <- "BC"
       type <- "British Columbia"
       df <- bc_ld_summary
@@ -191,14 +191,14 @@ shinyServer(function(input, output, session) {
 
   output$bec_title <- renderText({
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-    if (length(bec_code) == 0 || bec_code == "BC") return("British Columbia")
+    if (!isTruthy(bec_code) || bec_code == "BC") return("British Columbia")
     htmlize(bec_nms[bec_code])
   })
 
   ## Subset map of bec zone with land designations
   output$bec_map <- renderPlot({
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-    if (length(bec_code) == 0) bec_code <- "BC"
+    if (!isTruthy(bec_code)) bec_code <- "BC"
 
     gg_ld_class(class = "bec", bec_code)
   })
@@ -206,7 +206,7 @@ shinyServer(function(input, output, session) {
   ## Bar chart of land designations for selected bec zone
   output$bec_barchart <- renderggiraph({
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-    if (length(bec_code) == 0 || bec_code == "BC") {
+    if (!isTruthy(bec_code) || bec_code == "BC") {
       bec_code <- "BC"
       df <- bc_ld_summary
       type <- "British Columbia"
@@ -228,7 +228,7 @@ shinyServer(function(input, output, session) {
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
     df <- bec_reactives$bec_summary
 
-    by_zone <- ifelse(length(bec_code) == 0 || bec_code == "BC", TRUE, FALSE)
+    by_zone <- ifelse(!isTruthy(bec_code) || bec_code == "BC", TRUE, FALSE)
 
     summarize_bec(df, by_zone = by_zone) %>%
       make_dt()
@@ -238,7 +238,7 @@ shinyServer(function(input, output, session) {
     filename = function() "bec.csv",
     content = function(file) {
       bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-      by_zone <- ifelse(length(bec_code) == 0 || bec_code == "BC", TRUE, FALSE)
+      by_zone <- ifelse(!isTruthy(bec_code) || bec_code == "BC", TRUE, FALSE)
       write.csv(summarize_bec(bec_reactives$bec_summary,
                               by_zone), file, row.names = FALSE)
     },
