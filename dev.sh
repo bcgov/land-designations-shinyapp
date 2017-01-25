@@ -6,6 +6,30 @@
 #
 # --------------------------------------------------------
 
+if [[ "$1" == "--help" ]]
+then
+  echo "
+  Builds and deploys the app locally in a Docker image.
+  If you are on a Unix-based OS (e.g., OSX or Linux) the
+  logs and bookmarks will be mounted locally to help
+  with debugging etc.
+
+  Options:
+    --help :     displays this message
+    --no-cache : builds the Docker image from scratch,
+                 ignoring the cache
+                 (runs docker build with the --no-cache flag)
+  "
+  exit
+
+elif [[ "$1" == "--no-cache" ]]
+then
+  echo "Building with no cache"
+  no_cache="--no-cache"
+else
+  no_cache=""
+fi
+
 # --------------------------------------------------------
 #
 # create the local dockerfile
@@ -39,7 +63,7 @@ cp system-libraries.txt .system-libraries.txt
 # Build
 #
 # --------------------------------------------------------
-docker build -t shinylands -f Dockerfile.local .
+docker build $no_cache -t shinylands -f Dockerfile.local .
 
 # --------------------------------------------------------
 #
