@@ -31,6 +31,7 @@ gg_ld_class <- function(class, reg_cd) {
     geom_polypath(aes(fill = category)) +
     scale_fill_manual(values = des_cols) +
     coord_fixed(expand = FALSE) +
+    ggtitle(".") +
     theme_map() +
     guides(fill = "none")
 }
