@@ -87,7 +87,7 @@ shinyServer(function(input, output, session) {
 
   output$ecoreg_title <- renderText({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
-    if (!ecoreg_reactives$is_bc) return("")
+    if (ecoreg_reactives$is_bc) return("")
     ecoreg_nms[ecoreg_code]
   })
 
@@ -207,7 +207,7 @@ shinyServer(function(input, output, session) {
 
   output$bec_title <- renderText({
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-    if (!bec_reactives$is_bc) return("")
+    if (bec_reactives$is_bc) return("")
     htmlize(bec_nms[bec_code])
   })
 
