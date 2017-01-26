@@ -213,12 +213,14 @@ plotly_bec <- function(data, cat, highlight = NULL) {
 
 
   p <- plot_ly(data, x = ~`Percent Designated`, y = ~Zone) %>%
-    add_bars(name = "Prot", color = ~Category, colors = des_cols,
+    add_bars(color = ~Category, colors = des_cols,
              text = ~paste0("Percent Designated = ", `Percent Designated`),
-             hoverinfo = "text")
+             hoverinfo = "text", opacity = 0.6, outlinecolor = I("white"))
 
   if (!is.null(highlight)) {
-    p <- add_bars(p, data = high_dat, color = I("red"))
+    p <- add_bars(p, data = high_dat, color = ~Category, colors = des_cols,
+                  text = ~paste0("Percent Designated = ", `Percent Designated`),
+                  hoverinfo = "text", opacity = 1)
   }
 
   layout(p, barmode = "stack", showlegend = FALSE)
