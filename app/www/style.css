@@ -27,6 +27,11 @@ h2 {
   text-align: center;
 }
 
+#ecoreg_label, #bec_label {
+  color: black;
+  background-color: #cccccc;
+}
+
 .plot-container {
   position: relative;
 }
