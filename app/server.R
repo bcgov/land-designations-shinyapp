@@ -126,7 +126,8 @@ shinyServer(function(input, output, session) {
   #### BEC #####################################################################
 
   bec_reactives <- reactiveValues(bec_ids = character(0),
-                                  bec_summary = ld_bec_summary)
+                                  bec_summary = ld_bec_summary,
+                                  is_bc = TRUE)
 
   # Keep track of current clicked polygon and previous. Store in reactive values list
   observeEvent(input$bc_bec_map_shape_click$id, {
@@ -134,13 +135,18 @@ shinyServer(function(input, output, session) {
     prev_click_id <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
     bec_reactives$bec_ids <- c(prev_click_id, clicked_id)
 
+    bec_reactives$is_bc <- FALSE
     bec_reactives$bec_summary <- ld_bec_summary %>%
       filter(ZONE == clicked_id)
   })
 
+  output$isbc <- reactive(bec_reactives$is_bc)
+  outputOptions(output, "isbc", suspendWhenHidden = FALSE)
+
   observeEvent(input$reset_bc_bec, {
     prev_click_id <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
     bec_reactives$bec_ids <- c(prev_click_id, "BC")
+    bec_reactives$is_bc <- TRUE
 
     bec_reactives$bec_summary <- ld_bec_summary
   })
@@ -195,34 +201,28 @@ shinyServer(function(input, output, session) {
     htmlize(bec_nms[bec_code])
   })
 
-  ## Subset map of bec zone with land designations
-  # output$bec_map <- renderPlot({
-  #   bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-  #   if (!isTruthy(bec_code)) bec_code <- "BC"
-  #
-  #   gg_ld_class(class = "bec", bec_code)
-  # })
-  #
-  # ## Bar chart of land designations for selected bec zone
-  # output$bec_barchart <- renderggiraph({
-  #   bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-  #   if (!isTruthy(bec_code) || bec_code == "BC") {
-  #     bec_code <- "BC"
-  #     df <- bc_ld_summary
-  #     type <- "British Columbia"
-  #   } else {
-  #     df <- bec_reactives$bec_summary %>%
-  #       group_by(prot_rollup, category) %>%
-  #       summarize(area_des = sum(area_des, na.rm = TRUE),
-  #                 bec_area = sum(bec_area, na.rm = TRUE),
-  #                 percent_des = area_des / bec_area * 100,
-  #                 area_des_ha = sum(area_des_ha, na.rm = TRUE))
-  #
-  #     type <- "biogeoclimatic zone"
-  #   }
-  #
-  #   ggiraph_barchart(df, type)
-  # })
+  # Subset map of bec zone with land designations
+  output$bec_map <- renderPlot({
+    bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+    # if (!isTruthy(bec_code)) bec_code <- "BC"
+
+    gg_ld_class(class = "bec", bec_code)
+  })
+
+  ## Bar chart of land designations for selected bec zone
+  output$bec_barchart <- renderggiraph({
+    bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+    df <- bec_reactives$bec_summary %>%
+      group_by(prot_rollup, category) %>%
+      summarize(area_des = sum(area_des, na.rm = TRUE),
+                bec_area = sum(bec_area, na.rm = TRUE),
+                percent_des = area_des / bec_area * 100,
+                area_des_ha = sum(area_des_ha, na.rm = TRUE))
+
+    type <- "biogeoclimatic zone"
+
+    ggiraph_barchart(df, type)
+  })
 
   output$bec_summary_plot <- renderPlotly({
     bec_id <- input$bc_bec_map_shape_mouseover$id
