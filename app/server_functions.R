@@ -214,16 +214,21 @@ plotly_bec <- function(data, cat, highlight = NULL) {
 
   p <- plot_ly(data, x = ~`Percent Designated`, y = ~Zone) %>%
     add_bars(color = ~Category, colors = des_cols,
-             text = ~paste0("Percent Designated = ", `Percent Designated`),
+             text = ~paste0(round(`Percent Designated`, 1), " %"),
              hoverinfo = "text", opacity = 0.6)
 
   if (!is.null(highlight)) {
     p <- add_bars(p, data = high_dat, color = ~Category, colors = des_cols,
-                  text = ~paste0("Percent Designated = ", `Percent Designated`),
+                  text = ~paste0(round(`Percent Designated`, 1), " %"),
                   hoverinfo = "text", opacity = 1)
   }
 
-  layout(p, barmode = "stack", showlegend = FALSE)
+  layout(p, barmode = "stack", showlegend = FALSE,
+         yaxis = list(autotick = FALSE, zeroline = FALSE,
+                      tickfont = list(size = 10.5)),
+         xaxis = list(zeroline = FALSE, title = "Percent Designated"),
+         font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
+         hovermode = "closest")
 }
 
 subplotly <- function(data, plotly_fun = plotly_bec, highlight_id = NULL) {

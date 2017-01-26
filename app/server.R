@@ -197,7 +197,7 @@ shinyServer(function(input, output, session) {
 
   output$bec_title <- renderText({
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-    if (!isTruthy(bec_code) || bec_code == "BC") return("British Columbia")
+    if (!isTruthy(bec_code) || bec_code == "BC") return("")
     htmlize(bec_nms[bec_code])
   })
 
