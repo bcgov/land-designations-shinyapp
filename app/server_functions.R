@@ -202,3 +202,46 @@ reverse_factor <- function(x) {
   if (!is.factor(x)) x <- factor(x)
   ordered(x, levels = rev(levels(x)))
 }
+
+plotly_bec <- function(data, cat, highlight = NULL) {
+  data <- data[data$prot_rollup == cat, ]
+
+  if (!is.null(highlight)) {
+    high_dat <- data[data$Zone == highlight, ]
+    data <- data[data$Zone != highlight, ]
+  }
+
+
+  p <- plot_ly(data, x = ~`Percent Designated`, y = ~Zone) %>%
+    add_bars(name = "Prot", color = ~Category, colors = des_cols,
+             text = ~paste0("Percent Designated = ", `Percent Designated`),
+             hoverinfo = "text")
+
+  if (!is.null(highlight)) {
+    p <- add_bars(p, data = high_dat, color = I("red"))
+  }
+
+  layout(p, barmode = "stack", showlegend = FALSE)
+}
+
+subplotly <- function(data, plotly_fun = plotly_bec, highlight_id = NULL) {
+
+  sp <- subplot(plotly_fun(data, "Prot", highlight_id),
+                plotly_fun(data, "03_Exclude_1_2_Activities", highlight_id),
+                plotly_fun(data, "04_Managed", highlight_id),
+                nrows = 3,
+                shareX = TRUE)
+
+  sp$x$layout$annotations <- list()
+
+  for (i in seq_along(prot_rollup_labels)) {
+    yax <- ifelse(i == 1, "yaxis", paste0("yaxis", i))
+    y_pos <- max(sp$x$layout[[yax]]$domain)
+
+    sp$x$layout$annotations[[i]] <- list(x = 0.5, y = y_pos, text = prot_rollup_labels[i],
+                                         showarrow = FALSE, xanchor = "center",
+                                         yanchor = "bottom", xref='paper', yref='paper')
+  }
+  sp
+}
+

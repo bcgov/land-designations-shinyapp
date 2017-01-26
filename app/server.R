@@ -196,32 +196,39 @@ shinyServer(function(input, output, session) {
   })
 
   ## Subset map of bec zone with land designations
-  output$bec_map <- renderPlot({
-    bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-    if (!isTruthy(bec_code)) bec_code <- "BC"
+  # output$bec_map <- renderPlot({
+  #   bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+  #   if (!isTruthy(bec_code)) bec_code <- "BC"
+  #
+  #   gg_ld_class(class = "bec", bec_code)
+  # })
+  #
+  # ## Bar chart of land designations for selected bec zone
+  # output$bec_barchart <- renderggiraph({
+  #   bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+  #   if (!isTruthy(bec_code) || bec_code == "BC") {
+  #     bec_code <- "BC"
+  #     df <- bc_ld_summary
+  #     type <- "British Columbia"
+  #   } else {
+  #     df <- bec_reactives$bec_summary %>%
+  #       group_by(prot_rollup, category) %>%
+  #       summarize(area_des = sum(area_des, na.rm = TRUE),
+  #                 bec_area = sum(bec_area, na.rm = TRUE),
+  #                 percent_des = area_des / bec_area * 100,
+  #                 area_des_ha = sum(area_des_ha, na.rm = TRUE))
+  #
+  #     type <- "biogeoclimatic zone"
+  #   }
+  #
+  #   ggiraph_barchart(df, type)
+  # })
 
-    gg_ld_class(class = "bec", bec_code)
-  })
+  output$bec_summary_plot <- renderPlotly({
+    bec_id <- input$bc_bec_map_shape_mouseover$id
 
-  ## Bar chart of land designations for selected bec zone
-  output$bec_barchart <- renderggiraph({
-    bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-    if (!isTruthy(bec_code) || bec_code == "BC") {
-      bec_code <- "BC"
-      df <- bc_ld_summary
-      type <- "British Columbia"
-    } else {
-      df <- bec_reactives$bec_summary %>%
-        group_by(prot_rollup, category) %>%
-        summarize(area_des = sum(area_des, na.rm = TRUE),
-                  bec_area = sum(bec_area, na.rm = TRUE),
-                  percent_des = area_des / bec_area * 100,
-                  area_des_ha = sum(area_des_ha, na.rm = TRUE))
+    subplotly(bec_zone_summary, plotly_fun = plotly_bec, highlight_id = bec_id)
 
-      type <- "biogeoclimatic zone"
-    }
-
-    ggiraph_barchart(df, type)
   })
 
   output$bec_table <- DT::renderDataTable({

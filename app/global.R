@@ -19,6 +19,7 @@ library('ggthemes')
 library('ggpolypath')
 library('ggiraph')
 library('DT')
+library('plotly')
 
 # options(shiny.sanitize.errors = FALSE)
 # options(shiny.reactlog = TRUE)
