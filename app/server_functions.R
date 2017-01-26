@@ -231,23 +231,76 @@ plotly_bec <- function(data, cat, highlight = NULL) {
          hovermode = "closest")
 }
 
-subplotly <- function(data, plotly_fun = plotly_bec, highlight_id = NULL) {
+plotly_eco <- function(data, cat, highlight = NULL) {
+  data <- data[data$prot_rollup == cat, ]
+
+  if (!is.null(highlight)) {
+    high_dat <- data[data$ecoregion_code == highlight, ]
+    data <- data[data$ecoregion_code != highlight, ]
+  }
+
+
+  p <- plot_ly(data, x = ~percent_des, y = ~ecoregion_code) %>%
+    add_bars(color = ~category, colors = des_cols,
+             text = ~paste0(round(percent_des, 1), " %"),
+             hoverinfo = "text", opacity = 0.6)
+
+  if (!is.null(highlight)) {
+    p <- add_bars(p, data = high_dat, color = ~category, colors = des_cols,
+                  text = ~paste0(round(percent_des, 1), " %"),
+                  hoverinfo = "text", opacity = 1)
+  }
+
+  layout(p, barmode = "stack", showlegend = FALSE,
+         yaxis = list(autotick = FALSE, zeroline = FALSE,
+                      tickfont = list(size = 10.5)),
+         xaxis = list(zeroline = FALSE, title = "Percent Designated"),
+         font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
+         hovermode = "closest")
+}
+
+subplotly <- function(data, which, highlight_id = NULL, by) {
+
+  plotly_fun <- switch(which, "bec" = plotly_bec, "ecoreg" = plotly_eco)
+
+  if (by == "rows") {
+    n_rows <- 3
+    share_x <- TRUE
+    which_ax <- "yaxis"
+    x_pos <- 0.5
+    x_anchor = "center"
+  } else if ( by == "cols" ) {
+    n_rows <- 1
+    share_x <- FALSE
+    which_ax <- "xaxis"
+    y_pos <- 1
+    x_anchor = "left"
+  }
 
   sp <- subplot(plotly_fun(data, "Prot", highlight_id),
                 plotly_fun(data, "03_Exclude_1_2_Activities", highlight_id),
                 plotly_fun(data, "04_Managed", highlight_id),
-                nrows = 3,
-                shareX = TRUE)
+                nrows = n_rows,
+                shareX = share_x,
+                shareY = !share_x)
 
   sp$x$layout$annotations <- list()
 
   for (i in seq_along(prot_rollup_labels)) {
-    yax <- ifelse(i == 1, "yaxis", paste0("yaxis", i))
-    y_pos <- max(sp$x$layout[[yax]]$domain)
+    ax <- ifelse(i == 1, which_ax, paste0(which_ax, i))
+    ax_pos <- max(sp$x$layout[[ax]]$domain)
 
-    sp$x$layout$annotations[[i]] <- list(x = 0.5, y = y_pos, text = prot_rollup_labels[i],
-                                         showarrow = FALSE, xanchor = "center",
-                                         yanchor = "bottom", xref='paper', yref='paper')
+    if (by == "rows") {
+      y_pos <- ax_pos
+    } else if ( by == "cols" ) {
+      x_pos <- ax_pos - 0.3
+    }
+
+    sp$x$layout$annotations[[i]] <- list(x = x_pos, y = y_pos, text =
+                                         prot_rollup_labels[i], showarrow = FALSE,
+                                         xanchor = x_anchor, yanchor = "bottom",
+                                         xref = 'paper', yref = 'paper',
+                                         align = "left")
   }
   sp
 }

@@ -16,13 +16,16 @@ source("server_objects.R", local = TRUE)
 shinyServer(function(input, output, session) {
   # Reactive values list to keep track of clicked polygons
   ecoreg_reactives <- reactiveValues(ecoreg_ids = character(0),
-                                     ecoreg_summary = ld_ecoreg_summary)
+                                     ecoreg_summary = ld_ecoreg_summary,
+                                     is_bc = TRUE)
 
   # Keep track of current clicked polygon and previous. Store in reactive values list
   observeEvent(input$bc_ecoreg_map_shape_click$id, {
     clicked_id <- input$bc_ecoreg_map_shape_click$id
     prev_click_id <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
     ecoreg_reactives$ecoreg_ids <- c(prev_click_id, clicked_id)
+
+    ecoreg_reactives$is_bc <- FALSE
 
     ecoreg_reactives$ecoreg_summary <- ld_ecoreg_summary %>%
       filter(ecoregion_code == clicked_id)
@@ -31,6 +34,8 @@ shinyServer(function(input, output, session) {
   observeEvent(input$reset_bc_ecoreg, {
     prev_click_id <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
     ecoreg_reactives$ecoreg_ids <- c(prev_click_id, "BC")
+
+    ecoreg_reactives$is_bc <- TRUE
 
     ecoreg_reactives$ecoreg_summary <- ld_ecoreg_summary
   })
@@ -72,6 +77,9 @@ shinyServer(function(input, output, session) {
       addControl(reg_name, position = "topright", layerId = "ecoreg_label")
   })
 
+  output$ecoregisbc <- reactive(ecoreg_reactives$is_bc)
+  outputOptions(output, "ecoregisbc", suspendWhenHidden = FALSE)
+
   observeEvent(input$bc_ecoreg_map_shape_mouseout$id, {
     ecoreg_proxy() %>%
       removeControl(layerId = "ecoreg_label")
@@ -79,14 +87,13 @@ shinyServer(function(input, output, session) {
 
   output$ecoreg_title <- renderText({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
-    if (!isTruthy(ecoreg_code) || ecoreg_code == "BC") return("British Columbia")
+    if (!isTruthy(ecoreg_code) || ecoreg_code == "BC") return("")
     ecoreg_nms[ecoreg_code]
   })
 
   ## Subset map of ecoregion with land designations
   output$ecoreg_map <- renderPlot({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
-    if (!isTruthy(ecoreg_code)) ecoreg_code <- "BC"
 
     gg_ld_class(class = "ecoreg", ecoreg_code)
   })
@@ -94,17 +101,18 @@ shinyServer(function(input, output, session) {
   ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderggiraph({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
-
-    if (!isTruthy(ecoreg_code) || ecoreg_code == "BC") {
-      ecoreg_code <- "BC"
-      type <- "British Columbia"
-      df <- bc_ld_summary
-    } else {
-      type <- "ecoregion"
-      df <- ecoreg_reactives$ecoreg_summary
-    }
+    type <- "ecoregion"
+    df <- ecoreg_reactives$ecoreg_summary
 
     ggiraph_barchart(df, type)
+  })
+
+  output$ecoreg_summary_plot <- renderPlotly({
+    ecoreg_id <- input$bc_ecoreg_map_shape_mouseover$id
+
+    subplotly(ld_ecoreg_summary, which = "ecoreg",
+              highlight_id = ecoreg_id, by = "cols")
+
   })
 
   output$ecoreg_table <- DT::renderDataTable({
@@ -140,8 +148,8 @@ shinyServer(function(input, output, session) {
       filter(ZONE == clicked_id)
   })
 
-  output$isbc <- reactive(bec_reactives$is_bc)
-  outputOptions(output, "isbc", suspendWhenHidden = FALSE)
+  output$becisbc <- reactive(bec_reactives$is_bc)
+  outputOptions(output, "becisbc", suspendWhenHidden = FALSE)
 
   observeEvent(input$reset_bc_bec, {
     prev_click_id <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
@@ -227,7 +235,7 @@ shinyServer(function(input, output, session) {
   output$bec_summary_plot <- renderPlotly({
     bec_id <- input$bc_bec_map_shape_mouseover$id
 
-    subplotly(bec_zone_summary, plotly_fun = plotly_bec, highlight_id = bec_id)
+    subplotly(bec_zone_summary, which = "bec", highlight_id = bec_id, by = "cols")
 
   })
 

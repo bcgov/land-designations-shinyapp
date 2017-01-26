@@ -37,12 +37,16 @@ shinyUI(fluidPage(
                # textOutput("reset_bc_ecoreg")), # for debugging click
                column(6,
                       h4(htmlOutput("ecoreg_title")),
-                      div(class = "plot-container",
-                          tags$img(src = "spinner.gif",
-                                   class = "loading-spinner"),
-                          plotOutput(outputId = "ecoreg_map", height = 500)),
-                      ggiraphOutput(outputId = "ecoreg_barchart",
-                                    height = "100%"))),
+                      conditionalPanel(
+                        condition = "output.ecoregisbc == false",
+                        div(class = "plot-container",
+                            tags$img(src = "spinner.gif", class = "loading-spinner"),
+                            plotOutput(outputId = "ecoreg_map", height = 500)
+                        ),
+                        ggiraphOutput(outputId = "ecoreg_barchart", height = 200)),
+                      conditionalPanel(
+                        condition = "output.ecoregisbc == true",
+                        plotlyOutput("ecoreg_summary_plot", height = 600)))),
       br(),
       fluidRow(column(12,
                       dataTableOutput("ecoreg_table")))),
@@ -62,14 +66,14 @@ shinyUI(fluidPage(
                column(6,
                       h4(htmlOutput("bec_title")),
                       conditionalPanel(
-                        condition = "output.isbc == false",
+                        condition = "output.becisbc == false",
                         div(class = "plot-container",
                             tags$img(src = "spinner.gif", class = "loading-spinner"),
                             plotOutput(outputId = "bec_map", height = 500)
                         ),
                         ggiraphOutput(outputId = "bec_barchart", height = 200)),
                       conditionalPanel(
-                        condition = "output.isbc == true",
+                        condition = "output.becisbc == true",
                         plotlyOutput("bec_summary_plot", height = 600)))),
       br(),
       fluidRow(column(12,
