@@ -94,6 +94,7 @@ shinyServer(function(input, output, session) {
   ## Subset map of ecoregion with land designations
   output$ecoreg_map <- renderPlot({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
+    ecoreg_code <- req(ecoreg_code)
 
     gg_ld_class(class = "ecoreg", ecoreg_code)
   })
@@ -101,6 +102,7 @@ shinyServer(function(input, output, session) {
   ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderggiraph({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
+    req(ecoreg_code)
     type <- "ecoregion"
     df <- ecoreg_reactives$ecoreg_summary
 
@@ -212,7 +214,8 @@ shinyServer(function(input, output, session) {
   # Subset map of bec zone with land designations
   output$bec_map <- renderPlot({
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-    # if (!isTruthy(bec_code)) bec_code <- "BC"
+
+    req(bec_code)
 
     gg_ld_class(class = "bec", bec_code)
   })
@@ -220,6 +223,8 @@ shinyServer(function(input, output, session) {
   ## Bar chart of land designations for selected bec zone
   output$bec_barchart <- renderggiraph({
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+    req(bec_code)
+
     df <- bec_reactives$bec_summary %>%
       group_by(prot_rollup, category) %>%
       summarize(area_des = sum(area_des, na.rm = TRUE),
