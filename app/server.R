@@ -53,7 +53,7 @@ shinyServer(function(input, output, session) {
   # Observer for highlighting ecoregion polygon on click
   observe({
     clicked_polys <- ecoreg_reactives$ecoreg_ids
-    is_bc <- length(clicked_polys) > 0 && clicked_polys[length(clicked_polys)] == "BC"
+    is_bc <- ecoreg_reactives$is_bc
 
     # output$reset_bc_ecoreg <- renderText(clicked_polys)
 
@@ -87,7 +87,7 @@ shinyServer(function(input, output, session) {
 
   output$ecoreg_title <- renderText({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
-    if (!isTruthy(ecoreg_code) || ecoreg_code == "BC") return("")
+    if (!ecoreg_reactives$is_bc) return("")
     ecoreg_nms[ecoreg_code]
   })
 
@@ -174,7 +174,7 @@ shinyServer(function(input, output, session) {
   # Observer for highlighting bec polygon on click
   observe({
     clicked_polys <- bec_reactives$bec_ids
-    is_bc <- length(clicked_polys) > 0 && clicked_polys[length(clicked_polys)] == "BC"
+    is_bc <- bec_reactives$is_bc
 
     # output$reset_bc_bec <- renderText(clicked_polys)
 
@@ -207,7 +207,7 @@ shinyServer(function(input, output, session) {
 
   output$bec_title <- renderText({
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-    if (!isTruthy(bec_code) || bec_code == "BC") return("")
+    if (!bec_reactives$is_bc) return("")
     htmlize(bec_nms[bec_code])
   })
 
@@ -248,7 +248,7 @@ shinyServer(function(input, output, session) {
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
     df <- bec_reactives$bec_summary
 
-    by_zone <- ifelse(!isTruthy(bec_code) || bec_code == "BC", TRUE, FALSE)
+    by_zone <- bec_reactives$is_bc
 
     summarize_bec(df, by_zone = by_zone) %>%
       make_dt()
@@ -258,7 +258,7 @@ shinyServer(function(input, output, session) {
     filename = function() "bec.csv",
     content = function(file) {
       bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-      by_zone <- ifelse(!isTruthy(bec_code) || bec_code == "BC", TRUE, FALSE)
+      by_zone <- bec_reactives$is_bc
       write.csv(summarize_bec(bec_reactives$bec_summary,
                               by_zone), file, row.names = FALSE)
     },
