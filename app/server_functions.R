@@ -36,56 +36,26 @@ gg_ld_class <- function(class, reg_cd) {
 }
 
 ## Interactive bar chart for % designated in selected ecoregion/zone
-ggiraph_barchart <- function(df, type) {
-  tooltip_css = "
-  color:white;
-  background-color:dimgray;
-  padding:5px;
-  border-radius:5px;"
+des_barchart <- function(df, type) {
+  df <- df[!is.na(df$category), ]
+  df$category_lab <- des_labels[df$category]
+  df$prot_rollup <- prot_rollup_labels[as.character(df$prot_rollup)]
+  p <- plot_ly(df, x = ~percent_des, y = ~prot_rollup,
+               type = "bar", color = ~category, colors = des_cols,
+               text = "foo", hoverinfo = "x+text", alpha = 1)
 
-  hover_css <- "opacity:0.5;stroke:white;"
-
-  df$hovertip <- paste0(des_labels[df$category],
-                        "<br>Area: ",
-                        format_ha_comma(df$area_des_ha),
-                        " ha (",
-                        format_percent(df$percent_des), "%)")
-  gg <- ggplot(df[!is.na(df$category), ],
-               aes(x = prot_rollup, y = percent_des)) +
-    suppressWarnings(geom_bar_interactive(stat = "identity",
-                         aes(fill = reverse_factor(category), tooltip = hovertip, data_id = hovertip))) +
-    scale_fill_manual(values = des_cols) +
-    theme_minimal(base_size = 14) +
-    theme(axis.title.x = element_text(hjust = 0),
-          axis.title.y = element_text(hjust = 1),
-          panel.grid.major.y = element_blank(),
-          panel.grid.minor.y = element_blank(),
-          axis.text.y = element_text(hjust = 1)) +
-    scale_y_continuous(expand = c(0,0)) +
-    scale_x_discrete(expand = c(0,0), labels = prot_rollup_labels) +
-    coord_flip() +
-    labs(x = "Land Designation Type", y = paste0("Percent of ", tools::toTitleCase(type), " Designated")) +
-    guides(fill = "none")
-
-  ggiraph(ggobj = gg, width = 0.9, height_svg = 2.5,
-          tooltip_extra_css = tooltip_css, tooltip_opacity = 0.9,
-          hover_css = hover_css, selection_type = "none",
-          tooltip_offx = -20)
-
-  ## Simple plotly code
-  # gg <- ggplot(df[!is.na(df$category), ],
-  #              aes(x = prot_rollup, y = percent_des)) +
-  #   geom_bar(stat = "identity",
-  #            aes(fill = category)) +
-  #   scale_fill_manual(values = des_cols) +
-  #   theme_minimal(base_size = 15) +
-  #   theme(axis.title.x = element_text(hjust = 1)) +
-  #   scale_y_continuous(expand = c(0,0)) +
-  #   scale_x_discrete(expand = c(0,0), labels = prot_rollup_labels) +
-  #   coord_flip() +
-  #   labs(x = "Land Designation type", y = paste0("Percent of ", type, " Designated")) +
-  #   guides(fill = "none")
-  # ggplotly(gg)
+  p <- layout(p, barmode = "stack", showlegend = FALSE,
+              yaxis = list(autotick = FALSE, zeroline = FALSE,
+                           tickfont = list(size = 12),
+                           title = "",
+                           categoryarray = rev(prot_rollup_labels),
+                           categoryorder = "array"),
+              xaxis = list(zeroline = FALSE, title = "Percent Designated"),
+              font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
+              hovermode = "closest",
+              margin = list(l = 150)) %>%
+    config(displayModeBar = FALSE, collaborate = FALSE)
+  p
 }
 
 ## Shortcuts functions to initialize modifying ecoregion and bec leaflet maps
@@ -304,6 +274,6 @@ subplotly <- function(data, which, highlight_id = NULL, by) {
                                          xref = 'paper', yref = 'paper',
                                          align = "left")
   }
-  sp
+  sp %>% config(displayModeBar = FALSE, collaborate = FALSE)
 }
 

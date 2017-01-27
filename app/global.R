@@ -17,7 +17,6 @@ library('dplyr')
 library('ggplot2')
 library('ggthemes')
 library('ggpolypath')
-library('ggiraph')
 library('DT')
 library('plotly')
 

@@ -100,13 +100,13 @@ shinyServer(function(input, output, session) {
   })
 
   ## Bar chart of land designations for selected ecoregion
-  output$ecoreg_barchart <- renderggiraph({
+  output$ecoreg_barchart <- renderPlotly({
     ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
     req(ecoreg_code)
     type <- "ecoregion"
     df <- ecoreg_reactives$ecoreg_summary
 
-    ggiraph_barchart(df, type)
+    des_barchart(df, type)
   })
 
   output$ecoreg_summary_plot <- renderPlotly({
@@ -221,7 +221,7 @@ shinyServer(function(input, output, session) {
   })
 
   ## Bar chart of land designations for selected bec zone
-  output$bec_barchart <- renderggiraph({
+  output$bec_barchart <- renderPlotly({
     bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
     req(bec_code)
 
@@ -234,7 +234,7 @@ shinyServer(function(input, output, session) {
 
     type <- "biogeoclimatic zone"
 
-    ggiraph_barchart(df, type)
+    des_barchart(df, type)
   })
 
   output$bec_summary_plot <- renderPlotly({
