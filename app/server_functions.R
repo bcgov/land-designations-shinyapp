@@ -40,7 +40,7 @@ des_barchart <- function(df, type) {
   df <- df[!is.na(df$category), ]
   df$category_lab <- des_labels[df$category]
   df$prot_rollup <- prot_rollup_labels[as.character(df$prot_rollup)]
-  p <- plot_ly(df, x = ~percent_des, y = ~prot_rollup,
+  p <- plot_ly(df, x = ~round(percent_des, 1), y = ~prot_rollup,
                type = "bar", color = ~category, colors = des_cols,
                hoverinfo = "x", alpha = 1)
 
