@@ -174,6 +174,7 @@ reverse_factor <- function(x) {
 }
 
 plotly_bec <- function(data, cat, highlight = NULL) {
+  max_percent <- max(data[["Percent Designated"]], na.rm = TRUE)
   data <- data[data$prot_rollup == cat, ]
 
   if (!is.null(highlight)) {
@@ -197,12 +198,14 @@ plotly_bec <- function(data, cat, highlight = NULL) {
          yaxis = list(autotick = FALSE, zeroline = FALSE,
                       tickfont = list(size = 10.5),
                       title = "Biogeoclimatic Zone"),
-         xaxis = list(zeroline = FALSE, title = "Percent Designated"),
+         xaxis = list(zeroline = FALSE, title = "Percent Designated",
+                      range = c(0, ceiling(max_percent/10) * 10)),
          font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
          hovermode = "closest")
 }
 
 plotly_eco <- function(data, cat, highlight = NULL) {
+  max_percent <- max(data$percent_des, na.rm = TRUE)
   data <- data[data$prot_rollup == cat, ]
 
   if (!is.null(highlight)) {
@@ -226,7 +229,8 @@ plotly_eco <- function(data, cat, highlight = NULL) {
          yaxis = list(autotick = FALSE, zeroline = FALSE,
                       tickfont = list(size = 10.5),
                       title = "Ecoregion Code"),
-         xaxis = list(zeroline = FALSE, title = "Percent Designated"),
+         xaxis = list(zeroline = FALSE, title = "Percent Designated",
+                      range = c(0, ceiling(max_percent/10) * 10)),
          font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
          hovermode = "closest")
 }
