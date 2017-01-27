@@ -44,7 +44,7 @@ shinyServer(function(input, output, session) {
   output$bc_ecoreg_map <- renderLeaflet({
     leaflet(ecoregions) %>%
       bc_view() %>%
-      addProviderTiles("Stamen.TonerLite",
+      addProviderTiles("CartoDB.PositronNoLabels",
                        options = providerTileOptions(noWrap = TRUE)) %>%
       addPolygons(layerId = ~CRGNCD, color = "#00441b", fillColor = "#006d2c",
                   weight = 1, fillOpacity = 0.2)
