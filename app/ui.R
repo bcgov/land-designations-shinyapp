@@ -37,12 +37,16 @@ shinyUI(fluidPage(
                # textOutput("reset_bc_ecoreg")), # for debugging click
                column(6,
                       h4(htmlOutput("ecoreg_title")),
-                      div(class = "plot-container",
-                          tags$img(src = "spinner.gif",
-                                   class = "loading-spinner"),
-                          plotOutput(outputId = "ecoreg_map", height = 500)),
-                      ggiraphOutput(outputId = "ecoreg_barchart",
-                                    height = "100%"))),
+                      conditionalPanel(
+                        condition = "output.ecoregisbc == false",
+                        div(class = "plot-container",
+                            tags$img(src = "spinner.gif", class = "loading-spinner"),
+                            plotOutput(outputId = "ecoreg_map", height = 500)
+                        ),
+                        plotlyOutput(outputId = "ecoreg_barchart", height = 200)),
+                      conditionalPanel(
+                        condition = "output.ecoregisbc == true",
+                        plotlyOutput("ecoreg_summary_plot", height = 600)))),
       br(),
       fluidRow(column(12,
                       dataTableOutput("ecoreg_table")))),
@@ -58,18 +62,22 @@ shinyUI(fluidPage(
                       actionButton(inputId = "reset_bc_bec", "Click to reset to B.C."),
                       downloadButton(outputId = "download_bec_data", "Download csv",
                                      class = "dl-button")),
-                      # textOutput("reset_bc_bec")), # for debugging click
+                      # verbatimTextOutput("isbc")), # for debugging click
                column(6,
                       h4(htmlOutput("bec_title")),
-                      div(class = "plot-container",
-                          tags$img(src = "spinner.gif",
-                                   class = "loading-spinner"),
-                      plotOutput(outputId = "bec_map", height = 500)),
-                      ggiraphOutput(outputId = "bec_barchart",
-                                    height = 200))),
+                      conditionalPanel(
+                        condition = "output.becisbc == false",
+                        div(class = "plot-container",
+                            tags$img(src = "spinner.gif", class = "loading-spinner"),
+                            plotOutput(outputId = "bec_map", height = 500)
+                        ),
+                        plotlyOutput(outputId = "bec_barchart", height = 200)),
+                      conditionalPanel(
+                        condition = "output.becisbc == true",
+                        plotlyOutput("bec_summary_plot", height = 600)))),
       br(),
       fluidRow(column(12,
-                      dataTableOutput("bec_table")))))
+                      dataTableOutput("bec_table"))))
 
 
-))
+)))

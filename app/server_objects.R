@@ -86,6 +86,9 @@ gg_bec <- read_feather("data/gg_bec.feather")
 ld_bec_summary <- read_feather("data/ld_bec_summary.feather") %>%
   mutate(prot_rollup = rollup_category(category))
 
+bec_zone_summary <- summarize_bec(ld_bec_summary, by_zone = TRUE) %>%
+  mutate(prot_rollup = rollup_category(Category))
+
 bec_nms <- c(BAFA = "Boreal Altai Fescue Alpine",
              SWB = "Spruce--Willow--Birch",
              BWBS = "Boreal White & Black Spruce",
