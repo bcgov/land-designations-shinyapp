@@ -42,7 +42,7 @@ des_barchart <- function(df, type) {
   df$prot_rollup <- prot_rollup_labels[as.character(df$prot_rollup)]
   p <- plot_ly(df, x = ~percent_des, y = ~prot_rollup,
                type = "bar", color = ~category, colors = des_cols,
-               text = "foo", hoverinfo = "x+text", alpha = 1)
+               hoverinfo = "x", alpha = 1)
 
   p <- layout(p, barmode = "stack", showlegend = FALSE,
               yaxis = list(autotick = FALSE, zeroline = FALSE,
