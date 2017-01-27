@@ -225,7 +225,8 @@ plotly_bec <- function(data, cat, highlight = NULL) {
 
   layout(p, barmode = "stack", showlegend = FALSE,
          yaxis = list(autotick = FALSE, zeroline = FALSE,
-                      tickfont = list(size = 10.5)),
+                      tickfont = list(size = 10.5),
+                      title = "Biogeoclimatic Zone"),
          xaxis = list(zeroline = FALSE, title = "Percent Designated"),
          font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
          hovermode = "closest")
@@ -253,7 +254,8 @@ plotly_eco <- function(data, cat, highlight = NULL) {
 
   layout(p, barmode = "stack", showlegend = FALSE,
          yaxis = list(autotick = FALSE, zeroline = FALSE,
-                      tickfont = list(size = 10.5)),
+                      tickfont = list(size = 10.5),
+                      title = "Ecoregion Code"),
          xaxis = list(zeroline = FALSE, title = "Percent Designated"),
          font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
          hovermode = "closest")
