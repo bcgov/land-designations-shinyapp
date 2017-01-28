@@ -165,7 +165,7 @@ shinyServer(function(input, output, session) {
   output$bc_bec_map <- renderLeaflet({
     leaflet(bec_zones) %>%
       bc_view() %>%
-      addProviderTiles("Stamen.TonerLite",
+      addProviderTiles("CartoDB.PositronNoLabels",
                        options = providerTileOptions(noWrap = TRUE)) %>%
       addPolygons(layerId = ~ZONE, color = "",
                   fillColor = unname(bec_colors), fillOpacity = 0.7)
