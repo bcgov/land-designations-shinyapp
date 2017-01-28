@@ -44,8 +44,7 @@ shinyServer(function(input, output, session) {
   output$bc_ecoreg_map <- renderLeaflet({
     leaflet(ecoregions) %>%
       bc_view() %>%
-      addProviderTiles("CartoDB.PositronNoLabels",
-                       options = providerTileOptions(noWrap = TRUE)) %>%
+      add_tiles() %>%
       addPolygons(layerId = ~CRGNCD, color = "#00441b", fillColor = "#006d2c",
                   weight = 1, fillOpacity = 0.2)
   })
@@ -165,8 +164,7 @@ shinyServer(function(input, output, session) {
   output$bc_bec_map <- renderLeaflet({
     leaflet(bec_zones) %>%
       bc_view() %>%
-      addProviderTiles("CartoDB.PositronNoLabels",
-                       options = providerTileOptions(noWrap = TRUE)) %>%
+      add_tiles() %>%
       addPolygons(layerId = ~ZONE, color = "",
                   fillColor = unname(bec_colors), fillOpacity = 0.7)
   })

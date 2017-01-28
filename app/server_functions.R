@@ -66,6 +66,11 @@ bec_proxy <- function(...) leafletProxy("bc_bec_map", ...)
 ## Set view to BC
 bc_view <- function(map) setView(map, lng = -126.5, lat = 54.5, zoom = 5)
 
+add_tiles <- function(map) {
+  addProviderTiles(map, "CartoDB.PositronNoLabels",
+                   options = providerTileOptions(noWrap = TRUE))
+}
+
 ## Convert & and emdashes to html strings for representing on the map
 htmlize <- function(x) {
   x <- gsub("\\b&\\b", "&amp;", x, useBytes = TRUE)
