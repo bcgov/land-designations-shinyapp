@@ -20,7 +20,7 @@ shinyUI(fluidPage(
   #  img(width = "200px", src = "ER_Logo.png")
   #),
 
-  titlePanel("Explore Land Designations by Ecoregions & Biogeoclimatic Zones Across B.C."),
+  titlePanel("Explore Land Designations by Biogeoclimatic Zones & Ecoregions Across B.C."),
   tabsetPanel(
     tabPanel(
       "Biogeoclimatic Zones",
