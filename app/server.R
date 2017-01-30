@@ -51,7 +51,7 @@ shinyServer(function(input, output, session) {
 
   # Observer for highlighting ecoregion polygon on click
   observe({
-    clicked_polys <- ecoreg_reactives$ecoreg_ids
+    clicked_polys <- req(ecoreg_reactives$ecoreg_ids)
     is_bc <- ecoreg_reactives$is_bc
 
     # output$reset_bc_ecoreg <- renderText(clicked_polys)
@@ -171,7 +171,7 @@ shinyServer(function(input, output, session) {
 
   # Observer for highlighting bec polygon on click
   observe({
-    clicked_polys <- bec_reactives$bec_ids
+    clicked_polys <- req(bec_reactives$bec_ids)
     is_bc <- bec_reactives$is_bc
 
     # output$reset_bc_bec <- renderText(clicked_polys)
