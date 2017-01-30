@@ -1,1 +1,1 @@
-'shinythemes', 'leaflet', 'feather', 'dplyr', 'ggplot2', 'ggthemes', 'ggpolypath', 'DT', 'plotly'
+'shinythemes', 'leaflet', 'feather', 'dplyr', 'ggplot2', 'ggthemes', 'ggpolypath', 'DT', 'devtools'

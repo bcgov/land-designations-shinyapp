@@ -97,6 +97,7 @@ RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubu
 # --------------------------------------------------------
 ENV R_LIBS "${RLIBS}"
 RUN if [ "$R_LIBS" ]; then R -e "install.packages(c($R_LIBS))"; fi
+RUN R -e "devtools::install_github('ropensci/plotly@a1613b3e225')"
 
 # --------------------------------------------------------
 #
