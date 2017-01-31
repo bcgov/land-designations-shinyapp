@@ -20,5 +20,5 @@ library('ggpolypath')
 library('DT')
 library('plotly')
 
-# options(shiny.sanitize.errors = FALSE)
+options(shiny.sanitize.errors = FALSE)
 # options(shiny.reactlog = TRUE)

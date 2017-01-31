@@ -79,6 +79,7 @@ shinyServer(function(input, output, session) {
   })
 
   output$ecoregisbc <- reactive(ecoreg_reactives$is_bc)
+
   outputOptions(output, "ecoregisbc", suspendWhenHidden = FALSE)
 
   observeEvent(input$bc_ecoreg_map_shape_mouseout$id, {
@@ -87,27 +88,25 @@ shinyServer(function(input, output, session) {
   })
 
   output$ecoreg_title <- renderText({
-    ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
+    ecoreg_code <- req(ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)])
     if (ecoreg_reactives$is_bc) return("")
     ecoreg_nms[ecoreg_code]
   })
 
   ## Subset map of ecoregion with land designations
   output$ecoreg_map <- renderPlot({
-    ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
-    ecoreg_code <- req(ecoreg_code)
+    ecoreg_code <- req(ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)])
+    req(!ecoreg_reactives$is_bc)
 
     gg_ld_class(class = "ecoreg", ecoreg_code)
   })
 
   ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderPlotly({
-    ecoreg_code <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
-    req(ecoreg_code)
-    type <- "ecoregion"
-    df <- ecoreg_reactives$ecoreg_summary
+    ecoreg_code <- req(ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)])
+    req(!ecoreg_reactives$is_bc)
 
-    des_barchart(df, type)
+    des_barchart(ecoreg_reactives$ecoreg_summary, "ecoregion")
   })
 
   ## Use debounce to delay updating the barchart as the mouse runs over the leaflet map
@@ -216,17 +215,16 @@ shinyServer(function(input, output, session) {
 
   # Subset map of bec zone with land designations
   output$bec_map <- renderPlot({
-    bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
+    bec_code <- req(bec_reactives$bec_ids[length(bec_reactives$bec_ids)])
+    req(!bec_reactives$is_bc)
 
-    req(bec_code)
-
-    gg_ld_class(class = "bec", bec_code)
+    if (!bec_reactives$is_bc) gg_ld_class(class = "bec", bec_code)
   })
 
   ## Bar chart of land designations for selected bec zone
   output$bec_barchart <- renderPlotly({
-    bec_code <- bec_reactives$bec_ids[length(bec_reactives$bec_ids)]
-    req(bec_code)
+    bec_code <- req(bec_reactives$bec_ids[length(bec_reactives$bec_ids)])
+    req(!bec_reactives$is_bc)
 
     df <- bec_reactives$bec_summary %>%
       group_by(prot_rollup, category) %>%
@@ -235,9 +233,7 @@ shinyServer(function(input, output, session) {
                 percent_des = area_des / bec_area * 100,
                 area_des_ha = sum(area_des_ha, na.rm = TRUE))
 
-    type <- "biogeoclimatic zone"
-
-    des_barchart(df, type)
+    des_barchart(df, "biogeoclimatic zone")
   })
 
   ## Use debounce to delay updating the barchart as the mouse runs over the leaflet map
