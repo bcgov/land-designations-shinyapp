@@ -248,8 +248,14 @@ shinyServer(function(input, output, session) {
 
     by_zone <- bec_reactives$is_bc
 
-    summarize_bec(df, by_zone = by_zone) %>%
-      make_dt()
+    df <- summarize_bec(df, by_zone = by_zone)
+    if (!by_zone) {
+      df <- ungroup(df) %>%
+        mutate(`Subzone/Variant` = gsub("/NA$", "", paste(Subzone, Variant, sep = "/"))) %>%
+        select(Zone, `Subzone/Variant`, `BGC Label`, Category, `Area Designated (ha)`,
+             `BGC Unit Area (ha)`, `Percent Designated`)
+    }
+      make_dt(df)
   })
 
   output$download_bec_data <- downloadHandler(

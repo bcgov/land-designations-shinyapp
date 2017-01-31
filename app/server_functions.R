@@ -197,6 +197,20 @@ plotly_bec <- function(data, cat, highlight = NULL) {
     p <- add_bars(p, data = high_dat, color = ~Category, colors = des_cols,
                   text = ~paste0(round(`Percent Designated`, 1), " %"),
                   hoverinfo = "text", opacity = 1)
+
+    ref <- switch(cat, "Prot" = "",
+                  "03_Exclude_1_2_Activities" = "2",
+                  "04_Managed" = "3")
+    hoverlabel <- list(x = sum(high_dat$`Percent Designated`), y = high_dat$Zone,
+                       text = paste0(round(high_dat$`Percent Designated`, 1), "%", collapse = ", "),
+                       showarrow = TRUE, arrowhead = 0, ax = 10, ay = -10,
+                       arrowwidth = 1,
+                       xref = paste0("x", ref), xanchor = "left",
+                       yref = paste0("y", ref), yanchor = "bottom",
+                       bgcolor = "rgb(229,229,229)",
+                       bordercolor = "rgb(179,179,179)",
+                       align = "right")
+
   }
 
   layout(p, barmode = "stack", showlegend = FALSE,
@@ -225,9 +239,23 @@ plotly_eco <- function(data, cat, highlight = NULL) {
              hoverinfo = "text", opacity = 0.6)
 
   if (!is.null(highlight)) {
-    p <- add_bars(p, data = high_dat, color = ~category, colors = des_cols,
-                  text = ~paste0(round(percent_des, 1), " %"),
-                  hoverinfo = "text", opacity = 1)
+
+    p <- add_bars(p, data = high_dat, color = ~category,
+                  colors = des_cols, opacity = 1,
+                  hoverinfo = "skip")
+    ref <- switch(cat, "Prot" = "",
+                    "03_Exclude_1_2_Activities" = "2",
+                    "04_Managed" = "3")
+    hoverlabel <- list(x = sum(high_dat$percent_des), y = high_dat$ecoregion_code,
+                       text = paste0(round(high_dat$percent_des, 1), "%", collapse = ", "),
+                       showarrow = TRUE, arrowhead = 0, ax = 10, ay = -10,
+                       arrowwidth = 1,
+                       xref = paste0("x", ref), xanchor = "left",
+                       yref = paste0("y", ref), yanchor = "bottom",
+                       bgcolor = "rgb(229,229,229)",
+                       bordercolor = "rgb(179,179,179)",
+                       align = "right")
+
   }
 
   layout(p, barmode = "stack", showlegend = FALSE,
