@@ -193,11 +193,11 @@ plotly_bec <- function(data, cat, highlight = NULL) {
              text = ~paste0(round(`Percent Designated`, 1), " %"),
              hoverinfo = "text", opacity = 0.6)
 
+  hoverlabel = NULL
   if (!is.null(highlight)) {
     p <- add_bars(p, data = high_dat, color = ~Category, colors = des_cols,
                   text = ~paste0(round(`Percent Designated`, 1), " %"),
                   hoverinfo = "text", opacity = 1)
-
     ref <- switch(cat, "Prot" = "",
                   "03_Exclude_1_2_Activities" = "2",
                   "04_Managed" = "3")
@@ -210,7 +210,6 @@ plotly_bec <- function(data, cat, highlight = NULL) {
                        bgcolor = "rgb(229,229,229)",
                        bordercolor = "rgb(179,179,179)",
                        align = "right")
-
   }
 
   layout(p, barmode = "stack", showlegend = FALSE,
@@ -220,7 +219,7 @@ plotly_bec <- function(data, cat, highlight = NULL) {
          xaxis = list(zeroline = FALSE, title = "Percent Designated",
                       range = c(0, ceiling(max_percent/10) * 10)),
          font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
-         hovermode = "closest")
+         hovermode = "closest", annotations = hoverlabel)
 }
 
 plotly_eco <- function(data, cat, highlight = NULL) {
@@ -238,8 +237,9 @@ plotly_eco <- function(data, cat, highlight = NULL) {
              text = ~paste0(round(percent_des, 1), " %"),
              hoverinfo = "text", opacity = 0.6)
 
-  if (!is.null(highlight)) {
+  hoverlabel <- NULL
 
+  if (!is.null(highlight)) {
     p <- add_bars(p, data = high_dat, color = ~category,
                   colors = des_cols, opacity = 1,
                   hoverinfo = "skip")
@@ -255,7 +255,6 @@ plotly_eco <- function(data, cat, highlight = NULL) {
                        bgcolor = "rgb(229,229,229)",
                        bordercolor = "rgb(179,179,179)",
                        align = "right")
-
   }
 
   layout(p, barmode = "stack", showlegend = FALSE,
@@ -265,7 +264,7 @@ plotly_eco <- function(data, cat, highlight = NULL) {
          xaxis = list(zeroline = FALSE, title = "Percent Designated",
                       range = c(0, ceiling(max_percent/10) * 10)),
          font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
-         hovermode = "closest")
+         hovermode = "closest", annotations = hoverlabel)
 }
 
 subplotly <- function(data, which, highlight_id = NULL, by) {
@@ -293,9 +292,12 @@ subplotly <- function(data, which, highlight_id = NULL, by) {
                 shareX = share_x,
                 shareY = !share_x)
 
-  sp$x$layout$annotations <- list()
+  if (is.null(sp$x$layout$annotations)) {
+    sp$x$layout$annotations <- list()
+  }
 
   for (i in seq_along(prot_rollup_labels)) {
+    a_i <- length(sp$x$layout$annotations) + i
     ax <- ifelse(i == 1, which_ax, paste0(which_ax, i))
     ax_pos <- max(sp$x$layout[[ax]]$domain)
 
@@ -305,7 +307,7 @@ subplotly <- function(data, which, highlight_id = NULL, by) {
       x_pos <- ax_pos - 0.3
     }
 
-    sp$x$layout$annotations[[i]] <- list(x = x_pos, y = y_pos, text =
+    sp$x$layout$annotations[[a_i]] <- list(x = x_pos, y = y_pos, text =
                                          prot_rollup_labels[i], showarrow = FALSE,
                                          xanchor = x_anchor, yanchor = "bottom",
                                          xref = 'paper', yref = 'paper',
