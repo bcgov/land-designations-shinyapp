@@ -35,7 +35,7 @@ fi
 # create the local dockerfile
 #
 # --------------------------------------------------------
-if [[ $(diff packages.txt .packages.txt) ]] || [[ $(diff system-libraries.txt .system-libraries.txt) ]] || [[ ! -f Dockerfile.local ]]
+if [[ $(diff packages.txt .packages.txt) ]] || [[ $(diff gh-packages.txt .gh-packages.txt) ]] || [[ $(diff system-libraries.txt .system-libraries.txt) ]] || [[ ! -f Dockerfile.local ]]
 then
 
   if [[ $(head -n 1 packages.txt | wc -w) -gt 0 ]]
@@ -45,6 +45,14 @@ then
     rlib_str=""
   fi
 
+  if [[ $(head -n 1 gh-packages.txt | wc -w) -gt 0 ]]
+  then
+  ## '@', '.', and '/' need to be escaped:
+    r_gh_lib_str=$(sed 's/[\@\./]/\\&/g' <<<"$(head -n 1 gh-packages.txt)")
+  else
+    r_gh_lib_str=""
+  fi
+
   if [[ $(head -n 1 system-libraries.txt | wc -w) -gt 0 ]]
   then
     syslib_str="$(head -n 1 system-libraries.txt)"
@@ -52,10 +60,11 @@ then
     syslib_str=""
   fi
 
-  sed -e "s/\${RLIBS}/$rlib_str/; s/\${SYSLIBS}/$syslib_str/"  Dockerfile > Dockerfile.local
+  sed -e "s/\${RLIBS}/$rlib_str/; s/\${RGHLIBS}/$r_gh_lib_str/; s/\${SYSLIBS}/$syslib_str/"  Dockerfile > Dockerfile.local
 
 fi
 cp packages.txt .packages.txt
+cp gh-packages.txt .gh-packages.txt
 cp system-libraries.txt .system-libraries.txt
 
 # --------------------------------------------------------
@@ -74,7 +83,7 @@ docker build $no_cache -t shinylands -f Dockerfile.local .
 os=$OSTYPE
 if [[ "$os" == 'msys' ]] || [[ "$os" == 'cygwin' ]] || [[ "$os" == 'win32' ]]
 then
- echo "Running on Windows"
+  echo "Running on Windows"
   # --------------------------------------------------------
   #
   # Run the image - unfortunately won't mount the logs and
@@ -92,22 +101,22 @@ else
   #
   # --------------------------------------------------------
   docker run --rm --name shiny \
-  	-p 3838:3838 \
-  	-v `pwd`/_mount/bookmarks:/var/lib/shiny-server \
-  	-v `pwd`/_mount/logs:/var/log/shiny-server \
-  	-v `pwd`/_mount/output:/srv/shiny-server-output \
-  	-v `pwd`/_mount/tmp:/tmp \
-  	-v `pwd`/app:/srv/shiny-server \
-  	shinylands
+    -p 3838:3838 \
+    -v `pwd`/_mount/bookmarks:/var/lib/shiny-server \
+    -v `pwd`/_mount/logs:/var/log/shiny-server \
+    -v `pwd`/_mount/output:/srv/shiny-server-output \
+    -v `pwd`/_mount/tmp:/tmp \
+    -v `pwd`/app:/srv/shiny-server \
+    shinylands
 
   # docker run --rm --name shiny \
-  # 	-p 3838:3838 \
-  # 	-v `pwd`/_mount/bookmarks:/var/lib/shiny-server \
-  # 	-v `pwd`/_mount/logs:/var/log/shiny-server \
-  # 	-v `pwd`/_mount/output:/srv/shiny-server-output \
-  # 	-v `pwd`/_mount/tmp:/tmp \
-  # 	-v `pwd`/app:/srv/shiny-server \
-  # 	-ti --rm myshiny bash
+  #   -p 3838:3838 \
+  #   -v `pwd`/_mount/bookmarks:/var/lib/shiny-server \
+  #   -v `pwd`/_mount/logs:/var/log/shiny-server \
+  #   -v `pwd`/_mount/output:/srv/shiny-server-output \
+  #   -v `pwd`/_mount/tmp:/tmp \
+  #   -v `pwd`/app:/srv/shiny-server \
+  #   -ti --rm myshiny bash
 
   # docker run --rm --name shiny -p 3838:3838 -v `pwd`/_mount/bookmarks:/var/lib/shiny-server -v `pwd`/_mount/logs:/var/log/shiny-server -v `pwd`/_mount/output:/srv/shiny-server-output -v `pwd`/_mount/tmp:/tmp -v `pwd`/app:/srv/shiny-server -ti --rm myshiny bash
 
