@@ -12,6 +12,8 @@
 
 source("server_functions.R", local = TRUE)
 source("server_objects.R", local = TRUE)
+## Delay value for hovering over the leaflet map
+delay_value <- 200
 
 shinyServer(function(input, output, session) {
   # Reactive values list to keep track of clicked polygons
@@ -109,7 +111,7 @@ shinyServer(function(input, output, session) {
   })
 
   ## Use debounce to delay updating the barchart as the mouse runs over the leaflet map
-  delayed_ecoreg_hover_id <- debounce(reactive(input$bc_ecoreg_map_shape_mouseover$id), millis = 500)
+  delayed_ecoreg_hover_id <- debounce(reactive(input$bc_ecoreg_map_shape_mouseover$id), millis = delay_value)
 
   output$ecoreg_summary_plot <- renderPlotly({
     ecoreg_id <- delayed_ecoreg_hover_id()
@@ -239,7 +241,7 @@ shinyServer(function(input, output, session) {
   })
 
   ## Use debounce to delay updating the barchart as the mouse runs over the leaflet map
-  delayed_bec_hover_id <- debounce(reactive(input$bc_bec_map_shape_mouseover$id), millis = 500)
+  delayed_bec_hover_id <- debounce(reactive(input$bc_bec_map_shape_mouseover$id), millis = delay_value)
 
   output$bec_summary_plot <- renderPlotly({
     bec_id <- delayed_bec_hover_id()
