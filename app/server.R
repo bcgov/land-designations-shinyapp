@@ -108,8 +108,11 @@ shinyServer(function(input, output, session) {
     des_barchart(df, type)
   })
 
+  ## Use debounce to delay updating the barchart as the mouse runs over the leaflet map
+  delayed_ecoreg_hover_id <- debounce(reactive(input$bc_ecoreg_map_shape_mouseover$id), millis = 500)
+
   output$ecoreg_summary_plot <- renderPlotly({
-    ecoreg_id <- input$bc_ecoreg_map_shape_mouseover$id
+    ecoreg_id <- delayed_ecoreg_hover_id()
 
     subplotly(ld_ecoreg_summary, which = "ecoreg",
               highlight_id = ecoreg_id, by = "cols")
@@ -235,8 +238,11 @@ shinyServer(function(input, output, session) {
     des_barchart(df, type)
   })
 
+  ## Use debounce to delay updating the barchart as the mouse runs over the leaflet map
+  delayed_bec_hover_id <- debounce(reactive(input$bc_bec_map_shape_mouseover$id), millis = 500)
+
   output$bec_summary_plot <- renderPlotly({
-    bec_id <- input$bc_bec_map_shape_mouseover$id
+    bec_id <- delayed_bec_hover_id()
 
     subplotly(bec_zone_summary, which = "bec", highlight_id = bec_id, by = "cols")
 
