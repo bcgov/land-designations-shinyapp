@@ -178,76 +178,52 @@ reverse_factor <- function(x) {
   ordered(x, levels = rev(levels(x)))
 }
 
-plotly_bec <- function(data, cat, highlight = NULL) {
-  max_percent <- max(data[["Percent Designated"]], na.rm = TRUE)
-  data <- data[data$prot_rollup == cat, ]
+plotly_class <- function(data, class, cat, highlight = NULL) {
 
-  if (!is.null(highlight)) {
-    high_dat <- data[data$Zone == highlight, ]
-    data <- data[data$Zone != highlight, ]
+  if (class == "bec") {
+    percent <- "Percent Designated"
+    prot_rollup <- "prot_rollup"
+    code_col <- "Zone"
+    category_col <- "Category"
+    title <- "Biogeoclimatic Zone"
+  } else if (class == "ecoreg") {
+    percent <- "percent_des"
+    prot_rollup <- "prot_rollup"
+    code_col <- "ecoregion_code"
+    category_col <- "category"
+    title <- "Ecoregion Code"
   }
 
-
-  p <- plot_ly(data, x = ~`Percent Designated`, y = ~Zone) %>%
-    add_bars(color = ~Category, colors = des_cols,
-             text = ~paste0(round(`Percent Designated`, 1), " %"),
-             hoverinfo = "text", opacity = 0.6)
-
-  hoverlabel = NULL
-  if (!is.null(highlight)) {
-    p <- add_bars(p, data = high_dat, color = ~Category, colors = des_cols,
-                  text = ~paste0(round(`Percent Designated`, 1), " %"),
-                  hoverinfo = "text", opacity = 1)
-    ref <- switch(cat, "Prot" = "",
-                  "03_Exclude_1_2_Activities" = "2",
-                  "04_Managed" = "3")
-    hoverlabel <- list(x = sum(high_dat$`Percent Designated`), y = high_dat$Zone,
-                       text = paste0(round(high_dat$`Percent Designated`, 1), "%", collapse = ", "),
-                       showarrow = TRUE, arrowhead = 0, ax = 10, ay = -10,
-                       arrowwidth = 1,
-                       xref = paste0("x", ref), xanchor = "left",
-                       yref = paste0("y", ref), yanchor = "bottom",
-                       bgcolor = "rgb(229,229,229)",
-                       bordercolor = "rgb(179,179,179)",
-                       align = "right")
-  }
-
-  layout(p, barmode = "stack", showlegend = FALSE,
-         yaxis = list(autotick = FALSE, zeroline = FALSE,
-                      tickfont = list(size = 10.5),
-                      title = "Biogeoclimatic Zone"),
-         xaxis = list(zeroline = FALSE, title = "Percent Designated",
-                      range = c(0, ceiling(max_percent/10) * 10)),
-         font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
-         hovermode = "closest", annotations = hoverlabel)
-}
-
-plotly_eco <- function(data, cat, highlight = NULL) {
-  max_percent <- max(data$percent_des, na.rm = TRUE)
-  data <- data[data$prot_rollup == cat, ]
+  max_percent <- max(data[[percent]], na.rm = TRUE)
+  data <- data[data[[prot_rollup]] == cat, ]
 
   if (!is.null(highlight)) {
-    high_dat <- data[data$ecoregion_code == highlight, ]
-    data <- data[data$ecoregion_code != highlight, ]
+    high_dat <- data[data[[code_col]] == highlight, ]
+    data <- data[data[[code_col]] != highlight, ]
   }
 
+  as_formula <- function(var, ticks = FALSE) {
+    if (ticks) var <- paste0("`", var, "`")
+    as.formula(paste0("~",var))
+  }
 
-  p <- plot_ly(data, x = ~percent_des, y = ~ecoregion_code) %>%
-    add_bars(color = ~category, colors = des_cols,
-             text = ~paste0(round(percent_des, 1), " %"),
+  p <- plot_ly(data, x = as_formula(percent, TRUE),
+               y = as_formula(code_col, TRUE)) %>%
+    add_bars(color = as_formula(category_col, TRUE), colors = des_cols,
+             text = as_formula(paste0("paste0(round(`", percent, "`, 1), ' %')")),
              hoverinfo = "text", opacity = 0.6)
 
   hoverlabel <- NULL
 
   if (!is.null(highlight)) {
-    p <- add_bars(p, data = high_dat, color = ~category,
+    p <- add_bars(p, data = high_dat, color = as_formula(category_col, TRUE),
                   colors = des_cols, opacity = 1,
                   hoverinfo = "skip")
     ref <- switch(cat, "Prot" = "",
-                    "03_Exclude_1_2_Activities" = "2",
-                    "04_Managed" = "3")
-    hoverlabel <- list(x = sum(high_dat$percent_des), y = high_dat$ecoregion_code,
-                       text = paste0(round(high_dat$percent_des, 1), "%", collapse = ", "),
+                  "03_Exclude_1_2_Activities" = "2",
+                  "04_Managed" = "3")
+    hoverlabel <- list(x = sum(high_dat[[percent]]), y = high_dat[[code_col]],
+                       text = paste0(round(high_dat[[percent]], 1), "%", collapse = ", "),
                        showarrow = TRUE, arrowhead = 0, ax = 10, ay = -10,
                        arrowwidth = 1,
                        xref = paste0("x", ref), xanchor = "left",
@@ -260,7 +236,7 @@ plotly_eco <- function(data, cat, highlight = NULL) {
   layout(p, barmode = "stack", showlegend = FALSE,
          yaxis = list(autotick = FALSE, zeroline = FALSE,
                       tickfont = list(size = 10.5),
-                      title = "Ecoregion Code"),
+                      title = title),
          xaxis = list(zeroline = FALSE, title = "Percent Designated",
                       range = c(0, ceiling(max_percent/10) * 10)),
          font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
@@ -268,8 +244,6 @@ plotly_eco <- function(data, cat, highlight = NULL) {
 }
 
 subplotly <- function(data, which, highlight_id = NULL, by) {
-
-  plotly_fun <- switch(which, "bec" = plotly_bec, "ecoreg" = plotly_eco)
 
   if (by == "rows") {
     n_rows <- 3
@@ -285,9 +259,12 @@ subplotly <- function(data, which, highlight_id = NULL, by) {
     x_anchor = "left"
   }
 
-  sp <- subplot(plotly_fun(data, "Prot", highlight_id),
-                plotly_fun(data, "03_Exclude_1_2_Activities", highlight_id),
-                plotly_fun(data, "04_Managed", highlight_id),
+  sp <- subplot(plotly_class(data, class = which, cat = "Prot",
+                             highlight = highlight_id),
+                plotly_class(data, class = which, cat = "03_Exclude_1_2_Activities",
+                             highlight = highlight_id),
+                plotly_class(data, class = which, cat = "04_Managed",
+                             highlight = highlight_id),
                 nrows = n_rows,
                 shareX = share_x,
                 shareY = !share_x)
