@@ -282,7 +282,7 @@ subplotly <- function(data, which, highlight_id = NULL, by) {
     if (by == "rows") {
       y_pos <- ax_pos
     } else if ( by == "cols" ) {
-      x_pos <- ax_pos - 0.3
+      x_pos <- ax_pos - 0.33
     }
 
     sp$x$layout$annotations[[a_i]] <- list(x = x_pos, y = y_pos,
