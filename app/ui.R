@@ -46,7 +46,7 @@ shinyUI(fluidPage(
                         plotlyOutput(outputId = "bec_barchart", height = 200)),
                       conditionalPanel(
                         condition = "output.becisbc == true",
-                        plotlyOutput("bec_summary_plot", height = 600)))),
+                        plotlyOutput("bec_summary_plot", height = 700)))),
       br(),
       fluidRow(column(12,
                       dataTableOutput("bec_table")))),
@@ -74,7 +74,7 @@ shinyUI(fluidPage(
                         plotlyOutput(outputId = "ecoreg_barchart", height = 200)),
                       conditionalPanel(
                         condition = "output.ecoregisbc == true",
-                        plotlyOutput("ecoreg_summary_plot", height = 600)))),
+                        plotlyOutput("ecoreg_summary_plot", height = 700)))),
       br(),
       fluidRow(column(12,
                       dataTableOutput("ecoreg_table"))))

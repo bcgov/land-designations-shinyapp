@@ -224,10 +224,10 @@ plotly_class <- function(data, class, cat, highlight = NULL) {
                   "04_Managed" = "3")
     hoverlabel <- list(x = sum(high_dat[[percent]]), y = high_dat[[code_col]],
                        text = paste0(round(high_dat[[percent]], 1), "%", collapse = ", "),
-                       showarrow = TRUE, arrowhead = 0, ax = 10, ay = -10,
+                       showarrow = TRUE, arrowhead = 0, ax = 10, ay = 2,
                        arrowwidth = 1,
                        xref = paste0("x", ref), xanchor = "left",
-                       yref = paste0("y", ref), yanchor = "bottom",
+                       yref = paste0("y", ref), yanchor = "top",
                        bgcolor = "rgb(229,229,229)",
                        bordercolor = "rgb(179,179,179)",
                        align = "right")
