@@ -241,7 +241,7 @@ plotly_class <- function(data, class, cat, highlight = NULL) {
                       range = c(0, ceiling(max_percent/10) * 10)),
          font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
          hovermode = "closest", annotations = hoverlabel,
-         margin = list(t = 30))
+         margin = list(t = 40))
 }
 
 subplotly <- function(data, which, highlight_id = NULL, by) {

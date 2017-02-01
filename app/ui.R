@@ -43,10 +43,10 @@ shinyUI(fluidPage(
                             tags$img(src = "spinner.gif", class = "loading-spinner"),
                             plotOutput(outputId = "bec_map", height = 500)
                         ),
-                        plotlyOutput(outputId = "bec_barchart", height = 200)),
+                        plotlyOutput(outputId = "bec_barchart", height = 150)),
                       conditionalPanel(
                         condition = "output.becisbc == true",
-                        plotlyOutput("bec_summary_plot", height = 700)))),
+                        plotlyOutput("bec_summary_plot", height = 650)))),
       br(),
       fluidRow(column(12,
                       dataTableOutput("bec_table")))),
@@ -71,10 +71,10 @@ shinyUI(fluidPage(
                             tags$img(src = "spinner.gif", class = "loading-spinner"),
                             plotOutput(outputId = "ecoreg_map", height = 500)
                         ),
-                        plotlyOutput(outputId = "ecoreg_barchart", height = 200)),
+                        plotlyOutput(outputId = "ecoreg_barchart", height = 150)),
                       conditionalPanel(
                         condition = "output.ecoregisbc == true",
-                        plotlyOutput("ecoreg_summary_plot", height = 700)))),
+                        plotlyOutput("ecoreg_summary_plot", height = 650)))),
       br(),
       fluidRow(column(12,
                       dataTableOutput("ecoreg_table"))))
