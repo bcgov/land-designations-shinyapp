@@ -240,7 +240,8 @@ plotly_class <- function(data, class, cat, highlight = NULL) {
          xaxis = list(zeroline = FALSE, title = "Percent Designated",
                       range = c(0, ceiling(max_percent/10) * 10)),
          font = list(family = '"Myriad-Pro",sans-serif', color = '#494949'),
-         hovermode = "closest", annotations = hoverlabel)
+         hovermode = "closest", annotations = hoverlabel,
+         margin = list(t = 30))
 }
 
 subplotly <- function(data, which, highlight_id = NULL, by) {
@@ -284,11 +285,12 @@ subplotly <- function(data, which, highlight_id = NULL, by) {
       x_pos <- ax_pos - 0.3
     }
 
-    sp$x$layout$annotations[[a_i]] <- list(x = x_pos, y = y_pos, text =
-                                         prot_rollup_labels[i], showarrow = FALSE,
-                                         xanchor = x_anchor, yanchor = "bottom",
-                                         xref = 'paper', yref = 'paper',
-                                         align = "left")
+    sp$x$layout$annotations[[a_i]] <- list(x = x_pos, y = y_pos,
+                                           text = sub("\\s+", "\n", prot_rollup_labels[i]),
+                                           showarrow = FALSE,
+                                           xanchor = x_anchor, yanchor = "bottom",
+                                           xref = 'paper', yref = 'paper',
+                                           align = "left")
   }
   sp %>% config(displayModeBar = FALSE, collaborate = FALSE)
 }
