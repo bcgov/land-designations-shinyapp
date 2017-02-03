@@ -156,6 +156,7 @@ make_dt <- function(df) {
   cat_colours <- des_cols
   if (anyNA(categories)) cat_colours <- c(cat_colours, 'lightgrey')
 
+  ## Turn character columns into factor so that picklists are created in the DT
   fac_names <- c("Zone", "Subzone/Variant", "Subzone", "Variant", "BGC Label",
                  "Ecoregion", "Category")
 
@@ -165,8 +166,8 @@ make_dt <- function(df) {
     }
   }
 
-
-  datatable(df, filter = "top", rownames = FALSE, options = list(pageLength = 10, autoWidth = TRUE),
+  datatable(df, filter = "top", rownames = FALSE,
+            options = list(pageLength = 10, autoWidth = TRUE),
             fillContainer = FALSE) %>%
     formatStyle('Percent Designated',
                 background = styleColorBar(df[["Percent Designated"]], 'green')) %>%
