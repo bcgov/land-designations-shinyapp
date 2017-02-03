@@ -49,7 +49,7 @@ shinyUI(fluidPage(
                         plotlyOutput("bec_summary_plot", height = 650)))),
       br(),
       fluidRow(column(12,
-                      dataTableOutput("bec_table")))),
+                      DT::dataTableOutput("bec_table")))),
     tabPanel(
       "Ecoregions",
       # fluidRow(column(12, h3("Representation by Ecoregion"))),
@@ -77,7 +77,9 @@ shinyUI(fluidPage(
                         plotlyOutput("ecoreg_summary_plot", height = 650)))),
       br(),
       fluidRow(column(12,
-                      dataTableOutput("ecoreg_table"))))
+                      DT::dataTableOutput("ecoreg_table"))))
 
 
-)))
+),
+tags$script(src = "iframeResizer.contentWindow.min.js")
+))
