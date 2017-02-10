@@ -31,7 +31,7 @@ shinyServer(function(input, output, session) {
 
     ecoreg_reactives$ecoreg_summary <- ld_ecoreg_summary %>%
       filter(ecoregion_code == clicked_id)
-  })
+  }, ignoreInit = TRUE)
 
   observeEvent(input$reset_bc_ecoreg, {
     prev_click_id <- ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)]
@@ -40,7 +40,7 @@ shinyServer(function(input, output, session) {
     ecoreg_reactives$is_bc <- TRUE
 
     ecoreg_reactives$ecoreg_summary <- ld_ecoreg_summary
-  })
+  }, ignoreInit = TRUE)
 
   ## Ecoregion leaflet map - draw all polygons once at startup
   output$bc_ecoreg_map <- renderLeaflet({
@@ -76,7 +76,7 @@ shinyServer(function(input, output, session) {
     reg_name <- ecoreg_nms[ecoreg_ids == reg_id]
     ecoreg_proxy() %>%
       addControl(reg_name, position = "topright", layerId = "ecoreg_label")
-  })
+  }, ignoreInit = TRUE)
 
   output$ecoregisbc <- reactive(ecoreg_reactives$is_bc)
 
@@ -151,7 +151,7 @@ shinyServer(function(input, output, session) {
     bec_reactives$is_bc <- FALSE
     bec_reactives$bec_summary <- ld_bec_summary %>%
       filter(ZONE == clicked_id)
-  })
+  }, ignoreInit = TRUE)
 
   output$becisbc <- reactive(bec_reactives$is_bc)
   outputOptions(output, "becisbc", suspendWhenHidden = FALSE)
@@ -162,7 +162,7 @@ shinyServer(function(input, output, session) {
     bec_reactives$is_bc <- TRUE
 
     bec_reactives$bec_summary <- ld_bec_summary
-  })
+  }, ignoreInit = TRUE)
 
   # Render initial BEC map
   output$bc_bec_map <- renderLeaflet({
@@ -198,12 +198,12 @@ shinyServer(function(input, output, session) {
     reg_name <- bec_nms[reg_id]
     bec_proxy() %>%
       addControl(htmlize(reg_name), position = "topright", layerId = "bec_label")
-  })
+  }, ignoreInit = TRUE)
 
   observeEvent(input$bc_bec_map_shape_mouseout$id, {
     bec_proxy() %>%
       removeControl(layerId = "bec_label")
-  })
+  }, ignoreInit = TRUE)
 
   ## BEC map and barchart
 
