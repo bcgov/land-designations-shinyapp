@@ -122,8 +122,8 @@ des_cols <- c("01_PPA"                    = "#00441b",
 des_labels = c("01_PPA"                    = "Parks & Protected Areas",
                "02_Protected_Other"        = "Other Protected Lands",
                "03_Exclude_1_2_Activities" = "Resource Exclusion Areas",
-               "04_Managed"                = "Managed Areas")
+               "04_Managed"                = "Spatially Managed Areas")
 
 prot_rollup_labels <- c("Prot"                      = "Protected Lands",
                         "03_Exclude_1_2_Activities" = "Resource Exclusion Areas",
-                        "04_Managed"                = "Managed Areas")
+                        "04_Managed"                = "Spatially Managed Areas")
