@@ -48,21 +48,24 @@ shinyServer(function(input, output, session) {
       bc_view() %>%
       add_tiles() %>%
       addPolygons(layerId = ~CRGNCD, color = "#00441b", fillColor = "#006d2c",
-                  weight = 1, fillOpacity = 0.2)
+                  weight = 1, fillOpacity = 0.2) #,
+                  # highlightOptions =
+                  #   highlightOptions(fillOpacity = 0.9,
+                  #                    bringToFront = TRUE, sendToBack = TRUE))
   })
 
-  # Observer for highlighting ecoregion polygon on click
+  ## Observer for highlighting ecoregion polygon on click
   observe({
     clicked_polys <- req(ecoreg_reactives$ecoreg_ids)
     is_bc <- ecoreg_reactives$is_bc
 
     # output$reset_bc_ecoreg <- renderText(clicked_polys)
 
-    # subset the ecoregions to be updated to those that are either currently clicked
-    # or previously clicked. Using match subsets AND sorts the SPDF according to the order of
-    # clicked_polys, as the first one is the previously clicked one, and the second
-    # is the currently clicked. The polygons must be in the same order as the aesthetics
-    # (col, fill, weight, etc)
+    ## subset the ecoregions to be updated to those that are either currently clicked
+    ## or previously clicked. Using match subsets AND sorts the SPDF according to the order of
+    ## clicked_polys, as the first one is the previously clicked one, and the second
+    ## is the currently clicked. The polygons must be in the same order as the aesthetics
+    ## (col, fill, weight, etc)
     ecoreg_subset <- ecoregions[na.omit(match(clicked_polys, ecoregions$CRGNCD)), ]
 
     ecoreg_proxy(data = ecoreg_subset) %>%
@@ -170,7 +173,10 @@ shinyServer(function(input, output, session) {
       bc_view() %>%
       add_tiles() %>%
       addPolygons(layerId = ~ZONE, color = "",
-                  fillColor = unname(bec_colors), fillOpacity = 0.7)
+                  fillColor = unname(bec_colors), fillOpacity = 0.7) #,
+                  # highlightOptions =
+                  #   highlightOptions(fillOpacity = 0.9,
+                  #                    bringToFront = TRUE, sendToBack = TRUE))
   })
 
   # Observer for highlighting bec polygon on click
