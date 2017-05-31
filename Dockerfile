@@ -39,14 +39,14 @@ ENV LANG en_US.UTF-8
 RUN echo "deb http://http.debian.net/debian sid main" > /etc/apt/sources.list.d/debian-unstable.list \
     && echo 'APT::Default-Release "testing";' > /etc/apt/apt.conf.d/default
 
-ENV R_BASE_VERSION 3.3.2
+ENV R_BASE_VERSION 3.4.0
 
 ## Now install R and littler, and create a link for littler in /usr/local/bin
 ## Also set a default CRAN repo, and make sure littler knows about it too
 RUN apt-get update \
     && apt-get install -t unstable -y --no-install-recommends \
         littler \
-                r-cran-littler \
+        r-cran-littler \
         r-base=${R_BASE_VERSION}* \
         r-base-dev=${R_BASE_VERSION}* \
         r-recommended=${R_BASE_VERSION}* \
@@ -78,6 +78,14 @@ RUN apt-get update && apt-get install -y -t unstable \
     libnss-wrapper \
     gettext $SYS_LIBS
 
+
+# --------------------------------------------------------
+#
+# Install shiny and rmarkdown
+#
+# --------------------------------------------------------
+RUN install2.r --error shiny rmarkdown
+
 # --------------------------------------------------------
 #
 # Download and install shiny server
@@ -88,7 +96,6 @@ RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubu
     wget --no-verbose "https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-12.04/x86_64/shiny-server-$VERSION-amd64.deb" -O ss-latest.deb && \
     gdebi -n ss-latest.deb && \
     rm -f version.txt ss-latest.deb && \
-    R -e "install.packages(c('shiny', 'rmarkdown'), repos='https://cran.rstudio.com/')" && \
     cp -R /usr/local/lib/R/site-library/shiny/examples/* /srv/shiny-server/
 
 # --------------------------------------------------------
@@ -97,13 +104,22 @@ RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubu
 #
 # --------------------------------------------------------
 ENV R_LIBS "${RLIBS}"
-RUN if [ "$R_LIBS" ]; then R -e "install.packages(c($R_LIBS))"; fi
+RUN if [ "$R_LIBS" ]; \
+   then \
+   echo "Installing CRAN packages: '$R_LIBS'" && \
+   install2.r --error $R_LIBS; \
+   fi
 
+# --------------------------------------------------------
+# GitHub R packages
+# --------------------------------------------------------
 ENV R_GH_LIBS "${RGHLIBS}"
 RUN if [ "$R_GH_LIBS" ]; \
-    then \
-    R -e "install.packages('devtools'); devtools::install_github(c($R_GH_LIBS))"; \
-    fi
+   then \
+   echo "Installing GitHub packages: '$R_GH_LIBS'" && \
+   install2.r --error remotes && \
+   R -e "lapply(strsplit(Sys.getenv('R_GH_LIBS'), '\\\s+')[[1]], remotes::install_github)"; \
+   fi
 
 # --------------------------------------------------------
 #
@@ -151,9 +167,9 @@ RUN chmod a+x /usr/bin/run-test.sh
 # will invalidate the cache for those steps.
 #
 # --------------------------------------------------------
-COPY app/*.R /srv/shiny-server/
-COPY app/data /srv/shiny-server/data
-COPY app/www /srv/shiny-server/www
+COPY app/ /srv/shiny-server/
+RUN mkdir /srv/shiny-server/output/ && \
+    chown -R shiny:shiny /srv/shiny-server/
 
 # --------------------------------------------------------
 #
