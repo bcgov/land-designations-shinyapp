@@ -263,7 +263,8 @@ shinyServer(function(input, output, session) {
       df <- ungroup(df) %>%
         mutate(`Subzone/Variant` = gsub("/NA$", "", paste(Subzone, Variant, sep = "/"))) %>%
         select(Zone, `Subzone/Variant`, `BGC Label`, Category, `Area Designated (ha)`,
-             `BGC Unit Area (ha)`, `Percent Designated`)
+             `BGC Unit Area (ha)`, `Percent Designated`) %>%
+        as.data.frame()
     }
       make_dt(df)
   })

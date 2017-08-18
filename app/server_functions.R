@@ -130,7 +130,8 @@ summarize_bec <- function(df, by_zone) {
     summarize(`Area Designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
               `BGC Unit Area (ha)` = format_ha(sum(bec_area, na.rm = TRUE) * 1e-4),
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
-                                                       sum(bec_area, na.rm = TRUE)) * 100))
+                                                       sum(bec_area, na.rm = TRUE)) * 100)) %>%
+    as.data.frame()
 }
 
 summarize_ecoreg <- function(df) {
@@ -140,7 +141,8 @@ summarize_ecoreg <- function(df) {
     summarize(`Area Designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
               `Ecoregion Area (ha)` = format_ha(ecoreg_area * 1e-4),
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
-                                                       sum(ecoreg_area, na.rm = TRUE)) * 100))
+                                                       sum(ecoreg_area, na.rm = TRUE)) * 100)) %>%
+    as.data.frame()
 }
 
 format_if_exists <- function(dt, column) {
