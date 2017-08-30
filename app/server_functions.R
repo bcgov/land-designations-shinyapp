@@ -168,7 +168,7 @@ make_dt <- function(df) {
     }
   }
 
-  datatable(df, filter = "top", rownames = FALSE,
+  datatable(cleanDataFrame(df), filter = "top", rownames = FALSE,
             options = list(pageLength = 10, autoWidth = TRUE),
             fillContainer = FALSE) %>%
     formatStyle('Percent Designated',
@@ -179,6 +179,18 @@ make_dt <- function(df) {
     formatCurrency('Area Designated (ha)', currency = "", digits = 0) %>%
     format_if_exists('Ecoregion Area (ha)') %>%
     format_if_exists('BGC Unit Area (ha)')
+}
+
+cleanDataFrame = function(x) {
+  if (!is.data.frame(x)) return(x)
+  for (j in seq_len(ncol(x))) {
+    xj = x[, j]
+    xj = unname(xj)  # remove names
+    dim(xj) = NULL  # drop dimensions
+    if (is.table(xj)) xj = c(xj)  # drop the table class
+    x[, j] = xj
+  }
+  x
 }
 
 rollup_category <- function(category) {
