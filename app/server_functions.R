@@ -135,9 +135,8 @@ summarize_bec <- function(df, by_zone) {
 }
 
 summarize_ecoreg <- function(df) {
-  df$Ecoregion <- ecoreg_nms[df$ecoregion_code]
   df %>%
-    group_by(Ecoregion, `Category` = category) %>%
+    group_by(Ecoregion = ecoregion_name, `Category` = category) %>%
     summarize(`Area Designated (ha)` = format_ha(sum(area_des_ha, na.rm = TRUE)),
               `Ecoregion Area (ha)` = format_ha(ecoreg_area * 1e-4),
               `Percent Designated` = format_percent((sum(area_des, na.rm = TRUE) /
