@@ -91,43 +91,6 @@
 		}
 	},
 	{
-		"kind": "Service",
-		"apiVersion": "v1",
-		"metadata": {
-			"name": "${NAME}",
-			"annotations": {
-				"description": "Exposes and load balances the application pods"
-			}
-		},
-		"spec": {
-			"ports": [
-				{
-					"name": "web",
-					"port": 3838,
-					"targetPort": 3838,
-					"protocol": "TCP"
-				}
-			],
-			"selector": {
-				"name": "${NAME}"
-			}
-		}
-	},
-	{
-		"kind": "Route",
-		"apiVersion": "v1",
-		"metadata": {
-			"name": "${NAME}"
-		},
-		"spec": {
-			"host": "",
-			"to": {
-				"kind": "Service",
-				"name": "${NAME}"
-			}
-		}
-	},
-	{
 		"kind": "ImageStream",
 		"apiVersion": "v1",
 		"metadata": {
@@ -141,157 +104,41 @@
 		}
 	},
 	{
-		"kind": "DeploymentConfig",
-		"apiVersion": "v1",
-		"metadata": {
-			"name": "${NAME}",
-			"annotations": {
-				"description": "Defines how to deploy the application server"
-			}
-		},
-		"spec": {
-			"strategy": {
-				"type": "Rolling"
-			},
-			"revisionHistoryLimit": 2,
-			"triggers": [
-				{
-					"type": "ImageChange",
-					"imageChangeParams": {
-						"automatic": true,
-						"containerNames": [
-							"${NAME}"
-						],
-						"from": {
-							"kind": "ImageStreamTag",
-							"name": "${NAME}:latest"
-						}
-					}
-				},
-				{
-					"type": "ConfigChange"
-				}
-			],
-			"replicas": 1,
-			"selector": {
-				"name": "${NAME}"
-			},
-			"template": {
-				"metadata": {
-					"name": "${NAME}",
-					"labels": {
-						"name": "${NAME}"
-					}
-				},
-				"spec": {
-					"containers": [
-						{
-							"name": "${NAME}",
-							"image": "${NAME}:latest",
-							"ports": [{
-								"containerPort": 3838,
-								"protocol": "TCP"
-							}],
-							"env": [{
-								"name": "SOME_VAR",
-								"value": "some value"
-							}],
-							"resources": {
-								"limits": {
-									"memory": "${MEMORY_LIMIT}"
-								}
-							},
-							"volumeMounts": [
-								{
-									"name": "${NAME}-docs",
-									"mountPath": "/srv/shiny-server/output"
-								},
-								{
-									"name": "${NAME}-logs",
-									"mountPath": "/var/shinylogs"
-								},
-								{
-									"name": "${NAME}-bookmarks",
-									"mountPath": "/var/lib/shiny-server"
-								}
-							]
-						}
-					],
-					"volumes": [
-						{
-							"name": "${NAME}-docs",
-							"persistentVolumeClaim": {
-								"claimName": "${NAME}-docs-pvc"
-							}
-						},
-						{
-							"name": "${NAME}-logs",
-							"persistentVolumeClaim": {
-								"claimName": "${NAME}-logs-pvc"
-							}
-						},
-						{
-							"name": "${NAME}-bookmarks",
-							"persistentVolumeClaim": {
-								"claimName": "${NAME}-bookmarks-pvc"
-							}
-						}
-					]
-				}
-			}
-		}
-	},
-    {
-      "kind": "PersistentVolumeClaim",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${NAME}-docs-pvc"
-      },
-      "spec": {
-        "accessModes": [
-          "ReadWriteOnce"
-        ],
-        "resources": {
-          "requests": {
-            "storage": "${DOCUMENT_VOLUME_CAPACITY}"
-          }
+    "kind": "BuildConfig",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "rshiny-pipeline",
+        "creationTimestamp": null,
+        "labels": {
+            "app": "rshiny-pipeline",
+            "name": "rshiny-pipeline",
+            "template": "rshiny-pipeline"
         }
-      }
-	},
-    {
-      "kind": "PersistentVolumeClaim",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${NAME}-bookmarks-pvc"
-      },
-      "spec": {
-        "accessModes": [
-          "ReadWriteOnce"
-        ],
-        "resources": {
-          "requests": {
-            "storage": "${DOCUMENT_VOLUME_CAPACITY}"
-          }
-        }
-      }
-	},
-    {
-      "kind": "PersistentVolumeClaim",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${NAME}-logs-pvc"
-      },
-      "spec": {
-        "accessModes": [
-          "ReadWriteOnce"
-        ],
-        "resources": {
-          "requests": {
-            "storage": "${DOCUMENT_VOLUME_CAPACITY}"
-          }
-        }
-      }
-	}
+    },
+    "spec": {        
+        "runPolicy": "Parallel",
+        "source": {
+            "type": "Git",
+            "git": {
+                "uri": "${SOURCE_REPOSITORY_URL}",
+                "ref": "master"
+            }
+        },
+        "strategy": {
+            "type": "JenkinsPipeline",
+            "jenkinsPipelineStrategy": {
+                "jenkinsfilePath": "Jenkinsfile"
+            }
+        },
+        "output": {},
+        "resources": {},
+        "postCommit": {},
+        "nodeSelector": null
+    },
+    "status": {
+        "lastVersion": 0
+    }
+}
 	],
 	"parameters": [{
 		"name": "NAME",
