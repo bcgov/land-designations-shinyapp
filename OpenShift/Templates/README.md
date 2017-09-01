@@ -4,14 +4,14 @@ land-designations
 OpenShift Configuration and Deployment
 ----------------
 
-The land-designations-tools (Tools) project contains the Build Configurations (bc) and Image Streams (is) that are referenced by the Deployment Configurations.
+The moe-land-designations-tools (Tools) project contains the Build Configurations (bc) and Image Streams (is) that are referenced by the Deployment Configurations.
 
 The following projects contain the Deployment Configurations (dc) for the various types of deployments:
-- land-designations-dev (Development)
-- land-designations-test (Test)
-- land-designations-prod (Production)
+- moe-land-designations-dev (Development)
+- moe-land-designations-test (Test)
+- moe-land-designations-prod (Production)
  
-In land-designations there is just one component that is deployed, a R Shiny server.
+In moe-land-designations there is just one component that is deployed, a R Shiny server.
 
 
 Steps to configure the deployment:
@@ -30,9 +30,9 @@ The same basic procedure, minus the GitHub part, can be used to connect to your 
 
 Login to the server using the oc command from the page.
 Switch to the Tools project by running:
-`oc project land-designations-tools`
+`oc project moe-land-designations-tools`
 
-`oc process -f https://raw.githubusercontent.com/bcgov/land-designations/master/OpenShift/templates/build-template.json | oc create -f -`
+`oc process -f https://raw.githubusercontent.com/bcgov-c/moe-land-designations/master/OpenShift/templates/build-template.json | oc create -f -`
 
 This will produce several builds and image streams.
 
@@ -42,19 +42,19 @@ You can edit a build to change the tag.
 
 Once you have images tagged for dev, test or prod you are ready to deploy.
 Open a command prompt and login as above to OpenShift
-Change to the project for the type of deployment you are configuring.  For example, to configure a dev deployment, switch to land-designations-dev
+Change to the project for the type of deployment you are configuring.  For example, to configure a dev deployment, switch to moe-land-designations-dev
 
 In the command prompt, type
-`oc project land-designations-dev`
+`oc project moe-land-designations-dev`
 By default projects do not have permission to access images from other projects.  You will need to grant that.
 Run the following:
 `oc policy add-role-to-user system:image-puller system:serviceaccount:<project_identifier>:default -n <project namespace where project_identifier needs access>`
 
 EXAMPLE - to allow the production project access to the images, run:
 
-`oc policy add-role-to-user system:image-puller system:serviceaccount:land-designations-prod:default -n land-designations-tools`
+`oc policy add-role-to-user system:image-puller system:serviceaccount:moe-land-designations-prod:default -n moe-land-designations-tools`
 
 - Process and create the Environment Template
-- `oc process -f land-designations-deployment-template.json  -p APP_DEPLOYMENT_TAG=<DEPLOYMENT TAG> | oc create -f -`
-	- Substitute latest (dev enviornment), test (test enviornment) or prod (prod enviornment) for the <DEPLOYMENT TAG>
+- `oc process -f moe-land-designations-deployment-template.json  -p APP_DEPLOYMENT_TAG=<DEPLOYMENT TAG> | oc create -f -`
+	- Substitute latest (dev enviornment), test (test enviornment) or prod (prod enviornment) for the `<DEPLOYMENT TAG>`
 
