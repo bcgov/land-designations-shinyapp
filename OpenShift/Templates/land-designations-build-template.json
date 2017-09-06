@@ -9,139 +9,139 @@
 		}
 	},
 	"objects": [
-	{
-		"kind": "BuildConfig",
-		"apiVersion": "v1",
-		"metadata": {
-			"name": "${NAME}",
-			"creationTimestamp": null,
-			"labels": {
-				"template": "rshiny"
+		{
+			"kind": "BuildConfig",
+			"apiVersion": "v1",
+			"metadata": {
+				"name": "${NAME}",
+				"creationTimestamp": null,
+				"labels": {
+					"template": "rshiny"
+				},
+				"annotations": {
+					"description": "Defines how to build the application"
+				}
 			},
-			"annotations": {
-				"description": "Defines how to build the application"
+			"spec": {
+				"runPolicy": "Serial",
+				"resources": {
+					"limits": {
+						"memory": "${BUILD_MEMORY}"
+					},
+					"requests": {
+						"memory": "${BUILD_MEMORY}"
+					}
+				},
+				"postCommit": {},
+				"source": {
+					"type": "Git",
+					"git": {
+						"uri": "${SOURCE_REPOSITORY_URL}",
+						"ref": "${SOURCE_REPOSITORY_REF}"
+					},
+					"contextDir": ""
+				},
+				"strategy": {
+					"type": "Docker",
+					"dockerStrategy": {
+						"noCache": false,
+						"forcePull": false,
+						"env": [
+							{
+								"name": "RLIBS",
+								"value": "${R_PACKAGES}"
+							},
+							{
+								"name": "SYSLIBS",
+								"value": "${SYS_LIBRARIES}"
+							},
+							{
+								"name":"RGHLIBS",
+								"value": "${R_GH_PACKAGES}"
+							}
+						]
+					}
+				},
+				"output": {
+					"to": {
+						"kind": "ImageStreamTag",
+						"name": "${NAME}:latest"
+					}
+				},
+				"triggers": [
+					{
+						"type": "ImageChange"
+					},
+					{
+						"type": "ConfigChange"
+					},
+					{
+						"type": "GitHub",
+						"github": {
+							"secret": "${GITHUB_WEBHOOK_SECRET}"
+						}
+					},
+					{
+						"type": "Generic",
+						"generic": {
+							"secret": "${GENERIC_WEBHOOK_SECRET}"
+						}
+					}
+				]
 			}
 		},
-		"spec": {
-			"runPolicy": "Serial",
-			"resources": {
-				"limits": {
-					"memory": "${BUILD_MEMORY}"
+		{
+			"kind": "ImageStream",
+			"apiVersion": "v1",
+			"metadata": {
+				"name": "${NAME}",
+				"annotations": {
+					"description": "Keeps track of changes in the application image"
 				},
-				"requests": {
-				  "memory": "${BUILD_MEMORY}"
+				"labels": {
+					"template": "rshiny"
+				}
+			}
+		},
+		{
+			"kind": "BuildConfig",
+			"apiVersion": "v1",
+			"metadata": {
+				"name": "rshiny-pipeline",
+				"creationTimestamp": null,
+				"labels": {
+					"app": "rshiny-pipeline",
+					"name": "rshiny-pipeline",
+					"template": "rshiny-pipeline"
 				}
 			},
-			"postCommit": {},
-			"source": {
-				"type": "Git",
-				"git": {
-					"uri": "${SOURCE_REPOSITORY_URL}",
-					"ref": "${SOURCE_REPOSITORY_REF}"
-				},
-				"contextDir": ""
-			},
-			"strategy": {
-				"type": "Docker",
-				"dockerStrategy": {
-					"noCache": false,
-					"forcePull": false,
-					"env": [
-					  {
-					    "name": "RLIBS",
-						  "value": "${R_PACKAGES}"
-					  },
-					  {
-					    "name": "SYSLIBS",
-						  "value": "${SYS_LIBRARIES}"
-					  },
-					  {
-					  	"name":"RGHLIBS",
-					  	  "value": "${R_GH_PACKAGES}"
-					  }
-					]
-				}
-			},
-			"output": {
-				"to": {
-					"kind": "ImageStreamTag",
-					"name": "${NAME}:latest"
-				}
-			},
-			"triggers": [
-				{
-					"type": "ImageChange"
-				},
-				{
-					"type": "ConfigChange"
-				},
-				{
-					"type": "GitHub",
-					"github": {
-						"secret": "${GITHUB_WEBHOOK_SECRET}"
+			"spec": {
+				"runPolicy": "Parallel",
+				"source": {
+					"type": "Git",
+					"git": {
+						"uri": "${SOURCE_REPOSITORY_URL}",
+						"ref": "master"
+					},
+					"sourceSecret" : {
+						"name": "sshsecret"
 					}
 				},
-				{
-					"type": "Generic",
-					"generic": {
-						"secret": "${GENERIC_WEBHOOK_SECRET}"
+				"strategy": {
+					"type": "JenkinsPipeline",
+					"jenkinsPipelineStrategy": {
+						"jenkinsfilePath": "Jenkinsfile"
 					}
-				}
-			]
-		}
-	},
-	{
-		"kind": "ImageStream",
-		"apiVersion": "v1",
-		"metadata": {
-			"name": "${NAME}",
-			"annotations": {
-				"description": "Keeps track of changes in the application image"
+				},
+				"output": {},
+				"resources": {},
+				"postCommit": {},
+				"nodeSelector": null
 			},
-			"labels": {
-				"template": "rshiny"
+			"status": {
+				"lastVersion": 0
 			}
 		}
-	},
-	{
-    "kind": "BuildConfig",
-    "apiVersion": "v1",
-    "metadata": {
-        "name": "rshiny-pipeline",
-        "creationTimestamp": null,
-        "labels": {
-            "app": "rshiny-pipeline",
-            "name": "rshiny-pipeline",
-            "template": "rshiny-pipeline"
-        }
-    },
-    "spec": {
-        "runPolicy": "Parallel",
-        "source": {
-            "type": "Git",
-            "git": {
-                "uri": "${SOURCE_REPOSITORY_URL}",
-                "ref": "master"
-            },
-            "sourceSecret" : {
-              "name": "sshsecret"
-            }
-        },
-        "strategy": {
-            "type": "JenkinsPipeline",
-            "jenkinsPipelineStrategy": {
-                "jenkinsfilePath": "Jenkinsfile"
-            }
-        },
-        "output": {},
-        "resources": {},
-        "postCommit": {},
-        "nodeSelector": null
-    },
-    "status": {
-        "lastVersion": 0
-    }
-}
 	],
 	"parameters": [{
 		"name": "NAME",
