@@ -32,7 +32,7 @@ Login to the server using the oc command from the page.
 Switch to the Tools project by running:
 `oc project moe-land-designations-tools`
 
-`oc process -f https://raw.githubusercontent.com/bcgov-c/moe-land-designations/master/OpenShift/templates/build-template.json | oc create -f -`
+`oc process -f https://raw.githubusercontent.com/bcgov-c/land-designations-shinyapp/master/OpenShift/Templates/land-designations-build-template.json | oc create -f -`
 
 This will produce several builds and image streams.
 
