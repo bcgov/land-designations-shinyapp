@@ -58,3 +58,19 @@ EXAMPLE - to allow the production project access to the images, run:
 - `oc process -f land-designations-deployment-template.json  -p APP_DEPLOYMENT_TAG=<DEPLOYMENT TAG> | oc create -f -`
 	- Substitute latest (dev enviornment), test (test enviornment) or prod (prod enviornment) for the <DEPLOYMENT TAG>
 
+
+Viewing Pipeline Logs
+---------------------
+To view the logs for a pipeline, first get the admin password.
+
+Navigate to the Deployment Configuration for the jenkins-pipeline-svc and view the Environment settings.  Copy the admin password.
+
+Next, navigate to the Jenkins URL:
+
+https://jenkins-pipeline-svc-moe-land-designations-tools.pathfinder.gov.bc.ca/
+
+Login with the username of admin and the password mentioned above.
+
+You can now click on the Pipeline jobs in Jenkins to view details.
+
+
