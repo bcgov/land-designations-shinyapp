@@ -102,11 +102,19 @@
 								"name": "SOME_VAR",
 								"value": "some value"
 							}],
-							"resources": {
-								"limits": {
-									"memory": "${MEMORY_LIMIT}"
-								}
-							},
+							"resources":
+							  {
+								  "requests": {
+								    "memory": "${MEMORY_REQUEST}",
+								    "cpu": "${CPU_REQUEST}"
+								  }
+								,
+							    "limits": {
+									  "memory": "${MEMORY_LIMIT}",
+									  "cpu": "${CPU_LIMIT}"
+								  }
+							  }
+							,
 							"volumeMounts": [
 								{
 									"name": "${NAME}-docs",
@@ -200,92 +208,61 @@
 	}
 	],
 	"parameters": [
-	{
+	  {
+	  	"name": "NAME",
+	  	"displayName": "Name",
+	  	"description": "The name assigned to all of the frontend objects defined in this template.",
+	  	"required": true,
+	  	"value": "rshiny"
+	  },{
 			"name": "APP_IMAGE_NAME",
 			"displayName": "Application image name.",
 			"description": "Application image name.",
 			"value": "devxp",
 			"required": true
-		},
-		{
+		},{
 			"name": "DOMAIN",
 			"displayName": "Fully qualified domain name (route)",
 			"description": "Fully qualified domain name (route)",
 			"value": "bcdevexchange.org"
-		},
-		{
+		},{
 			"name": "APP_IMAGE_NAMESPACE",
 			"displayName": "Namespace containing application images.",
 			"description": "Namespace containing application images.",
 			"value": "devxp",
 			"required": true
-		},
-		{
+		},{
 			"name": "APP_DEPLOYMENT_TAG",
 			"displayName": "Image tag to watch for changes and trigger deployment.",
 			"description": "Image tag to watch for changes and trigger deployment.",
 			"value": "dev",
 			"required": true
-		},
-	{
-		"name": "NAME",
-		"displayName": "Name",
-		"description": "The name assigned to all of the frontend objects defined in this template.",
-		"required": true,
-		"value": "rshiny"
-	},{
-		"name": "SOURCE_REPOSITORY_URL",
-		"displayName": "Git Repository URL",
-		"description": "The URL of the repository with your application source code.",
-		"value": "https://github.com/bcgov/simple-R-shiny"
-	},{
-		"name": "SOURCE_REPOSITORY_REF",
-		"displayName": "Git Reference",
-		"description": "Set this to a branch name, tag or other ref of your repository if you are not using the default branch.",
-		"value": "master"
-	},{
-		"name": "GITHUB_WEBHOOK_SECRET",
-		"displayName": "GitHub Webhook Secret",
-		"description": "A secret string used to configure the GitHub webhook.",
-		"generate": "expression",
-		"from": "[a-zA-Z0-9]{40}"
-	},{
-		"name": "GENERIC_WEBHOOK_SECRET",
-		"displayName": "Generic Webhook Secret",
-		"description": "A secret string used to configure the Generic webhook.",
-		"generate": "expression",
-		"from": "[a-zA-Z0-9]{40}"
-	},{
-		"name": "DOCUMENT_VOLUME_CAPACITY",
-		"displayName": "Document Volume Capacity",
-		"description": "Volume space available for Document uploads, e.g. 512Mi, 2Gi.",
-		"value": "512Mi",
-		"required": true
-	},{
-		"name": "MEMORY_LIMIT",
-		"displayName": "Memory Limit",
-		"description": "Maximum amount of memory the container can use.",
-		"value": "512Mi"
-	},{
-		"name": "R_PACKAGES",
-		"displayName": "R Packages",
-		"description": "R Packages that need to be installed from CRAN. Separated by spaces, eg: datasets ggplot2"	,
-		"value": "ggplot2"
-	},{
-		"name": "SYS_LIBRARIES",
-		"displayName": "System Libraries",
-		"description": "System libraries that need to be installed as dependencies for R Packages. Separated by a space, eg: libproj-dev libgdal-dev libgeos-dev",
-		"value": ""
-	},{
-		"name": "R_GH_PACKAGES",
-		"displayName": "R GitHub Packages",
-		"description": "R Packages to be installed from GitHub. Unquoted strings separated by a space: (gh_user/repo@commit_SHA  gh_org/repo@release_tag) , the SHA/release tag is optional but recommended. eg: ropensci/plotly@a1613b3e225 tidyverse/ggplot2@v2.2.1",
-		"value": ""
-	},{
-		"name": "BUILD_MEMORY",
-		"displayName": "Build Memory Limit",
-		"description": "Amount of memory available to build the container.",
-		"value": "2Gi"
-	}
+		},{
+		  "name": "DOCUMENT_VOLUME_CAPACITY",
+		  "displayName": "Document Volume Capacity",
+		  "description": "Volume space available for Document uploads, e.g. 512Mi, 2Gi.",
+		  "value": "512Mi",
+		  "required": true
+	  },{
+	  	"name": "MEMORY_REQUEST",
+	  	"displayName": "Memory Request",
+	  	"description": "Minimum amount of memory the container can use.",
+	  	"value": "512Mi"
+	  },{
+	  	"name": "MEMORY_LIMIT",
+	  	"displayName": "Memory Limit",
+	  	"description": "Maximum amount of memory the container can use.",
+	  	"value": "1Gi"
+	  },{
+	  	"name": "CPU_REQUEST",
+	  	"displayName": "CPU Request",
+	  	"description": "Minimum amount of CPU the container can use.",
+	  	"value": "250m"
+	  },{
+	  	"name": "CPU_LIMIT",
+	  	"displayName": "CPU Limit",
+	  	"description": "Maximum amount of CPU the container can use.",
+	  	"value": "1"
+	  }
 ]
 }
