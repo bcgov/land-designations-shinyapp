@@ -104,7 +104,7 @@ else
     # without having to go into the container (hopefully)
     #
     # --------------------------------------------------------
-    docker run --rm --name myshiny \
+    docker run -i -t --rm --name myshiny \
       -p 3838:3838 \
       -v `pwd`/_mount/bookmarks:/var/lib/shiny-server \
       -v `pwd`/_mount/logs:/var/log/shiny-server \
