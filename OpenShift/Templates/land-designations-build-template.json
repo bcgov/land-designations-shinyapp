@@ -65,7 +65,7 @@
 				"output": {
 					"to": {
 						"kind": "ImageStreamTag",
-						"name": "${NAME}:latest"
+						"name": "${APP_IMAGE_NAME}:latest"
 					}
 				},
 				"triggers": [
@@ -150,6 +150,12 @@
 		"required": true,
 		"value": "rshiny"
 	},{
+    "name": "APP_IMAGE_NAME",
+    "displayName": "Application image name.",
+    "description": "Application image name.",
+    "value": "rshiny-moe-land-designations",
+    "required": true
+  },{
 		"name": "SOURCE_REPOSITORY_URL",
 		"displayName": "Git Repository URL",
 		"description": "The URL of the repository with your application source code.",

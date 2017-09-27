@@ -219,7 +219,7 @@
 			"name": "APP_IMAGE_NAME",
 			"displayName": "Application image name.",
 			"description": "Application image name.",
-			"value": "rshiny",
+			"value": "rshiny-moe-land-designations",
 			"required": true
 		},{
 			"name": "DOMAIN",
