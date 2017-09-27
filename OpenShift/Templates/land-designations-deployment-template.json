@@ -70,7 +70,8 @@
 						],
 						"from": {
 							"kind": "ImageStreamTag",
-							"name": "${NAME}:${APP_DEPLOYMENT_TAG}"
+							"namespace": "${APP_IMAGE_NAMESPACE}",
+							"name": "${APP_IMAGE_NAME}:${APP_DEPLOYMENT_TAG}"
 						}
 					}
 				},
@@ -218,7 +219,7 @@
 			"name": "APP_IMAGE_NAME",
 			"displayName": "Application image name.",
 			"description": "Application image name.",
-			"value": "moe-land-designations",
+			"value": "rshiny",
 			"required": true
 		},{
 			"name": "DOMAIN",
@@ -229,7 +230,7 @@
 			"name": "APP_IMAGE_NAMESPACE",
 			"displayName": "Namespace containing application images.",
 			"description": "Namespace containing application images.",
-			"value": "moe-land-designations",
+			"value": "moe-land-designations-tools",
 			"required": true
 		},{
 			"name": "APP_DEPLOYMENT_TAG",
