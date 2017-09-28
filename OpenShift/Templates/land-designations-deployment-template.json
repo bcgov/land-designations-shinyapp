@@ -94,7 +94,7 @@
 					"containers": [
 						{
 							"name": "${NAME}",
-							"image": "${APP_IMAGE_NAME}:latest",
+							"image": " ",
 							"ports": [{
 								"containerPort": 3838,
 								"protocol": "TCP"
