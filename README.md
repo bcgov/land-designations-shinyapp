@@ -17,6 +17,11 @@ provides more comprehensive instructions.
 You will need to **Install Docker**. Instructions for installing docker on your 
 local OS are [provided here](https://docs.docker.com/engine/installation/ "Yeah! Install Docker").
 
+Note that this repository is set up with a webhook that will trigger a build on 
+OpenShift when code is pushed to master, so do your work in the dev branch and 
+only merge into master when you are ready to start a new build and update the dev
+site. See the [Openshift Instructions here](Openshift/Templates/)
+
 ### R Code
 
 The Shiny app and all related resources are in the `app` folder. If you have R 
