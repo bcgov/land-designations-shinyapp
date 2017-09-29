@@ -20,7 +20,7 @@ local OS are [provided here](https://docs.docker.com/engine/installation/ "Yeah!
 Note that this repository is set up with a webhook that will trigger a build on 
 OpenShift when code is pushed to master, so do your work in the dev branch and 
 only merge into master when you are ready to start a new build and update the dev
-site. See the [Openshift Instructions here](Openshift/Templates/)
+site. See the [Openshift Instructions here](OpenShift/Templates/)
 
 ### R Code
 
