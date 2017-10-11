@@ -23,7 +23,7 @@ These can be found in the OpenShift/Templates folder of the project repository.
 
 If you are working on software development, fork the main repository.  You'll be using your own fork, and then using pull requests to send code to the main repository.
 
-Connect to the OpenShift server using the CLI; either your local instance or the production instance. 
+Connect to the OpenShift server using the CLI; either your local instance or the production instance.
 If you have not connected to the production instance before, use the web interface as you will need to login though your GitHub account.  Once you login you'll be able to get the token you'll need to login to you project(s) through the CLI from here; Token Request Page.  The CLI will also give you a URL to go to if you attempt a login to the OpenShift server without a token.
 
 The same basic procedure, minus the GitHub part, can be used to connect to your local instance.
@@ -31,6 +31,13 @@ The same basic procedure, minus the GitHub part, can be used to connect to your 
 Login to the server using the oc command from the page.
 Switch to the Tools project by running:
 `oc project moe-land-designations-tools`
+
+
+Create the build pipeline from the file `land-designations-build-template.json`. 
+You can view the paramaters available to be set (and their default values) by running:
+```
+oc process --parameters -f land-designations-build-template.json
+```
 
 `oc process -f https://raw.githubusercontent.com/bcgov-c/land-designations-shinyapp/master/OpenShift/Templates/land-designations-build-template.json | oc create -f -`
 
@@ -56,13 +63,36 @@ By default projects do not have permission to access images from other projects.
 Run the following:
 `oc policy add-role-to-user system:image-puller system:serviceaccount:<project_identifier>:default -n <project namespace where project_identifier needs access>`
 
-EXAMPLE - to allow the production project access to the images, run:
-
-`oc policy add-role-to-user system:image-puller system:serviceaccount:moe-land-designations-dev:default -n moe-land-designations-tools`
-
-- Process and create the Environment Template
+- Process and create the Deployment Template:
 - `oc process -f land-designations-deployment-template.json  -p APP_DEPLOYMENT_TAG=<DEPLOYMENT TAG> | oc create -f -`
 	- Substitute dev (dev environment), test (test environment) or prod (prod environment) for the `<DEPLOYMENT TAG>`
+	
+You will need to do provide access to the images, as well as process the deployment configuration, for all of the projects (dev, test, and prod):
+
+```
+## dev
+oc project moe-land-designations-dev
+oc policy add-role-to-user system:image-puller system:serviceaccount:moe-land-designations-dev:default -n moe-land-designations-tools
+oc process -f land-designations-deployment-template.json -p APP_DEPLOYMENT_TAG=dev | oc create -f -
+
+## test
+oc project moe-land-designations-test
+oc policy add-role-to-user system:image-puller system:serviceaccount:moe-land-designations-test:default -n moe-land-designations-tools
+oc process -f land-designations-deployment-template.json -p APP_DEPLOYMENT_TAG=test | oc create -f -
+```
+
+As with the build configuration, you can list the paramaters that you can set in the template, as well as their default values with:
+```
+oc process --parameters -f land-designations-deployment-template.json 
+```
+
+For example, you can set the host of the production app with the `DOMAIN` parameter, and 
+increase the number of pods to 2:
+```
+oc project moe-land-designations-prod
+oc policy add-role-to-user system:image-puller system:serviceaccount:moe-land-designations-prod:default -n moe-land-designations-tools
+oc process -f land-designations-deployment-template.json -p APP_DEPLOYMENT_TAG=prod -p DOMAIN=rshiny-moe-land-designations.pathfinder.gov.bc.ca -p N_REPLICAS=2 | oc create -f -
+```
 
 
 Login to Jenkins<a name="LoginToJenkins"></a>
