@@ -8,3 +8,4 @@ _mount
 .system-libraries.txt
 Dockerfile.local
 .gh-packages.txt
+\.DS_Store
