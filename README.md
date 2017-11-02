@@ -2,7 +2,12 @@
 
 ---
 
-# Shiny app for the [Environmentsl Reporting BC](https://www2.gov.bc.ca/gov/content?id=FF80E0B985F245CEA62808414D78C41B) indicator: 
+# Shiny App: Land Designations That Contribute to Conservation
+
+An interactive data visualization built using [RStudio's](https://www.rstudio.com/)
+[Shiny](https://www.rstudio.com/products/shiny/) open source R package. 
+
+It is used in the [Environmental Reporting BC](https://www2.gov.bc.ca/gov/content?id=FF80E0B985F245CEA62808414D78C41B) indicator: 
 [Land Designations That Contribute to Conservation](http://www.env.gov.bc.ca/soe/indicators/land/land-designations.html).
 
 ## Usage
@@ -70,7 +75,7 @@ If you would like to contribute, please see our [CONTRIBUTING](CONTRIBUTING.md) 
 
 Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
 
-## License
+## Licence
 
     Copyright 2016 Province of British Columbia
 
@@ -85,3 +90,6 @@ Please note that this project is released with a [Contributor Code of Conduct](C
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+
+This repository is maintained by [Environmental Reporting BC](http://www2.gov.bc.ca/gov/content?id=FF80E0B985F245CEA62808414D78C41B). Click [here](https://github.com/bcgov/EnvReportBC-RepoList) for a complete list of our repositories on GitHub.
