@@ -1,12 +1,9 @@
-<div id="devex-badge"><a rel="Exploration" href="https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md"><img alt="Being designed and built, but in the lab. May change, disappear, or be buggy." style="border-width:0" src="https://assets.bcdevexchange.org/images/badges/exploration.svg" title="Being designed and built, but in the lab. May change, disappear, or be buggy." /></a></div>
+<div id="devex-badge"><a rel="Delivery" href="https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md"><img alt="In production, but maybe in Alpha or Beta. Intended to persist and be supported." style="border-width:0" src="https://assets.bcdevexchange.org/images/badges/delivery.svg" title="In production, but maybe in Alpha or Beta. Intended to persist and be supported." /></a></div>
 
 ---
 
-# Shiny app for land designations that contribute to conservation
-
-## Project Status
-
-This is a very early exploration, using mock data, for an SoE indicator.
+# Shiny app for the [Environmentsl Reporting BC](https://www2.gov.bc.ca/gov/content?id=FF80E0B985F245CEA62808414D78C41B) indicator: 
+[Land Designations That Contribute to Conservation](http://www.env.gov.bc.ca/soe/indicators/land/land-designations.html). The app is running on OpenShift, and embedded in the website.
 
 ## Usage
 
@@ -18,7 +15,7 @@ You will need to **Install Docker**. Instructions for installing docker on your
 local OS are [provided here](https://docs.docker.com/engine/installation/ "Yeah! Install Docker").
 
 Note that this repository is set up with a webhook that will trigger a build on 
-OpenShift when code is pushed to master, so do your work in the dev branch and 
+OpenShift when code is pushed to the **master** branch, so do your work in the dev branch and 
 only merge into master when you are ready to start a new build and update the dev
 site. See the [Openshift Instructions here](OpenShift/Templates/)
 
@@ -27,6 +24,8 @@ site. See the [Openshift Instructions here](OpenShift/Templates/)
 The Shiny app and all related resources are in the `app` folder. If you have R 
 installed on your machine, you can open an R session in this directory, and 
 type `shiny::runApp("app")` to start the app.
+
+The data is generated in a [different repository](https://github.com/bcgov/land-designations-indicator) and copied into the `app/data` directory in this repository.
 
 ### R Packages
 
@@ -59,12 +58,6 @@ will appear in the root of your project under the `_mount` directory:
 Note: If you are on Windows and using Docker with VirtualBox, it unfortunately 
 won't be able to mount the logs and bookmarks folders locally, but it will build 
 and lanch the app.
-
-## Pathway to open source
-
-Once the data are available, this repo will be moved to the bcgov org and 
-developed in the open.
-
 
 ## Getting Help or Reporting an Issue
 
