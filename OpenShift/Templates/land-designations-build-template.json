@@ -159,7 +159,7 @@
 		"name": "SOURCE_REPOSITORY_URL",
 		"displayName": "Git Repository URL",
 		"description": "The URL of the repository with your application source code.",
-		"value": "git@github.com:bcgov-c/land-designations-shinyapp.git"
+		"value": "git@github.com:bcgov/land-designations-shinyapp.git"
 	},{
 		"name": "SOURCE_REPOSITORY_REF",
 		"displayName": "Git Reference",
