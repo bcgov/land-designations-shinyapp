@@ -20,36 +20,8 @@ shinyUI(fluidPage(
   #  img(width = "200px", src = "ER_Logo.png")
   #),
 
-  titlePanel("Explore Land Designations by Biogeoclimatic Zones & Ecoregions Across B.C."),
+  titlePanel("Explore Land Designations by Ecoregions & Biogeoclimatic Zones Across B.C."),
   tabsetPanel(
-    tabPanel(
-      "Biogeoclimatic Zones",
-      # fluidRow(column(12, h3("Representation by Biogeoclimatic Zone"))),
-      fluidRow(column(6,
-                      div(class = "plot-container",
-                          tags$img(src = "spinner.gif",
-                                   class = "loading-spinner"),
-                          leafletOutput("bc_bec_map", height = 600)),
-                      br(),
-                      actionButton(inputId = "reset_bc_bec", "Click to reset to B.C."),
-                      downloadButton(outputId = "download_bec_data", "Download csv",
-                                     class = "dl-button")),
-                      # verbatimTextOutput("isbc")), # for debugging click
-               column(6,
-                      h4(htmlOutput("bec_title")),
-                      conditionalPanel(
-                        condition = "output.becisbc == false",
-                        div(class = "plot-container",
-                            tags$img(src = "spinner.gif", class = "loading-spinner"),
-                            plotOutput(outputId = "bec_map", height = 500)
-                        ),
-                        plotlyOutput(outputId = "bec_barchart", height = 150)),
-                      conditionalPanel(
-                        condition = "output.becisbc == true",
-                        plotlyOutput("bec_summary_plot", height = 650)))),
-      br(),
-      fluidRow(column(12,
-                      DT::dataTableOutput("bec_table")))),
     tabPanel(
       "Ecoregions",
       # fluidRow(column(12, h3("Representation by Ecoregion"))),
@@ -77,7 +49,35 @@ shinyUI(fluidPage(
                         plotlyOutput("ecoreg_summary_plot", height = 650)))),
       br(),
       fluidRow(column(12,
-                      DT::dataTableOutput("ecoreg_table"))))
+                      DT::dataTableOutput("ecoreg_table")))),
+    tabPanel(
+      "Biogeoclimatic Zones",
+      # fluidRow(column(12, h3("Representation by Biogeoclimatic Zone"))),
+      fluidRow(column(6,
+                      div(class = "plot-container",
+                          tags$img(src = "spinner.gif",
+                                   class = "loading-spinner"),
+                          leafletOutput("bc_bec_map", height = 600)),
+                      br(),
+                      actionButton(inputId = "reset_bc_bec", "Click to reset to B.C."),
+                      downloadButton(outputId = "download_bec_data", "Download csv",
+                                     class = "dl-button")),
+               # verbatimTextOutput("isbc")), # for debugging click
+               column(6,
+                      h4(htmlOutput("bec_title")),
+                      conditionalPanel(
+                        condition = "output.becisbc == false",
+                        div(class = "plot-container",
+                            tags$img(src = "spinner.gif", class = "loading-spinner"),
+                            plotOutput(outputId = "bec_map", height = 500)
+                        ),
+                        plotlyOutput(outputId = "bec_barchart", height = 150)),
+                      conditionalPanel(
+                        condition = "output.becisbc == true",
+                        plotlyOutput("bec_summary_plot", height = 650)))),
+      br(),
+      fluidRow(column(12,
+                      DT::dataTableOutput("bec_table"))))
 
 
 ),
