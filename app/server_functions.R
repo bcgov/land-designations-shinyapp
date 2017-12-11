@@ -27,7 +27,7 @@ gg_ld_class <- function(class, reg_cd) {
   }
 
   ggplot(ld_df, aes(x = long, y = lat, group = group)) +
-    geom_polypath(data = class_df, fill = "grey80", colour = "gray80") +
+    geom_polypath(data = class_df, fill = "grey80", colour = "grey80", size = 0.2) +
     geom_polypath(aes(fill = category)) +
     scale_fill_manual(values = des_cols) +
     coord_fixed(expand = FALSE) +

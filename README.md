@@ -19,8 +19,8 @@ You will need to **Install Docker**. Instructions for installing docker on your
 local OS are [provided here](https://docs.docker.com/engine/installation/ "Yeah! Install Docker").
 
 Note that this repository is set up with a webhook that will trigger a build on 
-OpenShift when code is pushed to the **master** branch, so do your work in the **dev** branch and 
-only merge into master when you are ready to start a new build and update the dev
+OpenShift when code is pushed to the **deploy** branch, so only merge into that 
+branch when you are ready to start a new build and update the dev
 site. See the [Openshift Instructions here](OpenShift/Templates/).
 
 The app is running on OpenShift, and embedded in the [indicator website](http://www.env.gov.bc.ca/soe/indicators/land/land-designations.html).

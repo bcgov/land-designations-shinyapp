@@ -114,10 +114,10 @@ bec_colors <- c(BAFA = "#E5D8B1", SWB = "#A3D1AB", BWBS = "#ABE7FF",
                 IDF = "#FFCF00", BG = "#FF0000", PP = "#DE7D00",
                 CDF = "#FFFF00")[bec_ids] # index by bec_ids to put in order
 
-des_cols <- c("01_PPA"                    = "#00441b",
-              "02_Protected_Other"        = "#006d2c",
-              "03_Exclude_1_2_Activities" = "#a6d96a",
-              "04_Managed"                = "#fdbf6f")
+des_cols <- c("01_PPA"                    = "#004529",
+              "02_Protected_Other"        = "#006837",
+              "03_Exclude_1_2_Activities" = "#41ab5d",
+              "04_Managed"                = "#d9f0a3")
 
 des_labels = c("01_PPA"                    = "Parks & Protected Areas",
                "02_Protected_Other"        = "Other Protected Lands",
