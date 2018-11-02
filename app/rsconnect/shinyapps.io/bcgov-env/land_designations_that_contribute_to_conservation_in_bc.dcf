@@ -1,0 +1,10 @@
+name: land_designations_that_contribute_to_conservation_in_bc
+title: Land Designations that Contribute to Conservation in B.C.
+username:
+account: bcgov-env
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 547201
+bundleId: 1676910
+url: https://bcgov-env.shinyapps.io/land_designations_that_contribute_to_conservation_in_bc/
+when: 1541094008.38649
