@@ -38,6 +38,10 @@ plotly (#dev version; install_github("ropensci/plotly@7031a25"))
 DT
 ```
 
+### Previous versions
+
+This was previously hosted on bcgov's OpenShift instance. See the `deploy` branch for the setup used for that deployment strategy.
+
 ## Getting Help or Reporting an Issue
 
 To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov-c/land-designations-shinyapp/issues/).
