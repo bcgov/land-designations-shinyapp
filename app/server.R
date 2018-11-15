@@ -97,12 +97,12 @@ shinyServer(function(input, output, session) {
   })
 
   ## Subset map of ecoregion with land designations
-  output$ecoreg_map <- renderPlot({
+  output$ecoreg_map <- renderCachedPlot({
     ecoreg_code <- req(ecoreg_reactives$ecoreg_ids[length(ecoreg_reactives$ecoreg_ids)])
     req(!ecoreg_reactives$is_bc)
 
     gg_ld_class(class = "ecoreg", ecoreg_code)
-  })
+  }, cacheKeyExpr = ecoreg_reactives$ecoreg_ids)
 
   ## Bar chart of land designations for selected ecoregion
   output$ecoreg_barchart <- renderPlotly({
@@ -220,12 +220,12 @@ shinyServer(function(input, output, session) {
   })
 
   # Subset map of bec zone with land designations
-  output$bec_map <- renderPlot({
+  output$bec_map <- renderCachedPlot({
     bec_code <- req(bec_reactives$bec_ids[length(bec_reactives$bec_ids)])
     req(!bec_reactives$is_bc)
 
     if (!bec_reactives$is_bc) gg_ld_class(class = "bec", bec_code)
-  })
+  }, cacheKeyExpr = bec_reactives$bec_ids)
 
   ## Bar chart of land designations for selected bec zone
   output$bec_barchart <- renderPlotly({
